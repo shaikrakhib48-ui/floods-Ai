@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FloodGuard AI | Premium Intelligence Platform</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#030712;--panel:rgba(8,20,38,.78);--cyan:#22d3ee;--blue:#38bdf8;--green:#22c55e;--yellow:#facc15;--orange:#fb923c;--red:#ef4444;--muted:#94a3b8;--border:rgba(56,189,248,.18)}
+body{font-family:Arial,sans-serif;background:radial-gradient(circle at 15% 0%,#12365a 0%,transparent 28%),radial-gradient(circle at 90% 15%,#14235a 0%,transparent 25%),#030712;color:#eef7ff;overflow-x:hidden}
+#loader{position:fixed;inset:0;background:#020617;z-index:1000;display:grid;place-items:center;transition:opacity 1s}.load{text-align:center}.rings{width:150px;height:150px;margin:auto;position:relative}.ring{position:absolute;border-radius:50%;inset:0;border:2px solid transparent;border-top-color:var(--cyan);animation:spin 1.4s linear infinite}.ring:nth-child(2){inset:15px;border-top-color:var(--blue);animation-duration:1s;animation-direction:reverse}.ring:nth-child(3){inset:30px;border-top-color:#fff;animation-duration:.7s}.core{position:absolute;inset:50px;border-radius:50%;display:grid;place-items:center;background:rgba(34,211,238,.15);box-shadow:0 0 40px var(--cyan);animation:pulse 1.5s infinite}.load h1{letter-spacing:5px;margin-top:30px}.load p{color:var(--muted);margin:12px}.progress{width:320px;height:7px;background:#101b2c;border-radius:10px;margin:25px auto;overflow:hidden}.progress div{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan),#fff);animation:progress 4s forwards}.dots span{display:inline-block;width:8px;height:8px;margin:5px;background:var(--cyan);border-radius:50%;animation:bounce 1s infinite}.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{50%{transform:scale(1.12);box-shadow:0 0 70px var(--cyan)}}@keyframes progress{to{width:100%}}@keyframes bounce{50%{transform:translateY(-12px);opacity:.4}}
+.app{display:flex;min-height:100vh}.side{width:265px;position:fixed;inset:0 auto 0 0;background:rgba(2,8,20,.9);border-right:1px solid var(--border);padding:24px 16px;z-index:5}.brand{font-size:22px;font-weight:bold;padding:12px;border-bottom:1px solid var(--border)}.brand small{display:block;color:var(--cyan);font-size:10px;letter-spacing:2px;margin-top:5px}.nav{margin-top:25px}.nav button{width:100%;border:0;background:transparent;color:var(--muted);padding:15px;text-align:left;border-radius:12px;margin:4px 0;font-size:15px;cursor:pointer;transition:.25s}.nav button:hover,.nav button.active{background:linear-gradient(90deg,rgba(34,211,238,.16),transparent);color:#fff;border-left:3px solid var(--cyan)}.sidefoot{position:absolute;bottom:20px;padding:15px;color:var(--green);font-size:12px}
+main{margin-left:265px;padding:30px;width:calc(100% - 265px)}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}.top p{color:var(--muted);margin-top:7px}.live{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);padding:12px;border-radius:12px;color:var(--green)}.page{display:none;animation:fade .5s}.page.active{display:block}@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:20px;backdrop-filter:blur(14px);transition:.25s}.card:hover{transform:translateY(-5px);border-color:rgba(34,211,238,.6)}.name{color:var(--muted);font-size:12px;letter-spacing:1px;margin-top:15px}.value{font-size:30px;font-weight:bold;margin-top:6px}.unit{font-size:13px;color:var(--muted)}
+.twocol{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-top:18px}.risk{text-align:center;min-height:280px;display:grid;place-items:center;position:relative;overflow:hidden}.scan{position:absolute;left:0;width:100%;height:3px;background:var(--cyan);box-shadow:0 0 30px var(--cyan);animation:scanner 3s linear infinite}@keyframes scanner{from{top:0}to{top:100%}}.risk h2{font-size:45px}.map{height:430px;border-radius:20px;position:relative;overflow:hidden;background:linear-gradient(145deg,#0b263b,#102a22);border:1px solid var(--border)}.map:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent 0 45px,rgba(255,255,255,.035) 46px 48px)}.river{position:absolute;width:125%;height:110px;background:#0b7cb5;opacity:.7;border-radius:50%;transform:rotate(-18deg);top:42%;left:-15%}.area{position:absolute;width:70px;height:70px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:bold;cursor:pointer;animation:pulse 2s infinite}.safearea{background:rgba(34,197,94,.5);border:2px solid var(--green)}.watcharea{background:rgba(250,204,21,.5);border:2px solid var(--yellow)}.dangerarea{background:rgba(239,68,68,.55);border:2px solid var(--red)}.maplabel{position:absolute;bottom:15px;left:15px;background:#020617cc;padding:12px;border-radius:10px}
+.chart{height:250px;display:flex;align-items:end;gap:10px}.barbox{height:100%;flex:1;display:flex;align-items:center;justify-content:end;flex-direction:column}.bar{width:100%;background:linear-gradient(to top,#0369a1,var(--cyan));border-radius:8px 8px 0 0}.barbox small{margin-top:7px;color:var(--muted)}
+.sensorrow{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:20px}.monitor{min-height:150px}.status{color:var(--green);font-size:12px}.alerts .alert{padding:16px;margin:10px 0;border-radius:12px;background:#ffffff08;border-left:4px solid var(--yellow)}.settings label{display:block;margin:15px 0 5px;color:var(--muted)}input,select{width:100%;padding:12px;background:#081426;border:1px solid var(--border);color:#fff;border-radius:10px}.btn{margin-top:18px;padding:12px 18px;background:linear-gradient(90deg,#0284c7,var(--cyan));border:0;border-radius:10px;color:#02111e;font-weight:bold;cursor:pointer}
+@media(max-width:1050px){.grid{grid-template-columns:repeat(2,1fr)}.twocol{grid-template-columns:1fr}}@media(max-width:700px){.side{width:75px}.brand span,.brand small,.nav span,.sidefoot{display:none}main{margin-left:75px;width:calc(100% - 75px);padding:16px}.grid,.sensorrow{grid-template-columns:1fr}.top{display:block}.live{display:inline-block;margin-top:15px}}
+
+/* ULTRA ANIMATIONS */
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-25px)}}
+@keyframes floatCard{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes shimmer{0%{background-position:-300% 0}100%{background-position:300% 0}}
+@keyframes ripple{0%{transform:scale(.8);opacity:.8}100%{transform:scale(2.3);opacity:0}}
+.ambient{position:fixed;width:300px;height:300px;border-radius:50%;filter:blur(90px);opacity:.12;pointer-events:none;z-index:-1;animation:drift 10s ease-in-out infinite}
+.ambient.one{background:#22d3ee;top:10%;left:20%}.ambient.two{background:#2563eb;right:5%;bottom:10%;animation-delay:-4s}
+.card{animation:fade .7s ease both}.sensor-card:nth-child(odd),.monitor:nth-child(odd){animation:floatCard 4s ease-in-out infinite}
+.brand{background:linear-gradient(90deg,#fff,#22d3ee,#fff);background-size:300% 100%;animation:shimmer 6s linear infinite;-webkit-background-clip:text;background-clip:text;color:transparent}
+.live{position:relative}.live:after{content:"";position:absolute;width:8px;height:8px;border:1px solid #22c55e;border-radius:50%;left:10px;top:13px;animation:ripple 1.6s infinite}
+
+/* HEXA CHATBOT */
+#hexaLauncher{position:fixed;right:28px;bottom:28px;width:64px;height:64px;border-radius:50%;border:0;cursor:pointer;z-index:50;font-size:27px;background:linear-gradient(135deg,#22d3ee,#2563eb);box-shadow:0 0 0 0 rgba(34,211,238,.5),0 12px 35px rgba(0,0,0,.4);animation:hexaGlow 2s infinite}
+@keyframes hexaGlow{50%{box-shadow:0 0 0 16px rgba(34,211,238,0),0 0 35px #22d3ee}}
+#hexaChat{position:fixed;right:28px;bottom:105px;width:360px;max-width:calc(100vw - 32px);height:500px;display:none;flex-direction:column;background:rgba(3,12,27,.96);backdrop-filter:blur(24px);border:1px solid rgba(34,211,238,.35);border-radius:24px;z-index:50;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,.55)}
+#hexaChat.open{display:flex;animation:chatIn .35s ease}@keyframes chatIn{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:none}}
+.hexaHead{padding:16px;background:linear-gradient(90deg,rgba(34,211,238,.18),rgba(37,99,235,.12));display:flex;align-items:center;gap:12px}
+.hexaAvatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#0c3150;border:1px solid var(--cyan);animation:pulse 2s infinite}
+.hexaHead small{color:#22c55e}.hexaClose{margin-left:auto;background:transparent;border:0;color:#fff;font-size:20px;cursor:pointer}
+#hexaMessages{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:85%;padding:11px 13px;border-radius:15px;font-size:14px;line-height:1.4;animation:fade .25s}.bot{align-self:flex-start;background:#0b2239;border:1px solid #1b4768}.user{align-self:flex-end;background:#075985}
+.quick{padding:0 12px 10px;display:flex;gap:7px;overflow:auto}.quick button{white-space:nowrap;border:1px solid var(--border);background:#08192d;color:#bfefff;padding:8px 10px;border-radius:18px;cursor:pointer;font-size:12px}
+.hexaInput{display:flex;padding:12px;border-top:1px solid var(--border);gap:8px}.hexaInput input{margin:0}.hexaInput button{border:0;border-radius:10px;padding:0 15px;background:var(--cyan);cursor:pointer}
+
+</style>
+</head>
+<body>
+<div id="loader"><div class="load"><div class="rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="core">🌊</div></div><h1>FLOODGUARD AI</h1><p id="loadText">CONNECTING SENSOR NETWORK</p><div class="progress"><div></div></div><div class="dots"><span></span><span></span><span></span></div></div></div>
+<div class="app">
+<aside class="side"><div class="brand">🌊 <span>FloodGuard AI</span><small>INTELLIGENCE PLATFORM</small></div><div class="nav">
+<button class="active" onclick="showPage('dashboard',this)">📊 <span>Dashboard</span></button>
+<button onclick="showPage('monitoring',this)">📡 <span>Live Monitoring</span></button>
+<button onclick="showPage('zones',this)">🗺️ <span>Flood Risk Zones</span></button>
+<button onclick="showPage('alerts',this)">🚨 <span>Emergency Alerts</span></button>
+<button onclick="showPage('analytics',this)">📈 <span>Analytics</span></button>
+<button onclick="showPage('prediction',this)">🤖 <span>AI Prediction</span></button>
+<button onclick="showPage('settings',this)">⚙️ <span>Settings</span></button>
+</div><div class="sidefoot">● ALL SYSTEMS ONLINE</div></aside>
+<main><div class="top"><div><h1 id="pageTitle">Flood Intelligence Center</h1><p id="subtitle">Real-time environmental monitoring and AI flood prediction</p></div><div class="live">● LIVE &nbsp; <span id="clock"></span></div></div>
+
+<section id="dashboard" class="page active">
+<div class="grid" id="sensorCards"></div>
+<div class="twocol"><div class="card risk"><div class="scan"></div><div><p class="name">AI FLOOD RISK ASSESSMENT</p><h2 id="riskText">SAFE</h2><p>Risk Score: <b id="score">0</b>/100</p></div></div>
+<div class="card"><h3>🤖 AI Intelligence</h3><div class="alerts"><div class="alert">Water condition: <b id="waterCondition">Normal</b></div><div class="alert">Rain intensity: <b id="rainCondition">Low</b></div><div class="alert">Prediction: <b id="prediction">Stable</b></div></div></div></div>
+</section>
+
+<section id="monitoring" class="page"><div class="card"><h2>📡 Live Monitoring Station</h2><p class="name">Particular Area: <b id="monitorArea">Vijayawada Monitoring Zone</b></p><div class="sensorrow" id="monitorSensors"></div></div><div class="twocol"><div class="card"><h3>Live Water Level History</h3><div class="chart" id="liveChart"></div></div><div class="card"><h3>Sensor Network</h3><div id="networkStatus"></div></div></div></section>
+
+<section id="zones" class="page"><div class="card"><h2>🗺️ Flood Risk Zones</h2><p class="name">Interactive demonstration map — click an area to inspect its status.</p><div class="map">
+<div class="river"></div>
+<div class="area safearea" style="top:18%;left:18%" onclick="selectArea('North Zone','SAFE')">NORTH<br>SAFE</div>
+<div class="area watcharea" style="top:35%;left:55%" onclick="selectArea('Central Zone','WATCH')">CENTRAL<br>WATCH</div>
+<div class="area dangerarea" style="top:65%;left:32%" onclick="selectArea('River Side','HIGH RISK')">RIVER<br>HIGH</div>
+<div class="area safearea" style="top:60%;right:15%" onclick="selectArea('South Zone','SAFE')">SOUTH<br>SAFE</div>
+<div class="maplabel" id="areaInfo">Selected Area: Vijayawada Monitoring Zone</div>
+</div></div></section>
+
+<section id="alerts" class="page"><div class="card"><h2>🚨 Emergency Alert Center</h2><div class="alerts" id="alertList"></div><button class="btn" onclick="addTestAlert()">Generate Test Alert</button></div></section>
+
+<section id="analytics" class="page"><div class="twocol"><div class="card"><h2>📈 Flood Analytics</h2><div class="chart" id="analyticsChart"></div></div><div class="card"><h2>System Summary</h2><div id="summary"></div></div></div></section>
+
+<section id="prediction" class="page"><div class="card risk"><div class="scan"></div><div><p class="name">AI PREDICTIVE ENGINE</p><h2 id="futureRisk">ANALYZING...</h2><p id="futureText">Combining rainfall, water level and flow data.</p><button class="btn" onclick="runPrediction()">Run AI Prediction</button></div></div></section>
+
+<section id="settings" class="page"><div class="card settings"><h2>⚙️ Monitoring Configuration</h2><label>Monitoring Area</label><input id="areaInput" value="Vijayawada Monitoring Zone"><label>Water Level Alert Threshold (cm)</label><input id="thresholdInput" type="number" value="70"><label>Update Interval</label><select><option>Real-time simulation (5 seconds)</option><option>30 seconds</option><option>1 minute</option></select><button class="btn" onclick="saveSettings()">Save Configuration</button><p id="saveMessage" class="status"></p></div></section>
+</main></div>
+
+<div class="ambient one"></div><div class="ambient two"></div>
+<button id="hexaLauncher" onclick="toggleHexa()" title="Talk to Hexa">🤖</button>
+<div id="hexaChat">
+  <div class="hexaHead"><div class="hexaAvatar">H</div><div><b>Hexa AI</b><br><small>● FloodGuard Assistant</small></div><button class="hexaClose" onclick="toggleHexa()">×</button></div>
+  <div id="hexaMessages">
+    <div class="msg bot">Hello! I'm <b>Hexa</b> 🤖🌊 Your FloodGuard AI assistant. Ask me about flood risk, sensors, monitoring zones, or alerts.</div>
+  </div>
+  <div class="quick">
+    <button onclick="quickHexa('What is the current flood risk?')">Current Risk</button>
+    <button onclick="quickHexa('Show sensor status')">Sensors</button>
+    <button onclick="quickHexa('Which area is monitored?')">Area</button>
+    <button onclick="quickHexa('What should I do during a flood?')">Safety</button>
+  </div>
+  <div class="hexaInput"><input id="hexaInput" placeholder="Ask Hexa anything..." onkeydown="if(event.key==='Enter')sendHexa()"><button onclick="sendHexa()">➤</button></div>
+</div>
+
+<script>
+const sensors=[
+['🌊','Water Level','cm','water',45],
+['🌧️','Rainfall','mm','rain',20],
+['💨','Water Flow','L/min','flow',30],
+['🌡️','Temperature','°C','temp',28],
+['💧','Humidity','%','humidity',72],
+['🌬️','Wind Speed','km/h','wind',12],
+['⚡','Battery','%','battery',96],
+['📡','Signal Strength','%','signal',92]
+];
+let data={water:45,rain:20,flow:30,temp:28,humidity:72,wind:12,battery:96,signal:92};
+let history=[30,35,38,42,45,48,44,50];
+let selected='Vijayawada Monitoring Zone';
+const titles={dashboard:['Flood Intelligence Center','Real-time environmental monitoring and AI flood prediction'],monitoring:['Live Monitoring','Connected sensors updating continuously'],zones:['Flood Risk Zones','Area-wise risk visualization'],alerts:['Emergency Alert Center','Important warnings and notifications'],analytics:['Analytics','Historical trends and sensor intelligence'],prediction:['AI Prediction','Predicting flood probability from live sensor data'],settings:['System Settings','Configure FloodGuard AI monitoring']};
+function showPage(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');pageTitle.textContent=titles[id][0];subtitle.textContent=titles[id][1];}
+function cards(){sensorCards.innerHTML=sensors.slice(0,4).map(s=>`<div class="card"><div style="font-size:26px">${s[0]}</div><p class="name">${s[1].toUpperCase()}</p><div class="value">${Math.round(data[s[3]])} <span class="unit">${s[2]}</span></div><small class="status">● LIVE SENSOR</small></div>`).join('');
+monitorSensors.innerHTML=sensors.map(s=>`<div class="card monitor"><div style="font-size:22px">${s[0]}</div><p class="name">${s[1]}</p><div class="value">${Math.round(data[s[3]])}<span class="unit"> ${s[2]}</span></div><small class="status">● ACTIVE</small></div>`).join('');
+networkStatus.innerHTML=sensors.map(s=>`<p style="padding:11px;border-bottom:1px solid #ffffff12">🟢 ${s[1]} Sensor <span style="float:right;color:#22c55e">ONLINE</span></p>`).join('');
+}
+function getRisk(){let score=0;score+=data.water>=90?50:data.water>=70?35:data.water>=45?15:0;score+=data.rain>=80?30:data.rain>=50?20:data.rain>=20?10:0;score+=data.flow>=80?20:data.flow>=50?10:0;return Math.min(100,score)}
+function updateRisk(){let s=getRisk(),r=s>=80?'CRITICAL':s>=60?'HIGH RISK':s>=30?'WATCH':'SAFE';riskText.textContent=r;riskText.style.color=r==='SAFE'?'#22c55e':r==='WATCH'?'#facc15':'#ef4444';score.textContent=s;waterCondition.textContent=data.water>=70?'Dangerous':data.water>=45?'Increasing':'Normal';rainCondition.textContent=data.rain>=50?'Heavy':data.rain>=20?'Moderate':'Low';prediction.textContent=s>=60?'Flood Possible':s>=30?'Monitor Area':'Stable';futureRisk.textContent=r;futureRisk.style.color=riskText.style.color;futureText.textContent=`For ${selected}, AI estimates a ${s}% environmental flood risk score based on current sensor conditions.`}
+function draw(el){let c=document.getElementById(el);if(!c)return;c.innerHTML=history.map((v,i)=>`<div class="barbox"><div class="bar" style="height:${v}%"></div><small>T${i+1}</small></div>`).join('')}
+function summary(){document.getElementById('summary').innerHTML=`<p class="alert">📍 Area: <b>${selected}</b></p><p class="alert">🌊 Average Water Level: <b>${Math.round(history.reduce((a,b)=>a+b,0)/history.length)} cm</b></p><p class="alert">🤖 Current Risk: <b>${riskText.textContent}</b></p><p class="alert">📡 Active Sensors: <b>8 / 8</b></p>`}
+function simulate(){data.water=clamp(data.water+rand(-5,10),10,100);data.rain=clamp(data.rain+rand(-4,12),0,100);data.flow=clamp(data.flow+rand(-5,10),0,100);data.temp=clamp(data.temp+rand(-1,2),15,45);data.humidity=clamp(data.humidity+rand(-3,3),30,100);data.wind=clamp(data.wind+rand(-2,4),0,100);data.battery=Math.max(20,data.battery-.2);data.signal=clamp(data.signal+rand(-3,2),50,100);history.push(data.water);if(history.length>8)history.shift();cards();updateRisk();draw('liveChart');draw('analyticsChart');summary()}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function selectArea(area,status){selected=area;monitorArea.textContent=area;areaInfo.textContent=`Selected Area: ${area} | Current Zone Status: ${status}`;updateRisk();summary()}
+function addTestAlert(){let s=getRisk();alertList.insertAdjacentHTML('afterbegin',`<div class="alert">🚨 <b>${s>=60?'HIGH PRIORITY':'MONITORING ALERT'}</b><div class="alert-text">Area: ${selected} | Current AI Risk Score: ${s}/100 | ${new Date().toLocaleTimeString()}</div></div>`)}
+function runPrediction(){futureRisk.textContent='PROCESSING...';setTimeout(updateRisk,1200)}
+function saveSettings(){selected=areaInput.value||selected;monitorArea.textContent=selected;saveMessage.textContent='✓ Configuration saved successfully';setTimeout(()=>saveMessage.textContent='',3000)}
+const loadMessages=['CONNECTING SENSOR NETWORK...','CALIBRATING WATER LEVEL SENSORS...','INITIALIZING AI ENGINE...','LOADING FLOOD RISK MAP...','SECURING ALERT NETWORK...','FLOODGUARD AI READY'];
+let i=0;let li=setInterval(()=>{loadText.textContent=loadMessages[i++];if(i>=loadMessages.length)clearInterval(li)},600);
+setTimeout(()=>{loader.style.opacity=0;setTimeout(()=>loader.remove(),1000)},4200);
+setInterval(()=>clock.textContent=new Date().toLocaleTimeString(),1000);
+cards();updateRisk();draw('liveChart');draw('analyticsChart');summary();addTestAlert();setInterval(simulate,5000);
+
+function toggleHexa(){document.getElementById('hexaChat').classList.toggle('open')}
+function addHexa(text,type='bot'){let m=document.createElement('div');m.className='msg '+type;m.innerHTML=text;let box=document.getElementById('hexaMessages');box.appendChild(m);box.scrollTop=box.scrollHeight}
+function quickHexa(q){document.getElementById('hexaInput').value=q;sendHexa()}
+function sendHexa(){
+ let input=document.getElementById('hexaInput'),q=input.value.trim();if(!q)return;
+ addHexa(q,'user');input.value='';
+ setTimeout(()=>{addHexa(hexaReply(q.toLowerCase()))},450)
+}
+function hexaReply(q){
+ let s=getRisk(),r=s>=80?'CRITICAL':s>=60?'HIGH RISK':s>=30?'WATCH':'SAFE';
+ if(q.includes('risk')||q.includes('flood'))return `Current flood risk for <b>${selected}</b> is <b>${r}</b> with an AI score of <b>${s}/100</b>.`;
+ if(q.includes('sensor')||q.includes('status'))return `All <b>8 sensors</b> are active: Water Level, Rainfall, Water Flow, Temperature, Humidity, Wind Speed, Battery and Signal Strength.`;
+ if(q.includes('area')||q.includes('zone'))return `FloodGuard is currently focused on <b>${selected}</b>. You can select other zones from the Flood Risk Zones page.`;
+ if(q.includes('water'))return `Current water level is <b>${Math.round(data.water)} cm</b>. The alert logic continuously evaluates this value with rainfall and flow data.`;
+ if(q.includes('rain'))return `Current rainfall reading is <b>${Math.round(data.rain)} mm</b>.`;
+ if(q.includes('safe')||q.includes('emergency')||q.includes('do'))return `If flooding is occurring, follow official local emergency instructions, move to safer higher ground when advised, and avoid entering floodwater.`;
+ return `I'm Hexa 🤖. I can help with the current flood risk, sensor status, monitored areas, rainfall, water level and basic flood safety.`;
+}
+
+</script></body></html>
