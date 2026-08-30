@@ -430,6 +430,118 @@ io.on("connection", (socket) => {
   });
 });
 
+// ================================
+// FLOODGUARD AI SIMULATION MODE
+// ================================
+
+let simulationActive = true;
+
+function generateSimulationData() {
+  const waterLevel = Math.floor(Math.random() * 120) + 10;
+  const rainfall = Math.floor(Math.random() * 100);
+  const temperature = Math.floor(Math.random() * 15) + 20;
+  const humidity = Math.floor(Math.random() * 40) + 50;
+  const flowRate = Math.floor(Math.random() * 80) + 10;
+
+  const risk = calculateRisk(
+    waterLevel,
+    rainfall,
+    flowRate,
+    humidity
+  );
+
+  const areas = [
+    {
+      name: "Vijayawada",
+      latitude: 16.5062,
+      longitude: 80.6480
+    },
+    {
+      name: "Krishna River Zone",
+      latitude: 16.5185,
+      longitude: 80.6300
+    },
+    {
+      name: "Prakasam Barrage",
+      latitude: 16.5089,
+      longitude: 80.6200
+    },
+    {
+      name: "Flood Monitoring Zone A",
+      latitude: 16.4950,
+      longitude: 80.6600
+    }
+  ];
+
+  const selectedArea =
+    areas[Math.floor(Math.random() * areas.length)];
+
+  return {
+    deviceId: "SIM-FG-001",
+    area: selectedArea.name,
+    waterLevel,
+    rainfall,
+    temperature,
+    humidity,
+    flowRate,
+    latitude: selectedArea.latitude,
+    longitude: selectedArea.longitude,
+    riskScore: risk.score,
+    riskStatus: risk.status,
+    createdAt: new Date()
+  };
+}
+
+async function runSimulation() {
+  if (!simulationActive) return;
+
+  try {
+    const simulatedData = generateSimulationData();
+
+    const sensorData =
+      await SensorData.create(simulatedData);
+
+    console.log(
+      "Simulation Data:",
+      simulatedData.area,
+      simulatedData.riskStatus,
+      simulatedData.riskScore
+    );
+
+    io.emit(
+      "sensorUpdate",
+      sensorData
+    );
+
+    if (
+      simulatedData.riskStatus === "HIGH" ||
+      simulatedData.riskStatus === "CRITICAL"
+    ) {
+      io.emit(
+        "emergencyAlert",
+        {
+          area: simulatedData.area,
+          riskScore: simulatedData.riskScore,
+          riskStatus: simulatedData.riskStatus,
+          message:
+            `FloodGuard AI simulation detected ${simulatedData.riskStatus} flood risk in ${simulatedData.area}.`
+        }
+      );
+    }
+
+  } catch (error) {
+    console.error(
+      "Simulation Error:",
+      error.message
+    );
+  }
+}
+
+// Generate demo sensor data every 15 seconds
+setInterval(runSimulation, 15000);
+
+// Generate the first data shortly after startup
+setTimeout(runSimulation, 5000);
 server.listen(PORT, () => {
   console.log(
     `FloodGuard AI Backend running on port ${PORT}`
