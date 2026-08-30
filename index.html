@@ -40,7 +40,51 @@ html{
     scroll-behavior:smooth;
 }
 
-body{
+<script>
+const API_URL = "https://flood-ai-hexa.onrender.com";
+
+async function loadFloodData() {
+  try {
+    const response = await fetch(`${API_URL}/api/sensor/latest`);
+    const result = await response.json();
+
+    if (!result.success || !result.data) {
+      console.log("No sensor data available yet");
+      return;
+    }
+
+    const data = result.data;
+
+    console.log("Live FloodGuard Data:", data);
+
+    const waterLevel = document.getElementById("waterLevel");
+    const rainfall = document.getElementById("rainfall");
+    const temperature = document.getElementById("temperature");
+    const humidity = document.getElementById("humidity");
+    const flowRate = document.getElementById("flowRate");
+    const riskStatus = document.getElementById("riskStatus");
+    const riskScore = document.getElementById("riskScore");
+    const area = document.getElementById("area");
+
+    if (waterLevel) waterLevel.textContent = `${data.waterLevel ?? 0} cm`;
+    if (rainfall) rainfall.textContent = `${data.rainfall ?? 0} mm`;
+    if (temperature) temperature.textContent = `${data.temperature ?? 0} °C`;
+    if (humidity) humidity.textContent = `${data.humidity ?? 0} %`;
+    if (flowRate) flowRate.textContent = `${data.flowRate ?? 0}`;
+    if (riskStatus) riskStatus.textContent = data.riskStatus ?? "SAFE";
+    if (riskScore) riskScore.textContent = `${data.riskScore ?? 0}/100`;
+    if (area) area.textContent = data.area ?? "Unknown";
+
+  } catch (error) {
+    console.error("FloodGuard backend connection error:", error);
+  }
+}
+
+loadFloodData();
+
+setInterval(loadFloodData, 10000);
+</script>
+    body{
     background:
     radial-gradient(circle at 20% 0%,rgba(0,217,255,.09),transparent 28%),
     radial-gradient(circle at 100% 100%,rgba(155,92,255,.08),transparent 30%),
