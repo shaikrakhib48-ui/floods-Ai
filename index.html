@@ -7,10 +7,8 @@
 <title>FloodGuard AI | Hexa Tech</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
 <style>
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&display=swap');
 
 *{
@@ -21,7 +19,8 @@
 
 :root{
     --bg:#020611;
-    --glass:rgba(8,23,42,.78);
+    --bg2:#071729;
+    --glass:rgba(8,23,42,.82);
     --cyan:#00e5ff;
     --blue:#397cff;
     --purple:#9b6cff;
@@ -41,27 +40,54 @@ html{
 body{
     font-family:'Inter',sans-serif;
     color:var(--text);
+    min-height:100vh;
+    overflow-x:hidden;
     background:
         radial-gradient(circle at 15% 10%,rgba(0,229,255,.12),transparent 28%),
         radial-gradient(circle at 85% 20%,rgba(155,108,255,.12),transparent 28%),
         radial-gradient(circle at 50% 100%,rgba(57,124,255,.12),transparent 35%),
         var(--bg);
-    min-height:100vh;
-    overflow-x:hidden;
 }
-
 
 /* BACKGROUND */
 
 .background-grid{
     position:fixed;
     inset:0;
+    z-index:-5;
+    pointer-events:none;
+
     background-image:
         linear-gradient(rgba(0,229,255,.025) 1px,transparent 1px),
         linear-gradient(90deg,rgba(0,229,255,.025) 1px,transparent 1px);
+
     background-size:55px 55px;
+}
+
+.rain-layer{
+    position:fixed;
+    inset:0;
     pointer-events:none;
-    z-index:-5;
+    z-index:-4;
+    opacity:.2;
+    overflow:hidden;
+}
+
+.drop{
+    position:absolute;
+    width:1px;
+    height:70px;
+    background:linear-gradient(transparent,var(--cyan));
+    animation:rainFall linear infinite;
+}
+
+@keyframes rainFall{
+    from{
+        transform:translateY(-120px);
+    }
+    to{
+        transform:translateY(110vh);
+    }
 }
 
 .orb{
@@ -70,9 +96,9 @@ body{
     height:400px;
     border-radius:50%;
     filter:blur(90px);
-    opacity:.16;
+    opacity:.15;
     pointer-events:none;
-    z-index:-4;
+    z-index:-3;
 }
 
 .orb1{
@@ -84,8 +110,8 @@ body{
 
 .orb2{
     background:var(--purple);
-    right:-120px;
     top:25%;
+    right:-120px;
     animation:orbFloat 15s ease-in-out infinite reverse;
 }
 
@@ -105,20 +131,22 @@ body{
     }
 }
 
-
 /* LOADER */
 
 .loader{
     position:fixed;
     inset:0;
+    z-index:999999;
+
     display:flex;
     flex-direction:column;
-    align-items:center;
     justify-content:center;
+    align-items:center;
+
     background:
-        radial-gradient(circle at center,rgba(0,229,255,.12),transparent 40%),
+        radial-gradient(circle at center,rgba(0,229,255,.15),transparent 40%),
         #020611;
-    z-index:99999;
+
     transition:opacity .8s ease,visibility .8s ease;
 }
 
@@ -127,13 +155,29 @@ body{
     visibility:hidden;
 }
 
+.loader-brand{
+    position:absolute;
+    top:45px;
+    font-family:'Orbitron',sans-serif;
+    letter-spacing:6px;
+    font-size:13px;
+    color:var(--cyan);
+    animation:brandGlow 2s infinite;
+}
+
+@keyframes brandGlow{
+    50%{
+        text-shadow:0 0 25px var(--cyan);
+    }
+}
+
 .loader-core{
-    width:150px;
-    height:150px;
+    width:180px;
+    height:180px;
     position:relative;
     display:flex;
-    align-items:center;
     justify-content:center;
+    align-items:center;
 }
 
 .loader-ring{
@@ -143,102 +187,92 @@ body{
 }
 
 .ring1{
-    width:145px;
-    height:145px;
+    width:175px;
+    height:175px;
     border-top-color:var(--cyan);
     border-bottom-color:var(--blue);
     animation:spin 1.8s linear infinite;
 }
 
 .ring2{
-    width:110px;
-    height:110px;
+    width:135px;
+    height:135px;
     border-left-color:var(--purple);
     border-right-color:var(--cyan);
     animation:spinReverse 1.2s linear infinite;
 }
 
 .ring3{
-    width:70px;
-    height:70px;
+    width:80px;
+    height:80px;
     border-radius:50%;
     background:
         radial-gradient(circle,
-        rgba(0,229,255,.85),
+        rgba(0,229,255,.9),
         rgba(0,229,255,.05));
     box-shadow:
-        0 0 35px rgba(0,229,255,.7),
-        0 0 90px rgba(0,229,255,.25);
+        0 0 35px rgba(0,229,255,.8),
+        0 0 90px rgba(0,229,255,.3);
     animation:pulseCore 1.5s infinite;
 }
 
 .loader-logo{
     position:absolute;
     z-index:2;
-    font-size:30px;
+    font-size:32px;
 }
 
 .loader-title{
-    margin-top:32px;
+    margin-top:28px;
     font-family:'Orbitron',sans-serif;
-    font-size:18px;
-    letter-spacing:4px;
-    color:white;
-}
-
-.hexa-loading{
-    margin-top:12px;
-    font-family:'Orbitron',sans-serif;
-    font-size:24px;
-    font-weight:800;
-    letter-spacing:6px;
-    color:var(--cyan);
-    text-shadow:
-        0 0 15px var(--cyan),
-        0 0 35px rgba(0,229,255,.5);
-    animation:hexaGlow 1.5s infinite alternate;
+    font-size:20px;
+    letter-spacing:5px;
 }
 
 .loader-text{
-    margin-top:14px;
-    color:#b7cbd8;
+    margin-top:13px;
     font-size:10px;
     letter-spacing:3px;
-    animation:textPulse 1.5s infinite;
+    color:var(--cyan);
 }
 
 .loader-bar{
-    width:260px;
-    height:4px;
-    margin-top:22px;
-    border-radius:10px;
-    background:rgba(255,255,255,.06);
+    width:270px;
+    height:5px;
+    margin-top:24px;
+    border-radius:20px;
+    background:rgba(255,255,255,.07);
     overflow:hidden;
 }
 
 .loader-progress{
-    height:100%;
     width:0;
-    background:
-        linear-gradient(
-            90deg,
-            var(--blue),
-            var(--cyan),
-            var(--purple)
-        );
-    box-shadow:0 0 15px var(--cyan);
-    animation:loading 3s ease forwards;
+    height:100%;
+    background:linear-gradient(
+        90deg,
+        var(--blue),
+        var(--cyan),
+        var(--purple)
+    );
+    box-shadow:0 0 18px var(--cyan);
+    animation:loading 4s ease forwards;
+}
+
+.loader-percent{
+    margin-top:10px;
+    color:var(--muted);
+    font-size:10px;
 }
 
 .powered{
-    margin-top:22px;
-    padding:9px 18px;
+    margin-top:20px;
+    padding:10px 20px;
     border-radius:30px;
+    border:1px solid rgba(0,229,255,.15);
+    background:rgba(0,229,255,.04);
     color:#a9c7d8;
     font-size:10px;
     letter-spacing:2px;
-    border:1px solid rgba(0,229,255,.12);
-    background:rgba(0,229,255,.04);
 }
 
 .powered span{
@@ -256,30 +290,14 @@ body{
 
 @keyframes pulseCore{
     50%{
-        transform:scale(1.14);
-        opacity:.75;
+        transform:scale(1.15);
+        opacity:.7;
     }
-}
-
-@keyframes textPulse{
-    50%{opacity:.4;}
 }
 
 @keyframes loading{
     to{width:100%;}
 }
-
-@keyframes hexaGlow{
-    from{
-        transform:scale(.98);
-        opacity:.7;
-    }
-    to{
-        transform:scale(1.04);
-        opacity:1;
-    }
-}
-
 
 /* SIDEBAR */
 
@@ -288,20 +306,26 @@ body{
     top:18px;
     left:18px;
     bottom:18px;
+
     width:255px;
     padding:20px 14px;
-    border-radius:24px;
-    background:rgba(5,17,32,.78);
-    backdrop-filter:blur(25px);
-    border:1px solid var(--border);
-    box-shadow:0 20px 60px rgba(0,0,0,.45);
+
     z-index:1000;
+
+    border-radius:24px;
+    background:rgba(5,17,32,.82);
+    backdrop-filter:blur(25px);
+
+    border:1px solid var(--border);
+
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
 }
 
 .logo{
     display:flex;
     align-items:center;
     gap:12px;
+
     padding:10px 10px 24px;
     border-bottom:1px solid var(--border);
 }
@@ -309,22 +333,30 @@ body{
 .logo-icon{
     width:45px;
     height:45px;
+
     display:flex;
-    align-items:center;
     justify-content:center;
+    align-items:center;
+
     border-radius:14px;
-    background:linear-gradient(135deg,var(--blue),var(--cyan));
+
+    background:linear-gradient(
+        135deg,
+        var(--blue),
+        var(--cyan)
+    );
+
     box-shadow:0 10px 30px rgba(0,229,255,.25);
 }
 
 .logo h2{
     font-family:'Orbitron',sans-serif;
-    font-size:14px;
+    font-size:13px;
 }
 
 .logo small{
     color:var(--muted);
-    font-size:9px;
+    font-size:8px;
     letter-spacing:1px;
 }
 
@@ -343,12 +375,16 @@ body{
     width:100%;
     padding:13px 14px;
     margin-bottom:5px;
+
     border:none;
     border-radius:12px;
-    background:transparent;
+
     color:#91a6b9;
+    background:transparent;
+
     cursor:pointer;
     text-align:left;
+
     transition:.25s;
     font-size:13px;
 }
@@ -361,38 +397,39 @@ body{
 
 .nav button.active{
     color:white;
-    background:
-        linear-gradient(
-            90deg,
-            rgba(57,124,255,.30),
-            rgba(0,229,255,.10)
-        );
+    background:linear-gradient(
+        90deg,
+        rgba(57,124,255,.30),
+        rgba(0,229,255,.10)
+    );
     box-shadow:inset 2px 0 var(--cyan);
 }
 
 .system-status{
     position:absolute;
-    bottom:18px;
     left:16px;
     right:16px;
+    bottom:18px;
+
     padding:13px;
     border-radius:14px;
+
+    font-size:10px;
     color:var(--green);
+
     background:rgba(33,230,161,.06);
     border:1px solid rgba(33,230,161,.15);
-    font-size:10px;
 }
 
 .status-dot{
     display:inline-block;
     width:8px;
     height:8px;
+    margin-right:7px;
     border-radius:50%;
     background:var(--green);
     box-shadow:0 0 12px var(--green);
-    margin-right:7px;
 }
-
 
 /* MAIN */
 
@@ -415,8 +452,8 @@ body{
 }
 
 .topbar p{
-    color:var(--muted);
     margin-top:7px;
+    color:var(--muted);
     font-size:12px;
 }
 
@@ -427,14 +464,20 @@ body{
     flex-wrap:wrap;
 }
 
+.live-badge,
+.location-box{
+    padding:10px 14px;
+    border-radius:12px;
+    font-size:10px;
+}
+
 .live-badge{
     display:flex;
     align-items:center;
     gap:7px;
-    padding:10px 15px;
-    border-radius:30px;
+
     color:var(--green);
-    font-size:10px;
+
     background:rgba(33,230,161,.06);
     border:1px solid rgba(33,230,161,.18);
 }
@@ -445,17 +488,22 @@ body{
     border-radius:50%;
     background:var(--green);
     box-shadow:0 0 12px var(--green);
+    animation:blink 1s infinite;
+}
+
+@keyframes blink{
+    50%{opacity:.3;}
 }
 
 .location-box{
-    padding:10px 14px;
-    border-radius:12px;
     background:var(--glass);
     border:1px solid var(--border);
     color:#b8c9d8;
-    font-size:11px;
 }
 
+.mobile-menu{
+    display:none;
+}
 
 /* PAGES */
 
@@ -479,7 +527,6 @@ body{
     }
 }
 
-
 /* CARDS */
 
 .grid{
@@ -489,25 +536,40 @@ body{
 }
 
 .card{
-    position:relative;
     padding:20px;
+    position:relative;
     overflow:hidden;
+
     border-radius:20px;
-    background:
-        linear-gradient(
-            145deg,
-            rgba(13,32,55,.82),
-            rgba(6,19,34,.82)
-        );
-    backdrop-filter:blur(18px);
+
+    background:linear-gradient(
+        145deg,
+        rgba(13,32,55,.84),
+        rgba(6,19,34,.84)
+    );
+
     border:1px solid var(--border);
+    backdrop-filter:blur(18px);
+
     box-shadow:0 15px 45px rgba(0,0,0,.22);
+
     transition:.3s;
 }
 
 .card:hover{
     transform:translateY(-5px);
-    border-color:rgba(0,229,255,.3);
+    border-color:rgba(0,229,255,.32);
+}
+
+.card::before{
+    content:"";
+    position:absolute;
+    width:100px;
+    height:100px;
+    right:-50px;
+    top:-50px;
+    border-radius:50%;
+    background:rgba(0,229,255,.04);
 }
 
 .stat-label{
@@ -517,7 +579,7 @@ body{
 }
 
 .stat-value{
-    font-size:28px;
+    font-size:27px;
     font-weight:700;
     margin:13px 0 7px;
 }
@@ -545,6 +607,39 @@ body{
     height:320px;
 }
 
+/* BUTTONS */
+
+.primary-btn{
+    border:none;
+    padding:11px 17px;
+    border-radius:11px;
+
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+
+    background:linear-gradient(
+        135deg,
+        var(--blue),
+        var(--cyan)
+    );
+
+    box-shadow:0 8px 25px rgba(0,140,255,.2);
+    transition:.25s;
+}
+
+.primary-btn:hover{
+    transform:translateY(-2px);
+}
+
+.secondary-btn{
+    padding:10px 14px;
+    border-radius:11px;
+    color:#c8d9e5;
+    background:var(--glass);
+    border:1px solid var(--border);
+    cursor:pointer;
+}
 
 /* RISK */
 
@@ -555,19 +650,25 @@ body{
 .risk-ring{
     width:195px;
     height:195px;
+
     margin:18px auto;
+
     border-radius:50%;
+    border:9px solid var(--green);
+
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    border:9px solid var(--green);
+
     background:
         radial-gradient(
             circle,
             rgba(33,230,161,.08),
             transparent 65%
         );
+
+    box-shadow:0 0 35px rgba(33,230,161,.12);
     animation:antiGravity 4s ease-in-out infinite;
 }
 
@@ -591,8 +692,10 @@ body{
 .ai-box{
     padding:15px;
     border-radius:14px;
+
     background:rgba(0,229,255,.045);
     border:1px solid rgba(0,229,255,.12);
+
     text-align:left;
 }
 
@@ -601,7 +704,6 @@ body{
     font-size:12px;
     line-height:1.8;
 }
-
 
 /* SENSORS */
 
@@ -614,8 +716,10 @@ body{
 .sensor{
     padding:20px;
     border-radius:18px;
+
     background:rgba(5,18,33,.65);
     border:1px solid var(--border);
+
     transition:.25s;
 }
 
@@ -625,7 +729,7 @@ body{
 }
 
 .sensor-icon{
-    font-size:24px;
+    font-size:25px;
 }
 
 .sensor p{
@@ -636,60 +740,31 @@ body{
 
 .sensor strong{
     display:block;
-    font-size:24px;
     margin-top:8px;
+    font-size:23px;
 }
 
+/* INPUT */
 
-/* BUTTONS */
-
-.primary-btn{
-    border:none;
-    padding:11px 17px;
-    border-radius:11px;
-    color:white;
-    font-weight:600;
-    cursor:pointer;
-    background:
-        linear-gradient(
-            135deg,
-            var(--blue),
-            var(--cyan)
-        );
-    transition:.25s;
-}
-
-.primary-btn:hover{
-    transform:translateY(-2px);
-}
-
-.secondary-btn{
-    padding:10px 14px;
-    border-radius:11px;
-    color:#c8d9e5;
-    background:var(--glass);
-    border:1px solid var(--border);
-    cursor:pointer;
-}
-
-
-/* INPUTS */
-
-input,select{
+input,
+select{
     width:100%;
     padding:13px 14px;
     margin:7px 0 15px;
+
     border-radius:12px;
+
     background:rgba(3,12,23,.8);
     color:white;
+
     border:1px solid var(--border);
     outline:none;
 }
 
-input:focus,select:focus{
+input:focus,
+select:focus{
     border-color:var(--cyan);
 }
-
 
 /* TABLE */
 
@@ -698,7 +773,8 @@ table{
     border-collapse:collapse;
 }
 
-th,td{
+th,
+td{
     padding:15px;
     text-align:left;
     border-bottom:1px solid rgba(255,255,255,.05);
@@ -709,20 +785,22 @@ th{
     color:#738da1;
 }
 
-
 /* MAP */
 
 .map{
     height:430px;
     position:relative;
     overflow:hidden;
+
     border-radius:20px;
     border:1px solid var(--border);
+
     background:
         linear-gradient(rgba(0,229,255,.06) 1px,transparent 1px),
         linear-gradient(90deg,rgba(0,229,255,.06) 1px,transparent 1px),
         radial-gradient(circle at center,rgba(57,124,255,.15),transparent 55%),
         #06111f;
+
     background-size:40px 40px,40px 40px,100% 100%;
 }
 
@@ -731,29 +809,39 @@ th{
     top:18px;
     left:18px;
     z-index:5;
+
     padding:11px 14px;
     border-radius:12px;
+
     background:rgba(4,14,27,.85);
     border:1px solid var(--border);
+
     font-size:11px;
 }
 
 .zone{
     position:absolute;
+
     width:135px;
     height:135px;
+
     border-radius:50%;
+
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
+
     cursor:pointer;
     border:2px solid;
+
+    transition:.3s;
     animation:zoneFloat 4s ease-in-out infinite;
 }
 
 .zone:hover{
-    transform:scale(1.1);
+    transform:scale(1.12);
+    box-shadow:0 0 30px currentColor;
 }
 
 .zone small{
@@ -790,13 +878,13 @@ th{
     }
 }
 
-
-/* ALERTS */
+/* ALERT */
 
 .alert{
     padding:17px;
     border-radius:15px;
     margin-bottom:12px;
+
     background:rgba(255,77,109,.06);
     border:1px solid rgba(255,77,109,.16);
     border-left:4px solid var(--red);
@@ -813,22 +901,19 @@ th{
     line-height:1.6;
 }
 
-
-/* SETTINGS */
-
 .settings-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:18px;
 }
 
-
-/* HEXA CHATBOT - TOP RIGHT */
+/* CHATBOT TOP RIGHT */
 
 .hexa-button{
     position:fixed;
-    top:25px;
+
     right:25px;
+    top:25px;
 
     width:58px;
     height:58px;
@@ -837,19 +922,18 @@ th{
     border-radius:50%;
 
     cursor:pointer;
+    z-index:10001;
+
     font-size:24px;
 
-    z-index:10000;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--purple),
-            var(--cyan)
-        );
+    background:linear-gradient(
+        135deg,
+        var(--purple),
+        var(--cyan)
+    );
 
     box-shadow:
-        0 10px 35px rgba(0,229,255,.35);
+        0 10px 35px rgba(0,229,255,.3);
 
     animation:hexaFloat 3s ease-in-out infinite;
 }
@@ -865,8 +949,8 @@ th{
 
     position:fixed;
 
-    top:95px;
     right:25px;
+    top:95px;
 
     width:370px;
     height:510px;
@@ -883,14 +967,14 @@ th{
 
     border:1px solid var(--border);
 
-    box-shadow:
-        0 25px 70px rgba(0,0,0,.6);
+    box-shadow:0 25px 70px rgba(0,0,0,.6);
 }
 
 .hexa-header{
     display:flex;
     justify-content:space-between;
     align-items:center;
+
     padding-bottom:13px;
     border-bottom:1px solid var(--border);
 }
@@ -898,6 +982,7 @@ th{
 .hexa-close{
     background:none;
     border:none;
+
     color:white;
     font-size:22px;
     cursor:pointer;
@@ -910,13 +995,14 @@ th{
 }
 
 .message{
-    max-width:78%;
+    max-width:80%;
     padding:12px 14px;
     margin:10px 0;
+
     border-radius:15px;
+
     font-size:12px;
     line-height:1.6;
-    word-wrap:break-word;
 }
 
 .bot{
@@ -926,12 +1012,11 @@ th{
 
 .user{
     margin-left:auto;
-    background:
-        linear-gradient(
-            135deg,
-            #164d79,
-            #0d6b8c
-        );
+    background:linear-gradient(
+        135deg,
+        #164d79,
+        #0d6b8c
+    );
 }
 
 .chat-input{
@@ -944,15 +1029,44 @@ th{
     margin:0;
 }
 
-.mobile-menu{
-    display:none;
+/* TOAST */
+
+.toast-container{
+    position:fixed;
+    bottom:25px;
+    right:25px;
+    z-index:10002;
 }
 
+.toast{
+    min-width:280px;
+    padding:15px;
+    margin-top:10px;
+
+    border-radius:14px;
+
+    background:rgba(7,22,39,.96);
+    border:1px solid var(--border);
+
+    box-shadow:0 15px 40px rgba(0,0,0,.4);
+
+    animation:toastIn .4s ease;
+}
+
+@keyframes toastIn{
+    from{
+        opacity:0;
+        transform:translateX(40px);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
 
 /* MOBILE */
 
 @media(max-width:1050px){
-
     .grid{
         grid-template-columns:repeat(2,1fr);
     }
@@ -960,7 +1074,6 @@ th{
     .big-grid{
         grid-template-columns:1fr;
     }
-
 }
 
 @media(max-width:750px){
@@ -976,7 +1089,7 @@ th{
 
     .main{
         margin-left:0;
-        padding:18px;
+        padding:90px 18px 30px;
     }
 
     .mobile-menu{
@@ -1003,34 +1116,36 @@ th{
     }
 
     .hexa-box{
-        top:85px;
         right:10px;
+        top:85px;
         width:calc(100% - 20px);
         height:500px;
     }
 
     .hexa-button{
-        top:15px;
         right:15px;
+        top:15px;
     }
-
 }
-
 </style>
 </head>
 
 <body>
 
 <div class="background-grid"></div>
+<div class="rain-layer" id="rainLayer"></div>
 
 <div class="orb orb1"></div>
 <div class="orb orb2"></div>
 <div class="orb orb3"></div>
 
-
 <!-- LOADER -->
 
 <div class="loader" id="loader">
+
+    <div class="loader-brand">
+        ⚡ HEXA TECH ⚡
+    </div>
 
     <div class="loader-core">
 
@@ -1046,10 +1161,6 @@ th{
         FLOODGUARD AI
     </div>
 
-    <div class="hexa-loading">
-        HEXA TECH
-    </div>
-
     <div class="loader-text" id="loaderText">
         INITIALIZING INTELLIGENCE SYSTEM
     </div>
@@ -1058,13 +1169,15 @@ th{
         <div class="loader-progress"></div>
     </div>
 
+    <div class="loader-percent" id="loaderPercent">
+        0%
+    </div>
+
     <div class="powered">
-        DEVELOPED & POWERED BY
-        <span>HEXA TECH</span> ⚡
+        POWERED BY <span>HEXA TECH</span> ⚡
     </div>
 
 </div>
-
 
 <!-- SIDEBAR -->
 
@@ -1119,11 +1232,10 @@ th{
 
     <div class="system-status">
         <span class="status-dot"></span>
-        ALL SYSTEMS ONLINE
+        <span id="systemStatus">ALL SYSTEMS ONLINE</span>
     </div>
 
 </aside>
-
 
 <!-- MAIN -->
 
@@ -1140,8 +1252,7 @@ th{
         <h1>Flood Intelligence Center</h1>
 
         <p>
-            Real-time environmental monitoring and
-            AI-powered flood prediction
+            Real-time environmental monitoring and AI-powered flood prediction
         </p>
 
     </div>
@@ -1150,7 +1261,7 @@ th{
 
         <div class="live-badge">
             <span class="live-dot"></span>
-            LIVE SYSTEM
+            <span id="liveStatus">LIVE SYSTEM</span>
         </div>
 
         <div class="location-box">
@@ -1165,597 +1276,700 @@ th{
 
 </div>
 
-
 <!-- DASHBOARD -->
 
 <section class="page active" id="dashboard">
 
-<div class="grid">
+    <div class="grid">
 
-<div class="card">
-<div class="stat-label">AI FLOOD RISK</div>
-<div class="stat-value" id="riskStatus">SAFE</div>
-<div class="stat-bottom" id="riskScore">Risk Score: 0/100</div>
-</div>
+        <div class="card">
+            <div class="stat-label">AI FLOOD RISK</div>
+            <div class="stat-value" id="riskStatus">SAFE</div>
+            <div class="stat-bottom" id="riskScore">Risk Score: 0/100</div>
+        </div>
 
-<div class="card">
-<div class="stat-label">WATER LEVEL</div>
-<div class="stat-value" id="waterLevel">-- cm</div>
-<div class="stat-bottom">Live sensor reading</div>
-</div>
+        <div class="card">
+            <div class="stat-label">WATER LEVEL</div>
+            <div class="stat-value" id="waterLevel">0 cm</div>
+            <div class="stat-bottom">Live sensor reading</div>
+        </div>
 
-<div class="card">
-<div class="stat-label">RAINFALL</div>
-<div class="stat-value" id="rainfall">-- mm</div>
-<div class="stat-bottom">Current rainfall intensity</div>
-</div>
+        <div class="card">
+            <div class="stat-label">RAINFALL</div>
+            <div class="stat-value" id="rainfall">0 mm</div>
+            <div class="stat-bottom">Current rainfall intensity</div>
+        </div>
 
-<div class="card">
-<div class="stat-label">MONITORING AREA</div>
-<div class="stat-value" id="currentArea">Vijayawada</div>
-<div class="stat-bottom">Active monitoring zone</div>
-</div>
+        <div class="card">
+            <div class="stat-label">MONITORING AREA</div>
+            <div class="stat-value" id="currentArea">Vijayawada</div>
+            <div class="stat-bottom">Active monitoring zone</div>
+        </div>
 
-</div>
+    </div>
 
+    <div class="big-grid">
 
-<div class="big-grid">
+        <div class="card">
 
-<div class="card">
+            <div class="section-title">
+                <h3>📡 Live Water Level History</h3>
 
-<div class="section-title">
-<h3>📡 Live Water Level History</h3>
-<span style="color:var(--cyan);font-size:10px;">REAL-TIME</span>
-</div>
+                <span style="color:var(--cyan);font-size:10px;">
+                    REAL-TIME
+                </span>
+            </div>
 
-<div class="chart-box">
-<canvas id="waterChart"></canvas>
-</div>
+            <div class="chart-box">
+                <canvas id="waterChart"></canvas>
+            </div>
 
-</div>
+        </div>
 
+        <div class="card risk-panel">
 
-<div class="card risk-panel">
+            <div class="section-title">
+                <h3>🤖 AI Intelligence</h3>
+            </div>
 
-<div class="section-title">
-<h3>🤖 AI Intelligence</h3>
-</div>
+            <div class="risk-ring" id="riskRing">
 
-<div class="risk-ring" id="riskRing">
-<h1 id="ringScore">0</h1>
-<p>RISK SCORE</p>
-</div>
+                <h1 id="ringScore">0</h1>
+                <p>RISK SCORE</p>
 
-<div class="ai-box">
-<p id="aiInsight">
-FloodGuard AI is ready for monitoring.
-</p>
-</div>
+            </div>
 
-</div>
+            <div class="ai-box">
+                <p id="aiInsight">
+                    FloodGuard AI is analyzing environmental conditions...
+                </p>
+            </div>
 
-</div>
+        </div>
+
+    </div>
 
 </section>
 
-
-<!-- LIVE MONITORING -->
+<!-- MONITORING -->
 
 <section class="page" id="monitoring">
 
-<div class="card">
+    <div class="card">
 
-<div class="section-title">
+        <div class="section-title">
 
-<h3>📡 Live Monitoring Station</h3>
+            <h3>📡 Live Monitoring Station</h3>
 
-<button class="primary-btn" onclick="loadLatest()">
-Refresh
-</button>
+            <button class="primary-btn" onclick="manualRefresh()">
+                Refresh
+            </button>
 
-</div>
+        </div>
 
+        <div class="sensor-grid">
 
-<div class="sensor-grid">
+            <div class="sensor">
+                <div class="sensor-icon">🌊</div>
+                <p>Water Level</p>
+                <strong id="sensorWater">0 cm</strong>
+            </div>
 
-<div class="sensor">
-<div class="sensor-icon">🌊</div>
-<p>Water Level</p>
-<strong id="sensorWater">-- cm</strong>
-</div>
+            <div class="sensor">
+                <div class="sensor-icon">🌧️</div>
+                <p>Rainfall</p>
+                <strong id="sensorRain">0 mm</strong>
+            </div>
 
-<div class="sensor">
-<div class="sensor-icon">🌧️</div>
-<p>Rainfall</p>
-<strong id="sensorRain">-- mm</strong>
-</div>
+            <div class="sensor">
+                <div class="sensor-icon">🌡️</div>
+                <p>Temperature</p>
+                <strong id="sensorTemp">0 °C</strong>
+            </div>
 
-<div class="sensor">
-<div class="sensor-icon">🌡️</div>
-<p>Temperature</p>
-<strong id="sensorTemp">-- °C</strong>
-</div>
+            <div class="sensor">
+                <div class="sensor-icon">💧</div>
+                <p>Humidity</p>
+                <strong id="sensorHumidity">0%</strong>
+            </div>
 
-<div class="sensor">
-<div class="sensor-icon">💧</div>
-<p>Humidity</p>
-<strong id="sensorHumidity">-- %</strong>
-</div>
+            <div class="sensor">
+                <div class="sensor-icon">🌊</div>
+                <p>Flow Rate</p>
+                <strong id="sensorFlow">0 L/min</strong>
+            </div>
 
-<div class="sensor">
-<div class="sensor-icon">🌊</div>
-<p>Flow Rate</p>
-<strong id="sensorFlow">-- L/min</strong>
-</div>
+            <div class="sensor">
+                <div class="sensor-icon">🧠</div>
+                <p>Risk Status</p>
+                <strong id="sensorRisk">SAFE</strong>
+            </div>
 
-<div class="sensor">
-<div class="sensor-icon">🧠</div>
-<p>Risk Status</p>
-<strong id="sensorRisk">SAFE</strong>
-</div>
+        </div>
 
-</div>
+    </div>
 
-</div>
+    <div class="card" style="margin-top:18px;">
 
+        <div class="section-title">
+            <h3>Sensor Network Records</h3>
+        </div>
 
-<div class="card" style="margin-top:18px;">
+        <div style="overflow:auto;">
 
-<div class="section-title">
-<h3>Sensor Network Records</h3>
-</div>
+            <table>
 
-<div style="overflow:auto;">
+                <thead>
+                    <tr>
+                        <th>DEVICE</th>
+                        <th>AREA</th>
+                        <th>WATER</th>
+                        <th>RAIN</th>
+                        <th>RISK</th>
+                    </tr>
+                </thead>
 
-<table>
+                <tbody id="sensorTable"></tbody>
 
-<thead>
-<tr>
-<th>DEVICE</th>
-<th>AREA</th>
-<th>WATER</th>
-<th>RAIN</th>
-<th>RISK</th>
-</tr>
-</thead>
+            </table>
 
-<tbody id="sensorTable"></tbody>
+        </div>
 
-</table>
-
-</div>
-
-</div>
+    </div>
 
 </section>
-
 
 <!-- ZONES -->
 
 <section class="page" id="zones">
 
-<div class="card">
+    <div class="card">
 
-<div class="section-title">
-<h3>🗺️ Flood Risk Zones</h3>
-<span style="color:var(--muted);font-size:11px;">
-Click an area
-</span>
-</div>
+        <div class="section-title">
+            <h3>🗺️ Flood Risk Zones</h3>
 
-<div class="map">
+            <span style="color:var(--muted);font-size:11px;">
+                Click an area
+            </span>
+        </div>
 
-<div class="map-title">
-🛰️ LIVE MONITORING GRID
-</div>
+        <div class="map">
 
-<div class="zone safe z1" onclick="selectZone('North Zone','SAFE')">
-<b>NORTH</b>
-<small>SAFE</small>
-</div>
+            <div class="map-title">
+                🛰️ LIVE MONITORING GRID
+            </div>
 
-<div class="zone watch z2" onclick="selectZone('Central Zone','WATCH')">
-<b>CENTRAL</b>
-<small>WATCH</small>
-</div>
+            <div class="zone safe z1"
+                 onclick="selectZone('North Zone','SAFE')">
+                <b>NORTH</b>
+                <small>SAFE</small>
+            </div>
 
-<div class="zone high z3" onclick="selectZone('River Zone','HIGH')">
-<b>RIVER</b>
-<small>HIGH</small>
-</div>
+            <div class="zone watch z2"
+                 onclick="selectZone('Central Zone','WATCH')">
+                <b>CENTRAL</b>
+                <small>WATCH</small>
+            </div>
 
-<div class="zone safe z4" onclick="selectZone('South Zone','SAFE')">
-<b>SOUTH</b>
-<small>SAFE</small>
-</div>
+            <div class="zone high z3"
+                 onclick="selectZone('River Zone','HIGH')">
+                <b>RIVER</b>
+                <small>HIGH</small>
+            </div>
 
-</div>
+            <div class="zone safe z4"
+                 onclick="selectZone('South Zone','SAFE')">
+                <b>SOUTH</b>
+                <small>SAFE</small>
+            </div>
 
-<div class="ai-box" style="margin-top:18px;">
-<p id="zoneInfo">
-Selected Area: FloodGuard Monitoring Zone
-</p>
-</div>
+        </div>
 
-</div>
+        <div class="ai-box" style="margin-top:18px;">
+            <p id="zoneInfo">
+                Selected Area: FloodGuard Monitoring Zone
+            </p>
+        </div>
+
+    </div>
 
 </section>
-
 
 <!-- ALERTS -->
 
 <section class="page" id="alerts">
 
-<div class="card">
+    <div class="card">
 
-<div class="section-title">
+        <div class="section-title">
 
-<h3>🚨 Emergency Alert Center</h3>
+            <h3>🚨 Emergency Alert Center</h3>
 
-<button class="primary-btn" onclick="generateTestAlert()">
-Generate Test Alert
-</button>
+            <button class="primary-btn"
+                    onclick="generateTestAlert()">
+                Generate Test Alert
+            </button>
 
-</div>
+        </div>
 
-<div id="alertList">
+        <div id="alertList">
 
-<div class="alert">
-<h3>🟢 System Active</h3>
-<p>
-FloodGuard AI emergency monitoring system is operational.
-</p>
-</div>
+            <div class="alert">
 
-</div>
+                <h3>🟢 System Active</h3>
 
-</div>
+                <p>
+                    FloodGuard AI emergency monitoring system is operational.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </section>
-
 
 <!-- ANALYTICS -->
 
 <section class="page" id="analytics">
 
-<div class="grid">
+    <div class="grid">
 
-<div class="card">
-<div class="stat-label">TOTAL RECORDS</div>
-<div class="stat-value" id="totalRecords">0</div>
-</div>
+        <div class="card">
+            <div class="stat-label">TOTAL RECORDS</div>
+            <div class="stat-value" id="totalRecords">0</div>
+        </div>
 
-<div class="card">
-<div class="stat-label">AVERAGE WATER</div>
-<div class="stat-value" id="avgWater">0 cm</div>
-</div>
+        <div class="card">
+            <div class="stat-label">AVERAGE WATER</div>
+            <div class="stat-value" id="avgWater">0 cm</div>
+        </div>
 
-<div class="card">
-<div class="stat-label">AVERAGE RAIN</div>
-<div class="stat-value" id="avgRain">0 mm</div>
-</div>
+        <div class="card">
+            <div class="stat-label">AVERAGE RAIN</div>
+            <div class="stat-value" id="avgRain">0 mm</div>
+        </div>
 
-<div class="card">
-<div class="stat-label">AVERAGE RISK</div>
-<div class="stat-value" id="avgRisk">0</div>
-</div>
+        <div class="card">
+            <div class="stat-label">AVERAGE RISK</div>
+            <div class="stat-value" id="avgRisk">0</div>
+        </div>
 
-</div>
+    </div>
 
+    <div class="card" style="margin-top:18px;">
 
-<div class="card" style="margin-top:18px;">
+        <div class="section-title">
+            <h3>📈 Flood Analytics</h3>
+        </div>
 
-<div class="section-title">
-<h3>📈 Flood Analytics</h3>
-</div>
+        <div class="chart-box">
+            <canvas id="analyticsChart"></canvas>
+        </div>
 
-<div class="chart-box">
-<canvas id="analyticsChart"></canvas>
-</div>
-
-</div>
+    </div>
 
 </section>
 
-
-<!-- PREDICTION -->
+<!-- AI PREDICTION -->
 
 <section class="page" id="prediction">
 
-<div class="big-grid">
+    <div class="big-grid">
 
-<div class="card">
+        <div class="card">
 
-<h3>🧠 AI Predictive Engine</h3>
+            <h3>🧠 AI Predictive Engine</h3>
 
-<p style="color:var(--muted);font-size:12px;margin:12px 0 20px;">
-Analyze flood risk using environmental conditions.
-</p>
+            <p style="color:var(--muted);font-size:12px;margin:12px 0 20px;">
+                Analyze flood risk using environmental conditions.
+            </p>
 
-<label>Water Level (cm)</label>
-<input type="number" id="predictWater" value="45">
+            <label>Water Level (cm)</label>
+            <input type="number" id="predictWater" value="45">
 
-<label>Rainfall (mm)</label>
-<input type="number" id="predictRain" value="20">
+            <label>Rainfall (mm)</label>
+            <input type="number" id="predictRain" value="20">
 
-<label>Flow Rate</label>
-<input type="number" id="predictFlow" value="15">
+            <label>Flow Rate (L/min)</label>
+            <input type="number" id="predictFlow" value="15">
 
-<label>Humidity (%)</label>
-<input type="number" id="predictHumidity" value="65">
+            <label>Humidity (%)</label>
+            <input type="number" id="predictHumidity" value="65">
 
-<button class="primary-btn" onclick="runPrediction()">
-Run AI Prediction
-</button>
+            <button class="primary-btn" onclick="runPrediction()">
+                Run AI Prediction
+            </button>
 
-</div>
+        </div>
 
+        <div class="card risk-panel">
 
-<div class="card risk-panel">
+            <h3>AI PREDICTION RESULT</h3>
 
-<h3>AI PREDICTION RESULT</h3>
+            <div class="risk-ring" id="predictionRing">
 
-<div class="risk-ring">
-<h1 id="predictionScore">--</h1>
-<p>RISK SCORE</p>
-</div>
+                <h1 id="predictionScore">--</h1>
+                <p>RISK SCORE</p>
 
-<div class="ai-box">
-<p id="predictionResult">
-Waiting for sensor analysis...
-</p>
-</div>
+            </div>
 
-</div>
+            <div class="ai-box">
 
-</div>
+                <p id="predictionResult">
+                    Waiting for sensor analysis...
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </section>
-
 
 <!-- SETTINGS -->
 
 <section class="page" id="settings">
 
-<div class="settings-grid">
+    <div class="settings-grid">
 
-<div class="card">
+        <div class="card">
 
-<h3>⚙️ Monitoring Configuration</h3>
+            <h3>⚙️ Monitoring Configuration</h3>
+            <br>
 
-<br>
+            <label>Monitoring Area</label>
 
-<label>Monitoring Area</label>
-<input id="settingArea" value="Vijayawada">
+            <input id="settingArea" value="Vijayawada">
 
-<label>Water Alert Threshold</label>
-<input id="threshold" type="number" value="70">
+            <label>Water Alert Threshold</label>
 
-<label>Update Interval</label>
+            <input id="threshold"
+                   type="number"
+                   value="70">
 
-<select id="updateInterval">
-<option value="5000">5 Seconds</option>
-<option value="10000">10 Seconds</option>
-<option value="30000">30 Seconds</option>
-<option value="60000">1 Minute</option>
-</select>
+            <label>Update Interval</label>
 
-<button class="primary-btn" onclick="saveSettings()">
-Save Configuration
-</button>
+            <select id="updateInterval">
 
-</div>
+                <option value="5000">5 Seconds</option>
+                <option value="10000" selected>10 Seconds</option>
+                <option value="30000">30 Seconds</option>
+                <option value="60000">1 Minute</option>
 
+            </select>
 
-<div class="card">
+            <button class="primary-btn"
+                    onclick="saveSettings()">
+                Save Configuration
+            </button>
 
-<h3>🔐 System Information</h3>
+        </div>
 
-<br>
+        <div class="card">
 
-<div class="ai-box">
+            <h3>🔐 System Information</h3>
+            <br>
 
-<p>
+            <div class="ai-box">
 
-<b>Platform:</b> FloodGuard AI
+                <p>
 
-<br><br>
+                    <b>Platform:</b> FloodGuard AI
+                    <br><br>
 
-<b>Team:</b> Hexa Tech
+                    <b>Team:</b> Hexa Tech
+                    <br><br>
 
-<br><br>
+                    <b>Mode:</b> Real-Time Monitoring
+                    <br><br>
 
-<b>Mode:</b> Real-Time Monitoring
+                    <b>Database:</b> MongoDB Compatible
+                    <br><br>
 
-<br><br>
+                    <b>AI Assistant:</b> Hexa AI
+                    <br><br>
 
-<b>Database:</b> MongoDB
+                    <b>System:</b>
+                    <span id="systemMode">Simulation + Backend Ready</span>
 
-<br><br>
+                </p>
 
-<b>Powered By:</b> Hexa Tech
+            </div>
 
-</p>
+        </div>
 
-</div>
-
-</div>
-
-</div>
+    </div>
 
 </section>
 
 </main>
 
-
 <!-- HEXA CHATBOT -->
 
-<button class="hexa-button" onclick="toggleHexa()" title="Open Hexa AI">
-🤖
+<button class="hexa-button"
+        onclick="toggleHexa()"
+        title="Open Hexa AI">
+    🤖
 </button>
-
 
 <div id="hexaBox" class="hexa-box">
 
-<div class="hexa-header">
+    <div class="hexa-header">
 
-<div>
+        <div>
 
-<b>🤖 Hexa AI</b>
+            <b>🤖 Hexa AI</b>
 
-<br>
+            <br>
 
-<small style="color:var(--green);">
-● FLOODGUARD ASSISTANT
-</small>
+            <small style="color:var(--green);">
+                ● ONLINE • HEXA TECH
+            </small>
+
+        </div>
+
+        <button class="hexa-close"
+                onclick="toggleHexa()">
+            ×
+        </button>
+
+    </div>
+
+    <div id="chatMessages" class="messages">
+
+        <div class="message bot">
+
+            <b>Hexa AI 🤖</b>
+
+            <br><br>
+
+            Hello! I'm Hexa, your FloodGuard AI assistant.
+
+            <br><br>
+
+            Ask me about:
+            <br>
+            🌊 Flood risk
+            <br>
+            🌧️ Rainfall
+            <br>
+            📡 Sensors
+            <br>
+            🚨 Safety
+            <br>
+            🗺️ Monitoring zones
+
+        </div>
+
+    </div>
+
+    <div class="chat-input">
+
+        <input id="chatInput"
+               placeholder="Ask Hexa anything..."
+               onkeypress="if(event.key==='Enter')sendChat()">
+
+        <button class="primary-btn"
+                onclick="sendChat()">
+            ➤
+        </button>
+
+    </div>
 
 </div>
 
-<button class="hexa-close" onclick="toggleHexa()">
-×
-</button>
+<!-- TOAST -->
 
+<div class="toast-container"
+     id="toastContainer">
 </div>
-
-
-<div id="chatMessages" class="messages">
-
-<div class="message bot">
-
-<b>Hexa AI 🤖</b>
-
-<br>
-
-Hello! I'm Hexa, your FloodGuard AI assistant powered by Hexa Tech.
-
-<br><br>
-
-Ask me about flood risk, sensors, alerts, monitoring zones or safety.
-
-</div>
-
-</div>
-
-
-<div class="chat-input">
-
-<input
-id="chatInput"
-placeholder="Ask Hexa anything..."
-onkeypress="if(event.key==='Enter')sendChat()">
-
-<button class="primary-btn" onclick="sendChat()">
-➤
-</button>
-
-</div>
-
-</div>
-
 
 <script>
 
+/* =====================================================
+   FLOODGUARD AI - SINGLE FILE VERSION
+===================================================== */
+
 const API_URL = "https://flood-ai-hexa.onrender.com";
 
-let socket = null;
 let history = [];
 let waterChart = null;
 let analyticsChart = null;
 let refreshTimer = null;
 
-
-/* INITIALIZATION */
-
-window.addEventListener("load", function(){
-
-    const loaderMessages = [
-        "INITIALIZING HEXA TECH SYSTEM",
-        "CONNECTING SENSOR NETWORK",
-        "CONNECTING AI ENGINE",
-        "SYNCING FLOOD DATABASE",
-        "ACTIVATING LIVE MONITORING",
-        "SYSTEM READY"
-    ];
-
-    let messageIndex = 0;
-
-    const textInterval = setInterval(function(){
-
-        messageIndex++;
-
-        if(messageIndex < loaderMessages.length){
-
-            document.getElementById("loaderText").innerText =
-            loaderMessages[messageIndex];
-
-        }
-
-    }, 500);
+let currentData = {
+    deviceId:"ESP32-FG-001",
+    area:"Vijayawada",
+    waterLevel:32,
+    rainfall:12,
+    temperature:29,
+    humidity:68,
+    flowRate:14,
+    riskScore:18,
+    riskStatus:"SAFE",
+    createdAt:new Date().toISOString()
+};
 
 
-    setTimeout(function(){
+/* =====================================================
+   CREATE ANIMATED RAIN
+===================================================== */
 
-        clearInterval(textInterval);
+function createRain(){
 
-        document.getElementById("loader").classList.add("hidden");
+    const rainLayer =
+    document.getElementById("rainLayer");
 
-    }, 3200);
+    for(let i=0;i<35;i++){
 
+        const drop =
+        document.createElement("div");
 
-    loadSettings();
+        drop.className = "drop";
 
-    loadLatest();
+        drop.style.left =
+        Math.random()*100 + "%";
 
-    loadHistory();
+        drop.style.animationDuration =
+        (0.8 + Math.random()*1.2) + "s";
 
-    connectBackend();
+        drop.style.animationDelay =
+        Math.random()*2 + "s";
 
+        rainLayer.appendChild(drop);
 
-    const savedInterval =
-    Number(localStorage.getItem("floodguardInterval")) || 10000;
-
-
-    refreshTimer = setInterval(function(){
-
-        loadLatest();
-        loadHistory();
-
-    }, savedInterval);
-
-});
-
-
-/* NAVIGATION */
-
-function toggleMenu(){
-
-    document.getElementById("sidebar")
-    .classList.toggle("open");
+    }
 
 }
 
 
-function showPage(pageId, button){
+/* =====================================================
+   LOADER
+===================================================== */
 
-    document.querySelectorAll(".page")
-    .forEach(function(page){
+function startLoader(){
+
+    const messages = [
+
+        "INITIALIZING SENSOR NETWORK",
+        "CONNECTING AI ENGINE",
+        "SYNCING FLOOD DATABASE",
+        "ACTIVATING LIVE MONITORING",
+        "HEXA TECH SYSTEM READY"
+
+    ];
+
+    let progress = 0;
+
+    const progressElement =
+    document.getElementById("loaderPercent");
+
+    const textElement =
+    document.getElementById("loaderText");
+
+    const timer =
+    setInterval(() => {
+
+        progress += 2;
+
+        progressElement.innerText =
+        progress + "%";
+
+        const index =
+        Math.min(
+            messages.length-1,
+            Math.floor(progress/20)
+        );
+
+        textElement.innerText =
+        messages[index];
+
+        if(progress >= 100){
+
+            clearInterval(timer);
+
+        }
+
+    },80);
+
+    setTimeout(() => {
+
+        document
+        .getElementById("loader")
+        .classList
+        .add("hidden");
+
+    },4200);
+
+}
+
+
+/* =====================================================
+   INITIALIZATION
+===================================================== */
+
+window.addEventListener("load",()=>{
+
+    createRain();
+
+    startLoader();
+
+    loadSettings();
+
+    createInitialHistory();
+
+    updateDashboard(currentData);
+
+    renderWaterChart();
+
+    renderTable();
+
+    updateAnalytics();
+
+    startMonitoring();
+
+});
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+function toggleMenu(){
+
+    document
+    .getElementById("sidebar")
+    .classList
+    .toggle("open");
+
+}
+
+
+function showPage(pageId,button){
+
+    document
+    .querySelectorAll(".page")
+    .forEach(page=>{
 
         page.classList.remove("active");
 
     });
 
+    document
+    .getElementById(pageId)
+    .classList
+    .add("active");
 
-    document.getElementById(pageId)
-    .classList.add("active");
-
-
-    document.querySelectorAll(".nav button")
-    .forEach(function(btn){
+    document
+    .querySelectorAll(".nav button")
+    .forEach(btn=>{
 
         btn.classList.remove("active");
 
     });
-
 
     if(button){
 
@@ -1763,350 +1977,422 @@ function showPage(pageId, button){
 
     }
 
-
-    if(pageId === "analytics"){
+    if(pageId==="analytics"){
 
         renderAnalytics();
 
     }
 
-
-    document.getElementById("sidebar")
-    .classList.remove("open");
-
-}
-
-
-/* BACKEND */
-
-function connectBackend(){
-
-    try{
-
-        if(typeof io === "undefined"){
-            return;
-        }
-
-
-        socket = io(API_URL,{
-
-            transports:[
-                "websocket",
-                "polling"
-            ]
-
-        });
-
-
-        socket.on("connect", function(){
-
-            console.log("Connected to FloodGuard Backend");
-
-        });
-
-
-        socket.on("sensorUpdate", function(data){
-
-            updateDashboard(data);
-
-            history.push(data);
-
-            if(history.length > 30){
-
-                history.shift();
-
-            }
-
-            renderWaterChart();
-            renderTable();
-            updateAnalytics();
-
-        });
-
-
-        socket.on("emergencyAlert", function(data){
-
-            addAlert(data);
-
-        });
-
-    }
-
-    catch(error){
-
-        console.log("Socket connection unavailable");
-
-    }
+    document
+    .getElementById("sidebar")
+    .classList
+    .remove("open");
 
 }
 
 
-/* LOAD LATEST */
+/* =====================================================
+   SIMULATION
+===================================================== */
 
-async function loadLatest(){
+function createInitialHistory(){
 
-    try{
+    for(let i=0;i<15;i++){
 
-        const response =
-        await fetch(API_URL + "/api/sensor/latest");
+        const water =
+        25 + Math.random()*35;
 
-        if(!response.ok){
+        const rain =
+        Math.random()*45;
 
-            throw new Error("Backend unavailable");
-
-        }
-
-
-        const result =
-        await response.json();
-
-        const data =
-        result.data || result;
-
-
-        if(data && typeof data === "object"){
-
-            updateDashboard(data);
-
-        }
-
-    }
-
-    catch(error){
-
-        console.log("Backend waiting...");
-
-    }
-
-}
-
-
-/* LOAD HISTORY */
-
-async function loadHistory(){
-
-    try{
-
-        const response =
-        await fetch(
-            API_URL +
-            "/api/sensor/history?limit=30"
+        const risk =
+        calculateRisk(
+            water,
+            rain,
+            10+Math.random()*15,
+            60+Math.random()*25
         );
-
-
-        if(!response.ok){
-
-            return;
-
-        }
-
-
-        const result =
-        await response.json();
-
-
-        const data =
-        result.data || result;
-
-
-        if(Array.isArray(data)){
-
-            history = data.reverse();
-
-            renderWaterChart();
-            renderTable();
-            updateAnalytics();
-
-        }
-
-    }
-
-    catch(error){
-
-        console.log("History unavailable");
-
-        if(history.length === 0){
-
-            createDemoData();
-
-        }
-
-    }
-
-}
-
-
-/* DEMO DATA */
-
-function createDemoData(){
-
-    for(let i = 0; i < 10; i++){
 
         history.push({
 
-            waterLevel: 30 + Math.random() * 40,
-            rainfall: Math.random() * 50,
-            temperature: 25 + Math.random() * 8,
-            humidity: 50 + Math.random() * 30,
-            flowRate: 10 + Math.random() * 20,
-            riskScore: Math.floor(Math.random() * 80),
-            riskStatus: "SAFE",
-            area: "Vijayawada",
-            deviceId: "ESP32-FG-001",
-            createdAt: new Date().toISOString()
+            deviceId:"ESP32-FG-001",
+
+            area:"Vijayawada",
+
+            waterLevel:Number(
+                water.toFixed(1)
+            ),
+
+            rainfall:Number(
+                rain.toFixed(1)
+            ),
+
+            temperature:Number(
+                (26+Math.random()*8)
+                .toFixed(1)
+            ),
+
+            humidity:Number(
+                (60+Math.random()*25)
+                .toFixed(1)
+            ),
+
+            flowRate:Number(
+                (10+Math.random()*20)
+                .toFixed(1)
+            ),
+
+            riskScore:risk.score,
+
+            riskStatus:risk.status,
+
+            createdAt:new Date(
+                Date.now() -
+                (15-i)*60000
+            ).toISOString()
 
         });
 
     }
 
+}
+
+
+function generateLiveData(){
+
+    const previous =
+    currentData;
+
+    const water =
+    Math.max(
+        5,
+        previous.waterLevel +
+        (Math.random()*10-5)
+    );
+
+    const rain =
+    Math.max(
+        0,
+        previous.rainfall +
+        (Math.random()*14-7)
+    );
+
+    const flow =
+    Math.max(
+        2,
+        previous.flowRate +
+        (Math.random()*6-3)
+    );
+
+    const humidity =
+    Math.max(
+        30,
+        Math.min(
+            100,
+            previous.humidity +
+            (Math.random()*8-4)
+        )
+    );
+
+    const temperature =
+    Math.max(
+        15,
+        previous.temperature +
+        (Math.random()*3-1.5)
+    );
+
+    const risk =
+    calculateRisk(
+        water,
+        rain,
+        flow,
+        humidity
+    );
+
+    currentData = {
+
+        deviceId:"ESP32-FG-001",
+
+        area:
+        localStorage.getItem(
+            "floodguardArea"
+        ) || "Vijayawada",
+
+        waterLevel:
+        Number(water.toFixed(1)),
+
+        rainfall:
+        Number(rain.toFixed(1)),
+
+        temperature:
+        Number(
+            temperature.toFixed(1)
+        ),
+
+        humidity:
+        Number(
+            humidity.toFixed(1)
+        ),
+
+        flowRate:
+        Number(flow.toFixed(1)),
+
+        riskScore:risk.score,
+
+        riskStatus:risk.status,
+
+        createdAt:
+        new Date().toISOString()
+
+    };
+
+    history.push(currentData);
+
+    if(history.length>30){
+
+        history.shift();
+
+    }
+
+    updateDashboard(currentData);
+
     renderWaterChart();
+
     renderTable();
+
     updateAnalytics();
+
+    checkAutomaticAlert(currentData);
 
 }
 
 
-/* UPDATE DASHBOARD */
+function calculateRisk(
+    water,
+    rain,
+    flow,
+    humidity
+){
+
+    let score =
+        water*.55 +
+        rain*.35 +
+        flow*.45 +
+        humidity*.08;
+
+    score =
+    Math.min(
+        100,
+        Math.max(
+            0,
+            Math.round(score)
+        )
+    );
+
+    let status = "SAFE";
+
+    if(score>=80){
+
+        status="CRITICAL";
+
+    }
+
+    else if(score>=60){
+
+        status="HIGH";
+
+    }
+
+    else if(score>=35){
+
+        status="WATCH";
+
+    }
+
+    return {
+        score,
+        status
+    };
+
+}
+
+
+/* =====================================================
+   MONITORING
+===================================================== */
+
+function startMonitoring(){
+
+    if(refreshTimer){
+
+        clearInterval(refreshTimer);
+
+    }
+
+    const interval =
+    Number(
+        localStorage.getItem(
+            "floodguardInterval"
+        ) || 10000
+    );
+
+    refreshTimer =
+    setInterval(()=>{
+
+        generateLiveData();
+
+    },interval);
+
+}
+
+
+function manualRefresh(){
+
+    generateLiveData();
+
+    showToast(
+        "📡 Monitoring station refreshed successfully."
+    );
+
+}
+
+
+/* =====================================================
+   DASHBOARD UPDATE
+===================================================== */
 
 function updateDashboard(data){
 
-    if(!data) return;
+    document
+    .getElementById("waterLevel")
+    .innerText =
+    data.waterLevel + " cm";
 
+    document
+    .getElementById("rainfall")
+    .innerText =
+    data.rainfall + " mm";
 
-    const water =
-    Number(data.waterLevel ?? data.water ?? 0);
+    document
+    .getElementById("currentArea")
+    .innerText =
+    data.area;
 
+    document
+    .getElementById("riskStatus")
+    .innerText =
+    data.riskStatus;
 
-    const rain =
-    Number(data.rainfall ?? data.rain ?? 0);
-
-
-    const temp =
-    Number(data.temperature ?? data.temp ?? 0);
-
-
-    const humidity =
-    Number(data.humidity ?? 0);
-
-
-    const flow =
-    Number(data.flowRate ?? data.flow ?? 0);
-
-
-    const score =
-    Number(data.riskScore ?? data.aiRisk ?? 0);
-
-
-    const status =
-    data.riskStatus ??
-    data.status ??
-    "SAFE";
-
-
-    const area =
-    data.area ??
-    data.location ??
-    "Vijayawada";
-
-
-    document.getElementById("waterLevel").innerText =
-    water.toFixed(1) + " cm";
-
-
-    document.getElementById("rainfall").innerText =
-    rain.toFixed(1) + " mm";
-
-
-    document.getElementById("currentArea").innerText =
-    area;
-
-
-    document.getElementById("riskStatus").innerText =
-    status;
-
-
-    document.getElementById("riskScore").innerText =
+    document
+    .getElementById("riskScore")
+    .innerText =
     "Risk Score: " +
-    score +
+    data.riskScore +
     "/100";
 
+    document
+    .getElementById("ringScore")
+    .innerText =
+    data.riskScore;
 
-    document.getElementById("ringScore").innerText =
-    score;
+    document
+    .getElementById("sensorWater")
+    .innerText =
+    data.waterLevel + " cm";
 
+    document
+    .getElementById("sensorRain")
+    .innerText =
+    data.rainfall + " mm";
 
-    document.getElementById("sensorWater").innerText =
-    water.toFixed(1) + " cm";
+    document
+    .getElementById("sensorTemp")
+    .innerText =
+    data.temperature + " °C";
 
+    document
+    .getElementById("sensorHumidity")
+    .innerText =
+    data.humidity + "%";
 
-    document.getElementById("sensorRain").innerText =
-    rain.toFixed(1) + " mm";
+    document
+    .getElementById("sensorFlow")
+    .innerText =
+    data.flowRate + " L/min";
 
+    document
+    .getElementById("sensorRisk")
+    .innerText =
+    data.riskStatus;
 
-    document.getElementById("sensorTemp").innerText =
-    temp.toFixed(1) + " °C";
+    let color =
+    "var(--green)";
 
+    if(data.riskStatus==="WATCH"){
 
-    document.getElementById("sensorHumidity").innerText =
-    humidity.toFixed(1) + "%";
+        color="var(--yellow)";
 
-
-    document.getElementById("sensorFlow").innerText =
-    flow.toFixed(1) + " L/min";
-
-
-    document.getElementById("sensorRisk").innerText =
-    status;
-
-
-    let color = "var(--green)";
-
-
-    if(status === "WATCH"){
-        color = "var(--yellow)";
     }
 
-    else if(status === "HIGH"){
-        color = "var(--orange)";
+    if(data.riskStatus==="HIGH"){
+
+        color="var(--orange)";
+
     }
 
-    else if(status === "CRITICAL"){
-        color = "var(--red)";
+    if(data.riskStatus==="CRITICAL"){
+
+        color="var(--red)";
+
     }
 
+    document
+    .getElementById("riskStatus")
+    .style.color =
+    color;
 
-    document.getElementById("riskStatus")
-    .style.color = color;
+    document
+    .getElementById("riskRing")
+    .style.borderColor =
+    color;
 
-
-    document.getElementById("riskRing")
-    .style.borderColor = color;
-
-
-    document.getElementById("aiInsight")
+    document
+    .getElementById("aiInsight")
     .innerHTML =
-        "Water condition: <b>" +
-        getWaterCondition(water) +
+
+        "🌊 Water condition: <b>" +
+        getWaterCondition(
+            data.waterLevel
+        ) +
         "</b><br>" +
 
-        "Rain intensity: <b>" +
-        getRainCondition(rain) +
+        "🌧️ Rain intensity: <b>" +
+        getRainCondition(
+            data.rainfall
+        ) +
         "</b><br>" +
 
-        "AI Prediction: <b>" +
-        status +
+        "🧠 AI Prediction: <b>" +
+        data.riskStatus +
+        "</b><br>" +
+
+        "📍 Monitoring Area: <b>" +
+        data.area +
         "</b>";
 
 }
 
 
-/* CONDITIONS */
-
 function getWaterCondition(value){
 
-    if(value >= 80) return "Critical";
-    if(value >= 60) return "High";
-    if(value >= 35) return "Rising";
+    if(value>=80)
+        return "Critical";
+
+    if(value>=60)
+        return "High";
+
+    if(value>=35)
+        return "Rising";
 
     return "Normal";
 
@@ -2115,34 +2401,36 @@ function getWaterCondition(value){
 
 function getRainCondition(value){
 
-    if(value >= 80) return "Extreme";
-    if(value >= 50) return "Heavy";
-    if(value >= 20) return "Moderate";
+    if(value>=80)
+        return "Extreme";
+
+    if(value>=50)
+        return "Heavy";
+
+    if(value>=20)
+        return "Moderate";
 
     return "Low";
 
 }
 
 
-/* WATER CHART */
+/* =====================================================
+   WATER CHART
+===================================================== */
 
 function renderWaterChart(){
 
     const canvas =
-    document.getElementById("waterChart");
-
-
-    if(!canvas || typeof Chart === "undefined"){
-        return;
-    }
-
+    document.getElementById(
+        "waterChart"
+    );
 
     if(waterChart){
 
         waterChart.destroy();
 
     }
-
 
     waterChart =
     new Chart(canvas,{
@@ -2152,35 +2440,21 @@ function renderWaterChart(){
         data:{
 
             labels:
-            history.map(function(item){
-
-                if(item.createdAt){
-
-                    return new Date(
-                        item.createdAt
-                    ).toLocaleTimeString();
-
-                }
-
-                return "Live";
-
-            }),
-
+            history.map(item=>
+                new Date(
+                    item.createdAt
+                ).toLocaleTimeString()
+            ),
 
             datasets:[{
 
-                label:"Water Level (cm)",
+                label:
+                "Water Level (cm)",
 
                 data:
-                history.map(function(item){
-
-                    return Number(
-                        item.waterLevel ??
-                        item.water ??
-                        0
-                    );
-
-                }),
+                history.map(
+                    item=>item.waterLevel
+                ),
 
                 borderColor:"#00e5ff",
 
@@ -2189,12 +2463,13 @@ function renderWaterChart(){
 
                 fill:true,
 
-                tension:.4
+                tension:.4,
+
+                pointRadius:2
 
             }]
 
         },
-
 
         options:{
 
@@ -2205,33 +2480,44 @@ function renderWaterChart(){
             plugins:{
 
                 legend:{
+
                     labels:{
+
                         color:"#b7c9d9"
+
                     }
+
                 }
 
             },
 
-
             scales:{
 
                 x:{
+
                     ticks:{
-                        color:"#7890a4"
+                        color:"#7890a4",
+                        maxTicksLimit:7
                     },
+
                     grid:{
-                        color:"rgba(255,255,255,.04)"
+                        color:
+                        "rgba(255,255,255,.04)"
                     }
+
                 },
 
-
                 y:{
+
                     ticks:{
                         color:"#7890a4"
                     },
+
                     grid:{
-                        color:"rgba(255,255,255,.05)"
+                        color:
+                        "rgba(255,255,255,.05)"
                     }
+
                 }
 
             }
@@ -2243,131 +2529,128 @@ function renderWaterChart(){
 }
 
 
-/* TABLE */
+/* =====================================================
+   TABLE
+===================================================== */
 
 function renderTable(){
 
     const table =
-    document.getElementById("sensorTable");
+    document.getElementById(
+        "sensorTable"
+    );
 
-
-    if(!table) return;
-
-
-    table.innerHTML = "";
-
+    table.innerHTML="";
 
     history
     .slice(-10)
     .reverse()
-    .forEach(function(item){
+    .forEach(item=>{
 
+        table.innerHTML += `
 
-        const row =
-        document.createElement("tr");
+        <tr>
 
+            <td>
+                ${item.deviceId}
+            </td>
 
-        row.innerHTML =
+            <td>
+                ${item.area}
+            </td>
 
-        "<td>" +
-        (item.deviceId || "ESP32-FG-001") +
-        "</td>" +
+            <td>
+                ${item.waterLevel} cm
+            </td>
 
-        "<td>" +
-        (item.area || "Vijayawada") +
-        "</td>" +
+            <td>
+                ${item.rainfall} mm
+            </td>
 
-        "<td>" +
-        Number(item.waterLevel ?? item.water ?? 0).toFixed(1) +
-        " cm</td>" +
+            <td>
+                ${item.riskStatus}
+            </td>
 
-        "<td>" +
-        Number(item.rainfall ?? item.rain ?? 0).toFixed(1) +
-        " mm</td>" +
+        </tr>
 
-        "<td>" +
-        (item.riskStatus || "SAFE") +
-        "</td>";
-
-
-        table.appendChild(row);
+        `;
 
     });
 
 }
 
 
-/* ANALYTICS */
+/* =====================================================
+   ANALYTICS
+===================================================== */
 
 function updateAnalytics(){
 
-    if(!history.length){
+    if(!history.length)
         return;
-    }
 
+    const average =
+    field => {
 
-    const average = function(field){
+        const total =
+        history.reduce(
+            (sum,item)=>
+            sum +
+            Number(
+                item[field] || 0
+            ),
+            0
+        );
 
-        let total = 0;
-
-        history.forEach(function(item){
-
-            total += Number(item[field] || 0);
-
-        });
-
-
-        return total / history.length;
+        return total /
+        history.length;
 
     };
 
-
-    document.getElementById("totalRecords")
+    document
+    .getElementById("totalRecords")
     .innerText =
     history.length;
 
-
-    document.getElementById("avgWater")
+    document
+    .getElementById("avgWater")
     .innerText =
-    average("waterLevel").toFixed(1) +
-    " cm";
+    average(
+        "waterLevel"
+    ).toFixed(1) + " cm";
 
-
-    document.getElementById("avgRain")
+    document
+    .getElementById("avgRain")
     .innerText =
-    average("rainfall").toFixed(1) +
-    " mm";
+    average(
+        "rainfall"
+    ).toFixed(1) + " mm";
 
-
-    document.getElementById("avgRisk")
+    document
+    .getElementById("avgRisk")
     .innerText =
-    average("riskScore").toFixed(1);
+    average(
+        "riskScore"
+    ).toFixed(1);
 
 }
 
 
 function renderAnalytics(){
 
-    if(!history.length){
-        return;
-    }
-
-
     const canvas =
-    document.getElementById("analyticsChart");
+    document.getElementById(
+        "analyticsChart"
+    );
 
-
-    if(!canvas || typeof Chart === "undefined"){
+    if(!canvas)
         return;
-    }
-
 
     if(analyticsChart){
 
         analyticsChart.destroy();
 
     }
-
 
     analyticsChart =
     new Chart(canvas,{
@@ -2377,48 +2660,38 @@ function renderAnalytics(){
         data:{
 
             labels:
-            history.map(function(_,index){
-
-                return "Record " + (index + 1);
-
-            }),
-
+            history.map(
+                (_,index)=>
+                "Record " +
+                (index+1)
+            ),
 
             datasets:[
 
                 {
 
-                    label:"Risk Score",
+                    label:
+                    "Risk Score",
 
                     data:
-                    history.map(function(item){
-
-                        return Number(
-                            item.riskScore || 0
-                        );
-
-                    }),
+                    history.map(
+                        item=>item.riskScore
+                    ),
 
                     backgroundColor:
                     "rgba(0,229,255,.55)"
 
                 },
 
-
                 {
 
-                    label:"Rainfall",
+                    label:
+                    "Rainfall",
 
                     data:
-                    history.map(function(item){
-
-                        return Number(
-                            item.rainfall ||
-                            item.rain ||
-                            0
-                        );
-
-                    }),
+                    history.map(
+                        item=>item.rainfall
+                    ),
 
                     backgroundColor:
                     "rgba(155,108,255,.5)"
@@ -2429,7 +2702,6 @@ function renderAnalytics(){
 
         },
 
-
         options:{
 
             responsive:true,
@@ -2439,15 +2711,20 @@ function renderAnalytics(){
             scales:{
 
                 x:{
+
                     ticks:{
-                        color:"#7890a4"
+                        color:"#7890a4",
+                        maxTicksLimit:10
                     }
+
                 },
 
                 y:{
+
                     ticks:{
                         color:"#7890a4"
                     }
+
                 }
 
             }
@@ -2459,39 +2736,99 @@ function renderAnalytics(){
 }
 
 
-/* ZONES */
+/* =====================================================
+   ZONES
+===================================================== */
 
 function selectZone(area,status){
 
-    document.getElementById("zoneInfo")
+    document
+    .getElementById("zoneInfo")
     .innerHTML =
 
-    "<b>Selected Area:</b> " +
-    area +
+        "<b>📍 Selected Area:</b> " +
+        area +
 
-    "<br><br>" +
+        "<br><br>" +
 
-    "<b>Current Status:</b> " +
-    status +
+        "<b>⚠️ Current Status:</b> " +
+        status +
 
-    "<br><br>" +
+        "<br><br>" +
 
-    "AI monitoring is analyzing environmental conditions.";
+        "🧠 FloodGuard AI is continuously analyzing water level, rainfall and environmental conditions in this zone.";
+
+    showToast(
+        "🗺️ " +
+        area +
+        " selected."
+    );
 
 }
 
 
-/* ALERTS */
+/* =====================================================
+   ALERTS
+===================================================== */
+
+let lastAlertStatus = "";
+
+function checkAutomaticAlert(data){
+
+    if(
+        data.riskStatus==="HIGH" ||
+        data.riskStatus==="CRITICAL"
+    ){
+
+        if(
+            lastAlertStatus !==
+            data.riskStatus
+        ){
+
+            addAlert({
+
+                riskStatus:
+                data.riskStatus,
+
+                area:
+                data.area,
+
+                riskScore:
+                data.riskScore,
+
+                message:
+                "Automatic FloodGuard AI warning generated from live sensor data."
+
+            });
+
+            lastAlertStatus =
+            data.riskStatus;
+
+        }
+
+    }
+
+    else{
+
+        lastAlertStatus = "";
+
+    }
+
+}
+
 
 function generateTestAlert(){
 
     addAlert({
 
-        riskStatus:"TEST ALERT",
+        riskStatus:
+        "TEST ALERT",
 
-        area:"Demo Monitoring Zone",
+        area:
+        "Demo Monitoring Zone",
 
-        riskScore:75,
+        riskScore:
+        75,
 
         message:
         "This is a FloodGuard AI emergency alert system test."
@@ -2504,250 +2841,254 @@ function generateTestAlert(){
 function addAlert(data){
 
     const list =
-    document.getElementById("alertList");
-
+    document.getElementById(
+        "alertList"
+    );
 
     const alert =
     document.createElement("div");
 
+    alert.className =
+    "alert";
 
-    alert.className = "alert";
+    alert.innerHTML = `
 
+        <h3>
+            🚨 ${data.riskStatus}
+            — ${data.area}
+        </h3>
 
-    const title =
-    document.createElement("h3");
+        <p>
+            ${data.message}
+        </p>
 
+        <p>
+            Risk Score:
+            ${data.riskScore}/100
+        </p>
 
-    title.innerText =
-    "🚨 " +
-    (data.riskStatus || "ALERT") +
-    " — " +
-    (data.area || "Unknown Area");
-
-
-    const message =
-    document.createElement("p");
-
-
-    message.innerText =
-    data.message ||
-    "Flood monitoring alert detected.";
-
-
-    const score =
-    document.createElement("p");
-
-
-    score.innerText =
-    "Risk Score: " +
-    (data.riskScore || 0) +
-    "/100";
-
-
-    alert.appendChild(title);
-    alert.appendChild(message);
-    alert.appendChild(score);
+    `;
 
     list.prepend(alert);
 
+    showToast(
+        "🚨 " +
+        data.riskStatus +
+        " alert detected!"
+    );
+
 }
 
 
-/* AI PREDICTION */
+/* =====================================================
+   AI PREDICTION
+===================================================== */
 
-async function runPrediction(){
+function runPrediction(){
 
     const waterLevel =
     Number(
-        document.getElementById("predictWater").value
+        document
+        .getElementById("predictWater")
+        .value
     );
-
 
     const rainfall =
     Number(
-        document.getElementById("predictRain").value
+        document
+        .getElementById("predictRain")
+        .value
     );
-
 
     const flowRate =
     Number(
-        document.getElementById("predictFlow").value
+        document
+        .getElementById("predictFlow")
+        .value
     );
-
 
     const humidity =
     Number(
-        document.getElementById("predictHumidity").value
+        document
+        .getElementById("predictHumidity")
+        .value
     );
 
+    const result =
+    calculateRisk(
+        waterLevel,
+        rainfall,
+        flowRate,
+        humidity
+    );
 
-    try{
+    document
+    .getElementById("predictionScore")
+    .innerText =
+    result.score;
 
-        const response =
-        await fetch(
+    let color =
+    "var(--green)";
 
-            API_URL + "/api/predict",
+    if(result.status==="WATCH")
+        color="var(--yellow)";
 
-            {
+    if(result.status==="HIGH")
+        color="var(--orange)";
 
-                method:"POST",
+    if(result.status==="CRITICAL")
+        color="var(--red)";
 
-                headers:{
-                    "Content-Type":"application/json"
-                },
+    document
+    .getElementById("predictionRing")
+    .style.borderColor =
+    color;
 
-                body:
-                JSON.stringify({
+    let recommendation =
+    "Environmental conditions are stable. Continue normal monitoring.";
 
-                    waterLevel:waterLevel,
-                    rainfall:rainfall,
-                    flowRate:flowRate,
-                    humidity:humidity
+    if(result.status==="WATCH"){
 
-                })
-
-            }
-
-        );
-
-
-        if(!response.ok){
-
-            throw new Error("Prediction unavailable");
-
-        }
-
-
-        const result =
-        await response.json();
-
-
-        document.getElementById("predictionScore")
-        .innerText =
-        result.riskScore ?? "--";
-
-
-        document.getElementById("predictionResult")
-        .innerHTML =
-
-        "<b>Status:</b> " +
-
-        (
-            result.prediction ||
-            result.riskStatus ||
-            "Unknown"
-        )
-
-        +
-
-        "<br><br>" +
-
-        (
-            result.recommendation ||
-            "AI analysis completed."
-        );
+        recommendation =
+        "Water levels are rising. Increase monitoring frequency.";
 
     }
 
-    catch(error){
+    if(result.status==="HIGH"){
 
-        const score =
-        Math.min(
+        recommendation =
+        "High flood probability detected. Prepare emergency response procedures.";
 
-            100,
+    }
 
-            Math.round(
+    if(result.status==="CRITICAL"){
 
-                waterLevel * .5 +
-                rainfall * .4 +
-                flowRate * .5 +
-                humidity * .1
+        recommendation =
+        "Critical flood risk detected. Move to higher ground and follow emergency instructions.";
 
-            )
+    }
 
-        );
-
-
-        let status = "SAFE";
-
-
-        if(score > 75){
-
-            status = "CRITICAL";
-
-        }
-
-        else if(score > 55){
-
-            status = "HIGH";
-
-        }
-
-        else if(score > 30){
-
-            status = "WATCH";
-
-        }
-
-
-        document.getElementById("predictionScore")
-        .innerText =
-        score;
-
-
-        document.getElementById("predictionResult")
-        .innerHTML =
+    document
+    .getElementById("predictionResult")
+    .innerHTML =
 
         "<b>Status:</b> " +
-        status +
+        result.status +
 
         "<br><br>" +
 
-        "Local FloodGuard AI fallback analysis completed successfully.";
+        "<b>AI Recommendation:</b><br>" +
+        recommendation;
 
-    }
+    showToast(
+        "🧠 AI prediction completed: " +
+        result.status
+    );
 
 }
 
 
-/* SETTINGS */
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+function saveSettings(){
+
+    const area =
+    document
+    .getElementById("settingArea")
+    .value.trim();
+
+    const threshold =
+    document
+    .getElementById("threshold")
+    .value;
+
+    const interval =
+    document
+    .getElementById("updateInterval")
+    .value;
+
+    localStorage.setItem(
+        "floodguardArea",
+        area || "Vijayawada"
+    );
+
+    localStorage.setItem(
+        "floodguardThreshold",
+        threshold
+    );
+
+    localStorage.setItem(
+        "floodguardInterval",
+        interval
+    );
+
+    currentData.area =
+    area || "Vijayawada";
+
+    document
+    .getElementById("locationText")
+    .innerText =
+    currentData.area;
+
+    document
+    .getElementById("currentArea")
+    .innerText =
+    currentData.area;
+
+    startMonitoring();
+
+    showToast(
+        "⚙️ FloodGuard configuration saved successfully!"
+    );
+
+}
+
 
 function loadSettings(){
 
     const area =
-    localStorage.getItem("floodguardArea");
-
+    localStorage.getItem(
+        "floodguardArea"
+    );
 
     const threshold =
-    localStorage.getItem("floodguardThreshold");
-
+    localStorage.getItem(
+        "floodguardThreshold"
+    );
 
     const interval =
-    localStorage.getItem("floodguardInterval");
-
+    localStorage.getItem(
+        "floodguardInterval"
+    );
 
     if(area){
 
-        document.getElementById("settingArea")
+        document
+        .getElementById("settingArea")
         .value = area;
 
-        document.getElementById("locationText")
+        currentData.area = area;
+
+        document
+        .getElementById("locationText")
         .innerText = area;
 
     }
 
-
     if(threshold){
 
-        document.getElementById("threshold")
+        document
+        .getElementById("threshold")
         .value = threshold;
 
     }
 
-
     if(interval){
 
-        document.getElementById("updateInterval")
+        document
+        .getElementById("updateInterval")
         .value = interval;
 
     }
@@ -2755,118 +3096,50 @@ function loadSettings(){
 }
 
 
-function saveSettings(){
-
-    const area =
-    document.getElementById("settingArea")
-    .value;
-
-
-    const threshold =
-    document.getElementById("threshold")
-    .value;
-
-
-    const interval =
-    Number(
-        document.getElementById("updateInterval")
-        .value
-    );
-
-
-    localStorage.setItem(
-        "floodguardArea",
-        area
-    );
-
-
-    localStorage.setItem(
-        "floodguardThreshold",
-        threshold
-    );
-
-
-    localStorage.setItem(
-        "floodguardInterval",
-        interval
-    );
-
-
-    document.getElementById("locationText")
-    .innerText =
-    area;
-
-
-    document.getElementById("currentArea")
-    .innerText =
-    area;
-
-
-    if(refreshTimer){
-
-        clearInterval(refreshTimer);
-
-    }
-
-
-    refreshTimer =
-    setInterval(function(){
-
-        loadLatest();
-        loadHistory();
-
-    },interval);
-
-
-    alert(
-        "FloodGuard configuration saved successfully!"
-    );
-
-}
-
-
-/* LOCATION */
+/* =====================================================
+   LOCATION
+===================================================== */
 
 function getLocation(){
 
     if(!navigator.geolocation){
 
-        document.getElementById("locationText")
-        .innerText =
-        "Location unavailable";
+        showToast(
+            "📍 Geolocation is not supported."
+        );
 
         return;
 
     }
 
+    navigator.geolocation.getCurrentPosition(
 
-    navigator.geolocation
-    .getCurrentPosition(
-
-        function(position){
+        position=>{
 
             const lat =
             position.coords.latitude;
 
-
             const lon =
             position.coords.longitude;
 
-
-            document.getElementById("locationText")
+            document
+            .getElementById("locationText")
             .innerText =
             lat.toFixed(4) +
             ", " +
             lon.toFixed(4);
 
+            showToast(
+                "📍 Location updated successfully."
+            );
+
         },
 
+        ()=>{
 
-        function(){
-
-            document.getElementById("locationText")
-            .innerText =
-            "Location permission denied";
+            showToast(
+                "⚠️ Location permission denied."
+            );
 
         }
 
@@ -2875,49 +3148,39 @@ function getLocation(){
 }
 
 
-/* HEXA CHATBOT */
+/* =====================================================
+   HEXA CHATBOT
+===================================================== */
 
 function toggleHexa(){
 
     const box =
-    document.getElementById("hexaBox");
+    document.getElementById(
+        "hexaBox"
+    );
 
-
-    if(box.style.display === "block"){
-
-        box.style.display = "none";
-
-    }
-
-    else{
-
-        box.style.display = "block";
-
-        setTimeout(function(){
-
-            document.getElementById("chatInput").focus();
-
-        },100);
-
-    }
+    box.style.display =
+    box.style.display==="block"
+    ?
+    "none"
+    :
+    "block";
 
 }
 
 
-async function sendChat(){
+function sendChat(){
 
     const input =
-    document.getElementById("chatInput");
-
+    document.getElementById(
+        "chatInput"
+    );
 
     const message =
     input.value.trim();
 
-
-    if(!message){
+    if(!message)
         return;
-    }
-
 
     addChatMessage(
         "user",
@@ -2925,45 +3188,9 @@ async function sendChat(){
         message
     );
 
-
     input.value = "";
 
-
-    try{
-
-        const response =
-        await fetch(
-
-            API_URL + "/api/hexa",
-
-            {
-
-                method:"POST",
-
-                headers:{
-                    "Content-Type":"application/json"
-                },
-
-                body:
-                JSON.stringify({
-                    message:message
-                })
-
-            }
-
-        );
-
-
-        if(!response.ok){
-
-            throw new Error("Chat unavailable");
-
-        }
-
-
-        const result =
-        await response.json();
-
+    setTimeout(()=>{
 
         addChatMessage(
 
@@ -2971,30 +3198,11 @@ async function sendChat(){
 
             "Hexa AI 🤖",
 
-            result.reply ||
             localHexa(message)
 
         );
 
-    }
-
-    catch(error){
-
-        setTimeout(function(){
-
-            addChatMessage(
-
-                "bot",
-
-                "Hexa AI 🤖",
-
-                localHexa(message)
-
-            );
-
-        },500);
-
-    }
+    },500);
 
 }
 
@@ -3003,7 +3211,6 @@ function localHexa(message){
 
     const text =
     message.toLowerCase();
-
 
     if(
         text.includes("hello") ||
@@ -3014,118 +3221,163 @@ function localHexa(message){
 
     }
 
+    if(
+        text.includes("risk")
+    ){
 
-    if(text.includes("risk")){
-
-        return "Flood risk is calculated using water level, rainfall, flow rate, humidity and environmental conditions.";
-
-    }
-
-
-    if(text.includes("water")){
-
-        return "Water level sensors continuously monitor rising water conditions and help detect possible flooding early.";
+        return "The current flood risk is calculated using water level, rainfall, flow rate and humidity. Current live risk score is " +
+        currentData.riskScore +
+        "/100 with status " +
+        currentData.riskStatus +
+        ".";
 
     }
 
+    if(
+        text.includes("water")
+    ){
 
-    if(text.includes("rain")){
-
-        return "Rainfall intensity is one of the important factors used by FloodGuard AI for flood prediction.";
+        return "Current water level is " +
+        currentData.waterLevel +
+        " cm. " +
+        getWaterCondition(
+            currentData.waterLevel
+        ) +
+        " condition detected.";
 
     }
 
+    if(
+        text.includes("rain")
+    ){
+
+        return "Current rainfall is " +
+        currentData.rainfall +
+        " mm. Rain intensity is currently " +
+        getRainCondition(
+            currentData.rainfall
+        ) +
+        ".";
+
+    }
+
+    if(
+        text.includes("sensor")
+    ){
+
+        return "FloodGuard monitors water level, rainfall, temperature, humidity and flow rate using IoT sensor stations.";
+
+    }
 
     if(
         text.includes("safety") ||
         text.includes("safe")
     ){
 
-        return "Move to higher ground, avoid walking or driving through floodwater, keep emergency supplies ready and follow official instructions.";
+        return "For flood safety: move to higher ground, avoid walking or driving through floodwater, keep emergency contacts ready and follow official instructions.";
 
     }
-
-
-    if(text.includes("sensor")){
-
-        return "FloodGuard supports sensors for water level, rainfall, temperature, humidity and water flow monitoring.";
-
-    }
-
-
-    if(text.includes("alert")){
-
-        return "The Emergency Alert Center displays important flood warnings. You can also generate a test alert from the Alerts section.";
-
-    }
-
-
-    if(text.includes("zone")){
-
-        return "Flood risk zones are classified as SAFE, WATCH, HIGH or CRITICAL based on environmental conditions.";
-
-    }
-
 
     if(
-        text.includes("hexa") ||
-        text.includes("who are you")
+        text.includes("area") ||
+        text.includes("location")
     ){
 
-        return "I'm Hexa AI 🤖, the intelligent FloodGuard assistant powered by Hexa Tech!";
+        return "The current FloodGuard monitoring area is " +
+        currentData.area +
+        ".";
 
     }
 
+    if(
+        text.includes("alert")
+    ){
 
-    return "I'm Hexa AI 🤖 powered by Hexa Tech. Ask me about flood risk, sensors, rainfall, safety, monitoring zones or emergency alerts.";
+        return "Emergency alerts are automatically generated when the AI detects HIGH or CRITICAL flood conditions.";
+
+    }
+
+    if(
+        text.includes("hexa")
+    ){
+
+        return "I'm Hexa AI 🤖, the intelligent FloodGuard assistant powered by Hexa Tech ⚡.";
+
+    }
+
+    return "I'm Hexa AI 🤖. Ask me about flood risk, water level, rainfall, sensors, alerts, safety or monitoring zones.";
 
 }
 
 
-function addChatMessage(type,name,message){
+function addChatMessage(
+    type,
+    name,
+    message
+){
 
     const container =
-    document.getElementById("chatMessages");
-
+    document.getElementById(
+        "chatMessages"
+    );
 
     const div =
     document.createElement("div");
-
 
     div.className =
     "message " +
     type;
 
+    div.innerHTML =
 
-    const nameElement =
-    document.createElement("b");
-
-
-    nameElement.innerText =
-    name;
-
-
-    const breakElement =
-    document.createElement("br");
-
-
-    const textElement =
-    document.createElement("span");
-
-
-    textElement.innerText =
-    message;
-
-
-    div.appendChild(nameElement);
-    div.appendChild(breakElement);
-    div.appendChild(textElement);
+        "<b>" +
+        name +
+        "</b><br>" +
+        message;
 
     container.appendChild(div);
 
-
     container.scrollTop =
     container.scrollHeight;
+
+}
+
+
+/* =====================================================
+   TOAST NOTIFICATION
+===================================================== */
+
+function showToast(message){
+
+    const container =
+    document.getElementById(
+        "toastContainer"
+    );
+
+    const toast =
+    document.createElement("div");
+
+    toast.className =
+    "toast";
+
+    toast.innerHTML =
+    "<b>FloodGuard AI</b><br><small>" +
+    message +
+    "</small>";
+
+    container.appendChild(toast);
+
+    setTimeout(()=>{
+
+        toast.style.opacity = "0";
+
+        setTimeout(()=>{
+
+            toast.remove();
+
+        },400);
+
+    },3500);
 
 }
 
