@@ -22,20 +22,16 @@
 :root{
     --bg:#020611;
     --bg2:#061426;
-
     --glass:rgba(8,23,42,.78);
     --cyan:#00e5ff;
     --blue:#397cff;
     --purple:#9b6cff;
-
     --green:#21e6a1;
     --yellow:#ffd43b;
     --orange:#ff9f43;
     --red:#ff4d6d;
-
     --text:#f4fbff;
     --muted:#8fa5b8;
-
     --border:rgba(102,210,255,.16);
 }
 
@@ -51,26 +47,20 @@ body{
         radial-gradient(circle at 85% 20%,rgba(155,108,255,.12),transparent 28%),
         radial-gradient(circle at 50% 100%,rgba(57,124,255,.12),transparent 35%),
         var(--bg);
-
     min-height:100vh;
     overflow-x:hidden;
 }
 
 
-/* ===============================
-   ANIMATED BACKGROUND
-================================ */
+/* ANIMATED BACKGROUND */
 
 .background-grid{
     position:fixed;
     inset:0;
-
     background-image:
         linear-gradient(rgba(0,229,255,.025) 1px,transparent 1px),
         linear-gradient(90deg,rgba(0,229,255,.025) 1px,transparent 1px);
-
     background-size:55px 55px;
-
     pointer-events:none;
     z-index:-5;
 }
@@ -79,12 +69,9 @@ body{
     position:fixed;
     width:400px;
     height:400px;
-
     border-radius:50%;
-
     filter:blur(90px);
     opacity:.16;
-
     pointer-events:none;
     z-index:-4;
 }
@@ -121,9 +108,7 @@ body{
 }
 
 
-/* ===============================
-   LOADER
-================================ */
+/* PREMIUM LOADER */
 
 .loader{
     position:fixed;
@@ -153,9 +138,7 @@ body{
 .loader-core{
     width:150px;
     height:150px;
-
     position:relative;
-
     display:flex;
     align-items:center;
     justify-content:center;
@@ -170,33 +153,30 @@ body{
 .ring1{
     width:145px;
     height:145px;
-
     border-top-color:var(--cyan);
     border-bottom-color:var(--blue);
-
     animation:spin 1.8s linear infinite;
 }
 
 .ring2{
     width:110px;
     height:110px;
-
     border-left-color:var(--purple);
     border-right-color:var(--cyan);
-
     animation:spinReverse 1.2s linear infinite;
 }
 
 .ring3{
     width:70px;
     height:70px;
-
     border-radius:50%;
 
     background:
-        radial-gradient(circle,
-        rgba(0,229,255,.85),
-        rgba(0,229,255,.05));
+        radial-gradient(
+            circle,
+            rgba(0,229,255,.85),
+            rgba(0,229,255,.05)
+        );
 
     box-shadow:
         0 0 35px rgba(0,229,255,.7),
@@ -213,36 +193,36 @@ body{
 
 .loader-title{
     margin-top:32px;
-
     font-family:'Orbitron',sans-serif;
-
-    font-size:17px;
-    letter-spacing:4px;
-
+    font-size:24px;
+    font-weight:800;
+    letter-spacing:5px;
     color:white;
+    text-shadow:0 0 25px rgba(0,229,255,.45);
+}
+
+.loader-subtitle{
+    margin-top:10px;
+    color:var(--cyan);
+    font-size:9px;
+    letter-spacing:3px;
+    animation:textPulse 1.5s infinite;
 }
 
 .loader-text{
-    margin-top:12px;
-
-    color:var(--cyan);
-
+    margin-top:16px;
+    color:#b5d5e4;
     font-size:10px;
     letter-spacing:3px;
-
     animation:textPulse 1.5s infinite;
 }
 
 .loader-bar{
     width:240px;
     height:4px;
-
     margin-top:22px;
-
     border-radius:10px;
-
     background:rgba(255,255,255,.06);
-
     overflow:hidden;
 }
 
@@ -265,21 +245,13 @@ body{
 
 .powered{
     margin-top:22px;
-
     padding:9px 18px;
-
     border-radius:30px;
-
     color:#a9c7d8;
-
     font-size:10px;
-
     letter-spacing:2px;
-
     border:1px solid rgba(0,229,255,.12);
-
     background:rgba(0,229,255,.04);
-
     animation:poweredPulse 2s infinite;
 }
 
@@ -327,32 +299,20 @@ body{
 }
 
 
-/* ===============================
-   SIDEBAR
-================================ */
+/* SIDEBAR */
 
 .sidebar{
     position:fixed;
-
     top:18px;
     left:18px;
     bottom:18px;
-
     width:255px;
-
     padding:20px 14px;
-
     border-radius:24px;
-
     background:rgba(5,17,32,.78);
-
     backdrop-filter:blur(25px);
-
     border:1px solid var(--border);
-
-    box-shadow:
-        0 20px 60px rgba(0,0,0,.45);
-
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
     z-index:1000;
 }
 
@@ -360,31 +320,19 @@ body{
     display:flex;
     align-items:center;
     gap:12px;
-
     padding:10px 10px 24px;
-
     border-bottom:1px solid var(--border);
 }
 
 .logo-icon{
     width:45px;
     height:45px;
-
     display:flex;
     align-items:center;
     justify-content:center;
-
     border-radius:14px;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--blue),
-            var(--cyan)
-        );
-
-    box-shadow:
-        0 10px 30px rgba(0,229,255,.25);
+    background:linear-gradient(135deg,var(--blue),var(--cyan));
+    box-shadow:0 10px 30px rgba(0,229,255,.25);
 }
 
 .logo h2{
@@ -404,93 +352,63 @@ body{
 
 .nav-title{
     color:#587087;
-
     font-size:9px;
-
     letter-spacing:2px;
-
     margin:20px 12px 9px;
 }
 
 .nav button{
     width:100%;
-
     padding:13px 14px;
-
     margin-bottom:5px;
-
     border:none;
     border-radius:12px;
-
     background:transparent;
-
     color:#91a6b9;
-
     cursor:pointer;
-
     text-align:left;
-
     transition:.25s;
-
     font-size:13px;
 }
 
 .nav button:hover{
     color:white;
-
     background:rgba(0,229,255,.06);
-
     transform:translateX(4px);
 }
 
 .nav button.active{
     color:white;
-
     background:
         linear-gradient(
             90deg,
             rgba(57,124,255,.30),
             rgba(0,229,255,.10)
         );
-
-    box-shadow:
-        inset 2px 0 var(--cyan);
+    box-shadow:inset 2px 0 var(--cyan);
 }
 
 .system-status{
     position:absolute;
-
     bottom:18px;
     left:16px;
     right:16px;
-
     padding:13px;
-
     border-radius:14px;
-
     color:var(--green);
-
     background:rgba(33,230,161,.06);
-
     border:1px solid rgba(33,230,161,.15);
-
     font-size:10px;
 }
 
 .status-dot{
     display:inline-block;
-
     width:8px;
     height:8px;
-
     border-radius:50%;
-
     background:var(--green);
-
     box-shadow:0 0 12px var(--green);
-
     margin-right:7px;
-
     animation:pulseDot 1.5s infinite;
 }
 
@@ -502,13 +420,10 @@ body{
 }
 
 
-/* ===============================
-   MAIN
-================================ */
+/* MAIN */
 
 .main{
     margin-left:290px;
-
     padding:28px 30px 40px;
 }
 
@@ -516,32 +431,25 @@ body{
     display:flex;
     justify-content:space-between;
     align-items:center;
-
     gap:20px;
-
     margin-bottom:28px;
 }
 
 .topbar h1{
     font-family:'Orbitron',sans-serif;
-
     font-size:24px;
 }
 
 .topbar p{
     color:var(--muted);
-
     margin-top:7px;
-
     font-size:12px;
 }
 
 .top-actions{
     display:flex;
     align-items:center;
-
     gap:10px;
-
     flex-wrap:wrap;
 }
 
@@ -549,49 +457,33 @@ body{
     display:flex;
     align-items:center;
     gap:7px;
-
     padding:10px 15px;
-
     border-radius:30px;
-
     color:var(--green);
-
     font-size:10px;
-
     background:rgba(33,230,161,.06);
-
     border:1px solid rgba(33,230,161,.18);
 }
 
 .live-dot{
     width:7px;
     height:7px;
-
     border-radius:50%;
-
     background:var(--green);
-
     box-shadow:0 0 12px var(--green);
 }
 
 .location-box{
     padding:10px 14px;
-
     border-radius:12px;
-
     background:var(--glass);
-
     border:1px solid var(--border);
-
     color:#b8c9d8;
-
     font-size:11px;
 }
 
 
-/* ===============================
-   PAGES
-================================ */
+/* PAGES */
 
 .page{
     display:none;
@@ -615,26 +507,18 @@ body{
 }
 
 
-/* ===============================
-   CARDS
-================================ */
+/* CARDS */
 
 .grid{
     display:grid;
-
-    grid-template-columns:
-        repeat(4,minmax(0,1fr));
-
+    grid-template-columns:repeat(4,minmax(0,1fr));
     gap:16px;
 }
 
 .card{
     position:relative;
-
     padding:20px;
-
     overflow:hidden;
-
     border-radius:20px;
 
     background:
@@ -645,62 +529,44 @@ body{
         );
 
     backdrop-filter:blur(18px);
-
     border:1px solid var(--border);
-
-    box-shadow:
-        0 15px 45px rgba(0,0,0,.22);
-
+    box-shadow:0 15px 45px rgba(0,0,0,.22);
     transition:.3s;
 }
 
 .card:hover{
     transform:translateY(-5px);
-
-    border-color:
-        rgba(0,229,255,.3);
+    border-color:rgba(0,229,255,.3);
 }
 
 .stat-label{
     color:var(--muted);
-
     font-size:10px;
-
     letter-spacing:1.3px;
 }
 
 .stat-value{
     font-size:28px;
-
     font-weight:700;
-
     margin:13px 0 7px;
 }
 
 .stat-bottom{
     color:#71889a;
-
     font-size:10px;
 }
 
 .big-grid{
     display:grid;
-
-    grid-template-columns:
-        2fr 1fr;
-
+    grid-template-columns:2fr 1fr;
     gap:18px;
-
     margin-top:18px;
 }
 
 .section-title{
     display:flex;
-
     justify-content:space-between;
-
     align-items:center;
-
     margin-bottom:18px;
 }
 
@@ -709,9 +575,7 @@ body{
 }
 
 
-/* ===============================
-   RISK RING
-================================ */
+/* RISK RING */
 
 .risk-panel{
     text-align:center;
@@ -720,15 +584,11 @@ body{
 .risk-ring{
     width:195px;
     height:195px;
-
     margin:18px auto;
-
     border-radius:50%;
 
     display:flex;
-
     flex-direction:column;
-
     align-items:center;
     justify-content:center;
 
@@ -741,23 +601,18 @@ body{
             transparent 65%
         );
 
-    box-shadow:
-        0 0 35px rgba(33,230,161,.12);
-
+    box-shadow:0 0 35px rgba(33,230,161,.12);
     animation:antiGravity 4s ease-in-out infinite;
 }
 
 .risk-ring h1{
     font-family:'Orbitron',sans-serif;
-
     font-size:42px;
 }
 
 .risk-ring p{
     color:var(--muted);
-
     font-size:10px;
-
     letter-spacing:1px;
 }
 
@@ -769,55 +624,38 @@ body{
 
 .ai-box{
     padding:15px;
-
     border-radius:14px;
-
     background:rgba(0,229,255,.045);
-
     border:1px solid rgba(0,229,255,.12);
-
     text-align:left;
 }
 
 .ai-box p{
     color:#b3c8d7;
-
     font-size:12px;
-
     line-height:1.8;
 }
 
 
-/* ===============================
-   SENSOR
-================================ */
+/* SENSORS */
 
 .sensor-grid{
     display:grid;
-
-    grid-template-columns:
-        repeat(3,1fr);
-
+    grid-template-columns:repeat(3,1fr);
     gap:15px;
 }
 
 .sensor{
     padding:20px;
-
     border-radius:18px;
-
     background:rgba(5,18,33,.65);
-
     border:1px solid var(--border);
-
     transition:.25s;
 }
 
 .sensor:hover{
     transform:translateY(-4px);
-
-    border-color:
-        rgba(0,229,255,.3);
+    border-color:rgba(0,229,255,.3);
 }
 
 .sensor-icon{
@@ -826,36 +664,25 @@ body{
 
 .sensor p{
     margin-top:10px;
-
     color:var(--muted);
-
     font-size:11px;
 }
 
 .sensor strong{
     display:block;
-
     font-size:24px;
-
     margin-top:8px;
 }
 
 
-/* ===============================
-   BUTTONS
-================================ */
+/* BUTTONS */
 
 .primary-btn{
     border:none;
-
     padding:11px 17px;
-
     border-radius:11px;
-
     color:white;
-
     font-weight:600;
-
     cursor:pointer;
 
     background:
@@ -865,9 +692,7 @@ body{
             var(--cyan)
         );
 
-    box-shadow:
-        0 8px 25px rgba(0,140,255,.2);
-
+    box-shadow:0 8px 25px rgba(0,140,255,.2);
     transition:.25s;
 }
 
@@ -877,39 +702,25 @@ body{
 
 .secondary-btn{
     padding:10px 14px;
-
     border-radius:11px;
-
     color:#c8d9e5;
-
     background:var(--glass);
-
     border:1px solid var(--border);
-
     cursor:pointer;
 }
 
 
-/* ===============================
-   INPUTS
-================================ */
+/* INPUTS */
 
 input,
 select{
     width:100%;
-
     padding:13px 14px;
-
     margin:7px 0 15px;
-
     border-radius:12px;
-
     background:rgba(3,12,23,.8);
-
     color:white;
-
     border:1px solid var(--border);
-
     outline:none;
 }
 
@@ -919,9 +730,7 @@ select:focus{
 }
 
 
-/* ===============================
-   TABLE
-================================ */
+/* TABLE */
 
 table{
     width:100%;
@@ -931,12 +740,8 @@ table{
 th,
 td{
     padding:15px;
-
     text-align:left;
-
-    border-bottom:
-        1px solid rgba(255,255,255,.05);
-
+    border-bottom:1px solid rgba(255,255,255,.05);
     font-size:11px;
 }
 
@@ -945,19 +750,13 @@ th{
 }
 
 
-/* ===============================
-   MAP
-================================ */
+/* MAP */
 
 .map{
     height:430px;
-
     position:relative;
-
     overflow:hidden;
-
     border-radius:20px;
-
     border:1px solid var(--border);
 
     background:
@@ -974,44 +773,28 @@ th{
 
 .map-title{
     position:absolute;
-
     top:18px;
     left:18px;
-
     z-index:5;
-
     padding:11px 14px;
-
     border-radius:12px;
-
     background:rgba(4,14,27,.85);
-
     border:1px solid var(--border);
-
     font-size:11px;
 }
 
 .zone{
     position:absolute;
-
     width:135px;
     height:135px;
-
     border-radius:50%;
-
     display:flex;
-
     flex-direction:column;
-
     align-items:center;
     justify-content:center;
-
     cursor:pointer;
-
     border:2px solid;
-
     transition:.3s;
-
     animation:zoneFloat 4s ease-in-out infinite;
 }
 
@@ -1026,25 +809,19 @@ th{
 
 .safe{
     color:var(--green);
-
     border-color:var(--green);
-
     background:rgba(33,230,161,.09);
 }
 
 .watch{
     color:var(--yellow);
-
     border-color:var(--yellow);
-
     background:rgba(255,212,59,.08);
 }
 
 .high{
     color:var(--red);
-
     border-color:var(--red);
-
     background:rgba(255,77,109,.08);
 }
 
@@ -1075,21 +852,14 @@ th{
 }
 
 
-/* ===============================
-   ALERTS
-================================ */
+/* ALERTS */
 
 .alert{
     padding:17px;
-
     border-radius:15px;
-
     margin-bottom:12px;
-
     background:rgba(255,77,109,.06);
-
     border:1px solid rgba(255,77,109,.16);
-
     border-left:4px solid var(--red);
 }
 
@@ -1099,50 +869,35 @@ th{
 
 .alert p{
     margin-top:7px;
-
     color:#b1c1ce;
-
     font-size:11px;
-
     line-height:1.6;
 }
 
 
-/* ===============================
-   SETTINGS
-================================ */
+/* SETTINGS */
 
 .settings-grid{
     display:grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
+    grid-template-columns:1fr 1fr;
     gap:18px;
 }
 
 
-/* ===============================
-   CHATBOT
-================================ */
+/* HEXA CHATBOT - TOP RIGHT */
 
 .hexa-button{
     position:fixed;
-
     right:28px;
-    bottom:28px;
+    top:28px;
 
     width:65px;
     height:65px;
 
     border:none;
-
     border-radius:50%;
-
     cursor:pointer;
-
     font-size:26px;
-
     z-index:10000;
 
     background:
@@ -1156,9 +911,39 @@ th{
         0 10px 35px rgba(0,229,255,.3);
 
     animation:hexaFloat 3s ease-in-out infinite;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.hexa-button::after{
+    content:"HEXA";
+    position:absolute;
+    right:0;
+    top:72px;
+    padding:6px 10px;
+    border-radius:20px;
+    background:rgba(7,22,39,.9);
+    border:1px solid var(--border);
+    color:var(--cyan);
+    font-size:9px;
+    font-family:'Orbitron',sans-serif;
+    letter-spacing:1px;
+    opacity:0;
+    transition:.3s;
+    pointer-events:none;
+}
+
+.hexa-button:hover::after{
+    opacity:1;
 }
 
 @keyframes hexaFloat{
+    0%,100%{
+        transform:translateY(0);
+    }
+
     50%{
         transform:translateY(-8px);
     }
@@ -1170,7 +955,7 @@ th{
     position:fixed;
 
     right:28px;
-    bottom:105px;
+    top:105px;
 
     width:370px;
     height:510px;
@@ -1189,62 +974,60 @@ th{
 
     box-shadow:
         0 25px 70px rgba(0,0,0,.6);
+
+    animation:chatOpen .35s ease;
+}
+
+@keyframes chatOpen{
+    from{
+        opacity:0;
+        transform:translateY(-15px) scale(.96);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
 }
 
 .hexa-header{
     display:flex;
-
     justify-content:space-between;
-
     align-items:center;
-
     padding-bottom:13px;
-
     border-bottom:1px solid var(--border);
 }
 
 .hexa-close{
     background:none;
     border:none;
-
     color:white;
-
     font-size:22px;
-
     cursor:pointer;
 }
 
 .messages{
     height:360px;
-
     overflow-y:auto;
-
     padding:10px 2px;
 }
 
 .message{
     max-width:78%;
-
     padding:12px 14px;
-
     margin:10px 0;
-
     border-radius:15px;
-
     font-size:12px;
-
     line-height:1.6;
 }
 
 .bot{
     background:#0d2238;
-
     border:1px solid var(--border);
 }
 
 .user{
     margin-left:auto;
-
     background:
         linear-gradient(
             135deg,
@@ -1255,9 +1038,7 @@ th{
 
 .chat-input{
     display:flex;
-
     gap:8px;
-
     margin-top:10px;
 }
 
@@ -1266,9 +1047,7 @@ th{
 }
 
 
-/* ===============================
-   MOBILE
-================================ */
+/* MOBILE */
 
 .mobile-menu{
     display:none;
@@ -1303,14 +1082,10 @@ th{
 
     .mobile-menu{
         display:block;
-
         background:none;
         border:none;
-
         color:white;
-
         font-size:24px;
-
         margin-bottom:10px;
     }
 
@@ -1328,19 +1103,20 @@ th{
         display:none;
     }
 
+    .hexa-button{
+        right:18px;
+        top:18px;
+        width:58px;
+        height:58px;
+    }
+
     .hexa-box{
         right:10px;
-        bottom:90px;
-
+        top:88px;
         width:calc(100% - 20px);
-
         height:500px;
     }
 
-    .hexa-button{
-        right:18px;
-        bottom:18px;
-    }
 }
 
 </style>
@@ -1355,9 +1131,7 @@ th{
 <div class="orb orb3"></div>
 
 
-<!-- ===============================
-     PREMIUM LOADER
-================================ -->
+<!-- LOADER -->
 
 <div class="loader" id="loader">
 
@@ -1367,12 +1141,16 @@ th{
         <div class="loader-ring ring2"></div>
         <div class="ring3"></div>
 
-        <div class="loader-logo">🌊</div>
+        <div class="loader-logo">⚡</div>
 
     </div>
 
     <div class="loader-title">
-        FLOODGUARD AI
+        HEXA TECH
+    </div>
+
+    <div class="loader-subtitle">
+        FLOODGUARD AI INTELLIGENCE SYSTEM
     </div>
 
     <div class="loader-text" id="loaderText">
@@ -1390,9 +1168,7 @@ th{
 </div>
 
 
-<!-- ===============================
-     SIDEBAR
-================================ -->
+<!-- SIDEBAR -->
 
 <aside class="sidebar" id="sidebar">
 
@@ -1407,13 +1183,11 @@ th{
 
     </div>
 
-
     <div class="nav">
 
         <div class="nav-title">INTELLIGENCE</div>
 
-        <button class="active"
-        onclick="showPage('dashboard',this)">
+        <button class="active" onclick="showPage('dashboard',this)">
             📊 Dashboard
         </button>
 
@@ -1433,7 +1207,6 @@ th{
             📈 Analytics
         </button>
 
-
         <div class="nav-title">AI SYSTEM</div>
 
         <button onclick="showPage('prediction',this)">
@@ -1446,7 +1219,6 @@ th{
 
     </div>
 
-
     <div class="system-status">
         <span class="status-dot"></span>
         ALL SYSTEMS ONLINE
@@ -1455,19 +1227,15 @@ th{
 </aside>
 
 
-<!-- ===============================
-     MAIN
-================================ -->
+<!-- MAIN -->
 
 <main class="main">
-
 
 <div class="topbar">
 
     <div>
 
-        <button class="mobile-menu"
-        onclick="toggleMenu()">
+        <button class="mobile-menu" onclick="toggleMenu()">
             ☰
         </button>
 
@@ -1480,7 +1248,6 @@ th{
 
     </div>
 
-
     <div class="top-actions">
 
         <div class="live-badge">
@@ -1489,13 +1256,10 @@ th{
         </div>
 
         <div class="location-box">
-            📍 <span id="locationText">
-                Vijayawada
-            </span>
+            📍 <span id="locationText">Vijayawada</span>
         </div>
 
-        <button class="secondary-btn"
-        onclick="getLocation()">
+        <button class="secondary-btn" onclick="getLocation()">
             Update Location
         </button>
 
@@ -1504,104 +1268,49 @@ th{
 </div>
 
 
-<!-- ===============================
-     DASHBOARD
-================================ -->
+<!-- DASHBOARD -->
 
 <section class="page active" id="dashboard">
 
     <div class="grid">
 
         <div class="card">
-
-            <div class="stat-label">
-                AI FLOOD RISK
-            </div>
-
-            <div class="stat-value"
-            id="riskStatus">
-                CONNECTING
-            </div>
-
-            <div class="stat-bottom"
-            id="riskScore">
+            <div class="stat-label">AI FLOOD RISK</div>
+            <div class="stat-value" id="riskStatus">CONNECTING</div>
+            <div class="stat-bottom" id="riskScore">
                 Risk Score: --/100
             </div>
-
         </div>
 
-
         <div class="card">
-
-            <div class="stat-label">
-                WATER LEVEL
-            </div>
-
-            <div class="stat-value"
-            id="waterLevel">
-                -- cm
-            </div>
-
-            <div class="stat-bottom">
-                Live sensor reading
-            </div>
-
+            <div class="stat-label">WATER LEVEL</div>
+            <div class="stat-value" id="waterLevel">-- cm</div>
+            <div class="stat-bottom">Live sensor reading</div>
         </div>
 
-
         <div class="card">
-
-            <div class="stat-label">
-                RAINFALL
-            </div>
-
-            <div class="stat-value"
-            id="rainfall">
-                -- mm
-            </div>
-
-            <div class="stat-bottom">
-                Current rainfall intensity
-            </div>
-
+            <div class="stat-label">RAINFALL</div>
+            <div class="stat-value" id="rainfall">-- mm</div>
+            <div class="stat-bottom">Current rainfall intensity</div>
         </div>
 
-
         <div class="card">
-
-            <div class="stat-label">
-                MONITORING AREA
-            </div>
-
-            <div class="stat-value"
-            id="currentArea">
-                --
-            </div>
-
-            <div class="stat-bottom">
-                Active monitoring zone
-            </div>
-
+            <div class="stat-label">MONITORING AREA</div>
+            <div class="stat-value" id="currentArea">--</div>
+            <div class="stat-bottom">Active monitoring zone</div>
         </div>
 
     </div>
 
-
     <div class="big-grid">
-
 
         <div class="card">
 
             <div class="section-title">
-
-                <h3>
-                    📡 Live Water Level History
-                </h3>
-
+                <h3>📡 Live Water Level History</h3>
                 <span style="color:var(--cyan);font-size:10px;">
                     REAL-TIME
                 </span>
-
             </div>
 
             <div class="chart-box">
@@ -1610,36 +1319,21 @@ th{
 
         </div>
 
-
         <div class="card risk-panel">
 
             <div class="section-title">
-
-                <h3>
-                    🤖 AI Intelligence
-                </h3>
-
+                <h3>🤖 AI Intelligence</h3>
             </div>
 
-
-            <div class="risk-ring"
-            id="riskRing">
-
+            <div class="risk-ring" id="riskRing">
                 <h1 id="ringScore">--</h1>
-
                 <p>RISK SCORE</p>
-
             </div>
-
 
             <div class="ai-box">
-
                 <p id="aiInsight">
-
                     Connecting to FloodGuard AI...
-
                 </p>
-
             </div>
 
         </div>
@@ -1649,9 +1343,7 @@ th{
 </section>
 
 
-<!-- ===============================
-     LIVE MONITORING
-================================ -->
+<!-- LIVE MONITORING -->
 
 <section class="page" id="monitoring">
 
@@ -1659,131 +1351,74 @@ th{
 
         <div class="section-title">
 
-            <h3>
-                📡 Live Monitoring Station
-            </h3>
+            <h3>📡 Live Monitoring Station</h3>
 
-            <button class="primary-btn"
-            onclick="loadLatest()">
+            <button class="primary-btn" onclick="loadLatest()">
                 Refresh
             </button>
 
         </div>
 
-
         <div class="sensor-grid">
 
-
             <div class="sensor">
-
                 <div class="sensor-icon">🌊</div>
-
                 <p>Water Level</p>
-
-                <strong id="sensorWater">
-                    -- cm
-                </strong>
-
+                <strong id="sensorWater">-- cm</strong>
             </div>
 
-
             <div class="sensor">
-
                 <div class="sensor-icon">🌧️</div>
-
                 <p>Rainfall</p>
-
-                <strong id="sensorRain">
-                    -- mm
-                </strong>
-
+                <strong id="sensorRain">-- mm</strong>
             </div>
 
-
             <div class="sensor">
-
                 <div class="sensor-icon">🌡️</div>
-
                 <p>Temperature</p>
-
-                <strong id="sensorTemp">
-                    -- °C
-                </strong>
-
+                <strong id="sensorTemp">-- °C</strong>
             </div>
 
-
             <div class="sensor">
-
                 <div class="sensor-icon">💧</div>
-
                 <p>Humidity</p>
-
-                <strong id="sensorHumidity">
-                    -- %
-                </strong>
-
+                <strong id="sensorHumidity">-- %</strong>
             </div>
 
-
             <div class="sensor">
-
                 <div class="sensor-icon">🌊</div>
-
                 <p>Flow Rate</p>
-
-                <strong id="sensorFlow">
-                    -- L/min
-                </strong>
-
+                <strong id="sensorFlow">-- L/min</strong>
             </div>
 
-
             <div class="sensor">
-
                 <div class="sensor-icon">🧠</div>
-
                 <p>Risk Status</p>
-
-                <strong id="sensorRisk">
-                    --
-                </strong>
-
+                <strong id="sensorRisk">--</strong>
             </div>
 
         </div>
 
     </div>
 
-
-    <div class="card"
-    style="margin-top:18px;">
+    <div class="card" style="margin-top:18px;">
 
         <div class="section-title">
-
-            <h3>
-                Sensor Network Records
-            </h3>
-
+            <h3>Sensor Network Records</h3>
         </div>
-
 
         <div style="overflow:auto;">
 
             <table>
 
                 <thead>
-
                     <tr>
-
                         <th>DEVICE</th>
                         <th>AREA</th>
                         <th>WATER</th>
                         <th>RAIN</th>
                         <th>RISK</th>
-
                     </tr>
-
                 </thead>
 
                 <tbody id="sensorTable"></tbody>
@@ -1797,9 +1432,7 @@ th{
 </section>
 
 
-<!-- ===============================
-     ZONES
-================================ -->
+<!-- ZONES -->
 
 <section class="page" id="zones">
 
@@ -1807,9 +1440,7 @@ th{
 
         <div class="section-title">
 
-            <h3>
-                🗺️ Flood Risk Zones
-            </h3>
+            <h3>🗺️ Flood Risk Zones</h3>
 
             <span style="color:var(--muted);font-size:11px;">
                 Click an area
@@ -1817,62 +1448,42 @@ th{
 
         </div>
 
-
         <div class="map">
 
             <div class="map-title">
                 🛰️ LIVE MONITORING GRID
             </div>
 
-
             <div class="zone safe z1"
             onclick="selectZone('North Zone','SAFE')">
-
                 <b>NORTH</b>
                 <small>SAFE</small>
-
             </div>
-
 
             <div class="zone watch z2"
             onclick="selectZone('Central Zone','WATCH')">
-
                 <b>CENTRAL</b>
                 <small>WATCH</small>
-
             </div>
-
 
             <div class="zone high z3"
             onclick="selectZone('River Zone','HIGH')">
-
                 <b>RIVER</b>
                 <small>HIGH</small>
-
             </div>
-
 
             <div class="zone safe z4"
             onclick="selectZone('South Zone','SAFE')">
-
                 <b>SOUTH</b>
                 <small>SAFE</small>
-
             </div>
 
         </div>
 
-
-        <div class="ai-box"
-        style="margin-top:18px;">
-
+        <div class="ai-box" style="margin-top:18px;">
             <p id="zoneInfo">
-
-                Selected Area:
-                FloodGuard Monitoring Zone
-
+                Selected Area: FloodGuard Monitoring Zone
             </p>
-
         </div>
 
     </div>
@@ -1880,9 +1491,7 @@ th{
 </section>
 
 
-<!-- ===============================
-     ALERTS
-================================ -->
+<!-- ALERTS -->
 
 <section class="page" id="alerts">
 
@@ -1890,27 +1499,20 @@ th{
 
         <div class="section-title">
 
-            <h3>
-                🚨 Emergency Alert Center
-            </h3>
+            <h3>🚨 Emergency Alert Center</h3>
 
             <button class="primary-btn"
             onclick="generateTestAlert()">
-
                 Generate Test Alert
-
             </button>
 
         </div>
-
 
         <div id="alertList">
 
             <div class="alert">
 
-                <h3>
-                    🟢 System Active
-                </h3>
+                <h3>🟢 System Active</h3>
 
                 <p>
                     FloodGuard AI emergency monitoring
@@ -1926,88 +1528,42 @@ th{
 </section>
 
 
-<!-- ===============================
-     ANALYTICS
-================================ -->
+<!-- ANALYTICS -->
 
 <section class="page" id="analytics">
 
     <div class="grid">
 
         <div class="card">
-
-            <div class="stat-label">
-                TOTAL RECORDS
-            </div>
-
-            <div class="stat-value"
-            id="totalRecords">
-                0
-            </div>
-
+            <div class="stat-label">TOTAL RECORDS</div>
+            <div class="stat-value" id="totalRecords">0</div>
         </div>
 
-
         <div class="card">
-
-            <div class="stat-label">
-                AVERAGE WATER
-            </div>
-
-            <div class="stat-value"
-            id="avgWater">
-                0 cm
-            </div>
-
+            <div class="stat-label">AVERAGE WATER</div>
+            <div class="stat-value" id="avgWater">0 cm</div>
         </div>
 
-
         <div class="card">
-
-            <div class="stat-label">
-                AVERAGE RAIN
-            </div>
-
-            <div class="stat-value"
-            id="avgRain">
-                0 mm
-            </div>
-
+            <div class="stat-label">AVERAGE RAIN</div>
+            <div class="stat-value" id="avgRain">0 mm</div>
         </div>
 
-
         <div class="card">
-
-            <div class="stat-label">
-                AVERAGE RISK
-            </div>
-
-            <div class="stat-value"
-            id="avgRisk">
-                0
-            </div>
-
+            <div class="stat-label">AVERAGE RISK</div>
+            <div class="stat-value" id="avgRisk">0</div>
         </div>
 
     </div>
 
-
-    <div class="card"
-    style="margin-top:18px;">
+    <div class="card" style="margin-top:18px;">
 
         <div class="section-title">
-
-            <h3>
-                📈 Flood Analytics
-            </h3>
-
+            <h3>📈 Flood Analytics</h3>
         </div>
 
-
         <div class="chart-box">
-
             <canvas id="analyticsChart"></canvas>
-
         </div>
 
     </div>
@@ -2015,101 +1571,56 @@ th{
 </section>
 
 
-<!-- ===============================
-     AI PREDICTION
-================================ -->
+<!-- AI PREDICTION -->
 
 <section class="page" id="prediction">
 
     <div class="big-grid">
 
-
         <div class="card">
 
-            <h3>
-                🧠 AI Predictive Engine
-            </h3>
+            <h3>🧠 AI Predictive Engine</h3>
 
             <p style="
                 color:var(--muted);
                 font-size:12px;
                 margin:12px 0 20px;
             ">
-
-                Analyze flood risk using
-                environmental conditions.
-
+                Analyze flood risk using environmental conditions.
             </p>
 
-
             <label>Water Level (cm)</label>
-
-            <input
-            type="number"
-            id="predictWater"
-            value="45">
-
+            <input type="number" id="predictWater" value="45">
 
             <label>Rainfall (mm)</label>
-
-            <input
-            type="number"
-            id="predictRain"
-            value="20">
-
+            <input type="number" id="predictRain" value="20">
 
             <label>Flow Rate</label>
-
-            <input
-            type="number"
-            id="predictFlow"
-            value="15">
-
+            <input type="number" id="predictFlow" value="15">
 
             <label>Humidity (%)</label>
-
-            <input
-            type="number"
-            id="predictHumidity"
-            value="65">
-
+            <input type="number" id="predictHumidity" value="65">
 
             <button class="primary-btn"
             onclick="runPrediction()">
-
                 Run AI Prediction
-
             </button>
 
         </div>
 
-
         <div class="card risk-panel">
 
-            <h3>
-                AI PREDICTION RESULT
-            </h3>
-
+            <h3>AI PREDICTION RESULT</h3>
 
             <div class="risk-ring">
-
-                <h1 id="predictionScore">
-                    --
-                </h1>
-
+                <h1 id="predictionScore">--</h1>
                 <p>RISK SCORE</p>
-
             </div>
 
-
             <div class="ai-box">
-
                 <p id="predictionResult">
-
                     Waiting for sensor analysis...
-
                 </p>
-
             </div>
 
         </div>
@@ -2119,84 +1630,47 @@ th{
 </section>
 
 
-<!-- ===============================
-     SETTINGS
-================================ -->
+<!-- SETTINGS -->
 
 <section class="page" id="settings">
 
     <div class="settings-grid">
 
-
         <div class="card">
 
-            <h3>
-                ⚙️ Monitoring Configuration
-            </h3>
+            <h3>⚙️ Monitoring Configuration</h3>
 
             <br>
 
-
             <label>Monitoring Area</label>
+            <input id="settingArea" value="Vijayawada">
 
-            <input
-            id="settingArea"
-            value="Vijayawada">
+            <label>Water Alert Threshold</label>
+            <input id="threshold" type="number" value="70">
 
-
-            <label>
-                Water Alert Threshold
-            </label>
-
-            <input
-            id="threshold"
-            type="number"
-            value="70">
-
-
-            <label>
-                Update Interval
-            </label>
+            <label>Update Interval</label>
 
             <select id="updateInterval">
 
-                <option value="5000">
-                    5 Seconds
-                </option>
-
-                <option value="10000">
-                    10 Seconds
-                </option>
-
-                <option value="30000">
-                    30 Seconds
-                </option>
-
-                <option value="60000">
-                    1 Minute
-                </option>
+                <option value="5000">5 Seconds</option>
+                <option value="10000">10 Seconds</option>
+                <option value="30000">30 Seconds</option>
+                <option value="60000">1 Minute</option>
 
             </select>
 
-
             <button class="primary-btn"
             onclick="saveSettings()">
-
                 Save Configuration
-
             </button>
 
         </div>
 
-
         <div class="card">
 
-            <h3>
-                🔐 System Information
-            </h3>
+            <h3>🔐 System Information</h3>
 
             <br>
-
 
             <div class="ai-box">
 
@@ -2238,42 +1712,33 @@ th{
 </main>
 
 
-<!-- ===============================
-     HEXA CHATBOT
-================================ -->
+<!-- HEXA CHATBOT TOP RIGHT -->
 
 <button
 class="hexa-button"
-onclick="toggleHexa()">
+onclick="toggleHexa()"
+title="Open Hexa AI">
 
     🤖
 
 </button>
 
 
-<div
-id="hexaBox"
-class="hexa-box">
+<div id="hexaBox" class="hexa-box">
 
     <div class="hexa-header">
 
         <div>
 
-            <b>
-                🤖 Hexa AI
-            </b>
+            <b>🤖 Hexa AI</b>
 
             <br>
 
-            <small
-            style="color:var(--green);">
-
+            <small style="color:var(--green);">
                 ● FLOODGUARD ASSISTANT
-
             </small>
 
         </div>
-
 
         <button
         class="hexa-close"
@@ -2292,9 +1757,7 @@ class="hexa-box">
 
         <div class="message bot">
 
-            <b>
-                Hexa AI 🤖
-            </b>
+            <b>Hexa AI 🤖</b>
 
             <br>
 
@@ -2319,7 +1782,6 @@ class="hexa-box">
         placeholder="Ask Hexa anything..."
         onkeypress="if(event.key==='Enter')sendChat()">
 
-
         <button
         class="primary-btn"
         onclick="sendChat()">
@@ -2335,13 +1797,8 @@ class="hexa-box">
 
 <script>
 
-/* =====================================
-   BACKEND URL
-===================================== */
-
 const API_URL =
 "https://flood-ai-hexa.onrender.com";
-
 
 let socket = null;
 let history = [];
@@ -2352,37 +1809,32 @@ let analyticsChart = null;
 let refreshTimer = null;
 
 
-/* =====================================
-   INITIALIZATION
-===================================== */
+/* INITIALIZATION */
 
 window.addEventListener("load", () => {
 
     const loaderMessages = [
 
         "INITIALIZING SENSOR NETWORK",
-
         "CONNECTING AI ENGINE",
-
         "SYNCING FLOOD DATABASE",
-
         "ACTIVATING LIVE MONITORING",
-
         "SYSTEM READY"
 
     ];
 
     let messageIndex = 0;
 
-    const textInterval = setInterval(() => {
+    const textInterval =
+    setInterval(() => {
 
         messageIndex++;
 
         if(messageIndex < loaderMessages.length){
 
-            document.getElementById(
-                "loaderText"
-            ).innerText =
+            document
+            .getElementById("loaderText")
+            .innerText =
             loaderMessages[messageIndex];
 
         }
@@ -2394,35 +1846,56 @@ window.addEventListener("load", () => {
 
         clearInterval(textInterval);
 
-        document.getElementById(
-            "loader"
-        ).classList.add("hidden");
+        document
+        .getElementById("loader")
+        .classList.add("hidden");
 
     },3000);
 
 
     loadLatest();
-
     loadHistory();
-
     connectBackend();
+
+
+    const savedArea =
+    localStorage.getItem("floodguardArea");
+
+    if(savedArea){
+
+        document
+        .getElementById("settingArea")
+        .value = savedArea;
+
+    }
+
+
+    const savedInterval =
+    Number(
+        localStorage.getItem(
+            "floodguardInterval"
+        )
+    ) || 10000;
+
+
+    document
+    .getElementById("updateInterval")
+    .value =
+    savedInterval;
 
 
     refreshTimer =
     setInterval(() => {
 
         loadLatest();
-
         loadHistory();
 
-    },10000);
+    },savedInterval);
 
 });
 
 
-/* =====================================
-   NAVIGATION
-===================================== */
+/* NAVIGATION */
 
 function toggleMenu(){
 
@@ -2481,9 +1954,7 @@ function showPage(pageId,button){
 }
 
 
-/* =====================================
-   BACKEND CONNECTION
-===================================== */
+/* BACKEND CONNECTION */
 
 function connectBackend(){
 
@@ -2523,9 +1994,7 @@ function connectBackend(){
                 }
 
                 renderWaterChart();
-
                 renderTable();
-
                 updateAnalytics();
 
             }
@@ -2554,9 +2023,7 @@ function connectBackend(){
 }
 
 
-/* =====================================
-   LOAD LATEST DATA
-===================================== */
+/* LOAD LATEST */
 
 async function loadLatest(){
 
@@ -2582,18 +2049,14 @@ async function loadLatest(){
         await response.json();
 
 
-        console.log(
-            "Latest Data:",
-            result
-        );
-
-
         const data =
         result.data || result;
 
 
-        if(data &&
-        typeof data === "object"){
+        if(
+            data &&
+            typeof data === "object"
+        ){
 
             updateDashboard(data);
 
@@ -2604,8 +2067,7 @@ async function loadLatest(){
     catch(error){
 
         console.log(
-            "Waiting for backend...",
-            error.message
+            "Waiting for backend..."
         );
 
     }
@@ -2613,9 +2075,7 @@ async function loadLatest(){
 }
 
 
-/* =====================================
-   LOAD HISTORY
-===================================== */
+/* LOAD HISTORY */
 
 async function loadHistory(){
 
@@ -2651,9 +2111,7 @@ async function loadHistory(){
             data.reverse();
 
             renderWaterChart();
-
             renderTable();
-
             updateAnalytics();
 
         }
@@ -2671,9 +2129,7 @@ async function loadHistory(){
 }
 
 
-/* =====================================
-   UPDATE DASHBOARD
-===================================== */
+/* UPDATE DASHBOARD */
 
 function updateDashboard(data){
 
@@ -2824,14 +2280,12 @@ function updateDashboard(data){
 
     }
 
-
     if(status === "HIGH"){
 
         color =
         "var(--orange)";
 
     }
-
 
     if(status === "CRITICAL"){
 
@@ -2872,9 +2326,7 @@ function updateDashboard(data){
 }
 
 
-/* =====================================
-   CONDITIONS
-===================================== */
+/* CONDITIONS */
 
 function getWaterCondition(value){
 
@@ -2908,9 +2360,7 @@ function getRainCondition(value){
 }
 
 
-/* =====================================
-   WATER CHART
-===================================== */
+/* WATER CHART */
 
 function renderWaterChart(){
 
@@ -2938,21 +2388,19 @@ function renderWaterChart(){
         data:{
 
             labels:
-            history.map(
-                item => {
+            history.map(item => {
 
-                    if(item.createdAt){
+                if(item.createdAt){
 
-                        return new Date(
-                            item.createdAt
-                        ).toLocaleTimeString();
-
-                    }
-
-                    return "Live";
+                    return new Date(
+                        item.createdAt
+                    ).toLocaleTimeString();
 
                 }
-            ),
+
+                return "Live";
+
+            }),
 
 
             datasets:[{
@@ -2961,8 +2409,7 @@ function renderWaterChart(){
                 "Water Level (cm)",
 
                 data:
-                history.map(
-                    item =>
+                history.map(item =>
                     Number(
                         item.waterLevel ??
                         item.water ??
@@ -2988,7 +2435,6 @@ function renderWaterChart(){
         options:{
 
             responsive:true,
-
             maintainAspectRatio:false,
 
             plugins:{
@@ -3011,16 +2457,11 @@ function renderWaterChart(){
                 x:{
 
                     ticks:{
-
                         color:"#7890a4"
-
                     },
 
                     grid:{
-
-                        color:
-                        "rgba(255,255,255,.04)"
-
+                        color:"rgba(255,255,255,.04)"
                     }
 
                 },
@@ -3029,16 +2470,11 @@ function renderWaterChart(){
                 y:{
 
                     ticks:{
-
                         color:"#7890a4"
-
                     },
 
                     grid:{
-
-                        color:
-                        "rgba(255,255,255,.05)"
-
+                        color:"rgba(255,255,255,.05)"
                     }
 
                 }
@@ -3052,9 +2488,7 @@ function renderWaterChart(){
 }
 
 
-/* =====================================
-   SENSOR TABLE
-===================================== */
+/* SENSOR TABLE */
 
 function renderTable(){
 
@@ -3074,7 +2508,6 @@ function renderTable(){
     .slice(-10)
     .reverse()
     .forEach(item => {
-
 
         table.innerHTML += `
 
@@ -3109,9 +2542,7 @@ function renderTable(){
 }
 
 
-/* =====================================
-   ANALYTICS
-===================================== */
+/* ANALYTICS */
 
 function updateAnalytics(){
 
@@ -3150,30 +2581,24 @@ function updateAnalytics(){
     document
     .getElementById("avgWater")
     .innerText =
-
-    average(
-        "waterLevel"
-    ).toFixed(1) +
+    average("waterLevel")
+    .toFixed(1) +
     " cm";
 
 
     document
     .getElementById("avgRain")
     .innerText =
-
-    average(
-        "rainfall"
-    ).toFixed(1) +
+    average("rainfall")
+    .toFixed(1) +
     " mm";
 
 
     document
     .getElementById("avgRisk")
     .innerText =
-
-    average(
-        "riskScore"
-    ).toFixed(1);
+    average("riskScore")
+    .toFixed(1);
 
 }
 
@@ -3257,7 +2682,6 @@ function renderAnalytics(){
         options:{
 
             responsive:true,
-
             maintainAspectRatio:false,
 
             scales:{
@@ -3265,20 +2689,15 @@ function renderAnalytics(){
                 x:{
 
                     ticks:{
-
                         color:"#7890a4"
-
                     }
 
                 },
 
-
                 y:{
 
                     ticks:{
-
                         color:"#7890a4"
-
                     }
 
                 }
@@ -3292,9 +2711,7 @@ function renderAnalytics(){
 }
 
 
-/* =====================================
-   ZONES
-===================================== */
+/* ZONES */
 
 function selectZone(area,status){
 
@@ -3317,9 +2734,7 @@ function selectZone(area,status){
 }
 
 
-/* =====================================
-   ALERTS
-===================================== */
+/* ALERTS */
 
 function generateTestAlert(){
 
@@ -3385,9 +2800,7 @@ function addAlert(data){
 }
 
 
-/* =====================================
-   AI PREDICTION
-===================================== */
+/* AI PREDICTION */
 
 async function runPrediction(){
 
@@ -3446,11 +2859,8 @@ async function runPrediction(){
                 JSON.stringify({
 
                     waterLevel,
-
                     rainfall,
-
                     flowRate,
-
                     humidity
 
                 })
@@ -3465,9 +2875,7 @@ async function runPrediction(){
 
 
         document
-        .getElementById(
-            "predictionScore"
-        )
+        .getElementById("predictionScore")
         .innerText =
 
         result.riskScore ??
@@ -3475,9 +2883,7 @@ async function runPrediction(){
 
 
         document
-        .getElementById(
-            "predictionResult"
-        )
+        .getElementById("predictionResult")
         .innerHTML =
 
             "<b>Status:</b> " +
@@ -3509,11 +2915,8 @@ async function runPrediction(){
             Math.round(
 
                 waterLevel * .5 +
-
                 rainfall * .4 +
-
                 flowRate * .5 +
-
                 humidity * .1
 
             )
@@ -3548,17 +2951,13 @@ async function runPrediction(){
 
 
         document
-        .getElementById(
-            "predictionScore"
-        )
+        .getElementById("predictionScore")
         .innerText =
         score;
 
 
         document
-        .getElementById(
-            "predictionResult"
-        )
+        .getElementById("predictionResult")
         .innerHTML =
 
             "<b>Status:</b> " +
@@ -3573,9 +2972,7 @@ async function runPrediction(){
 }
 
 
-/* =====================================
-   SETTINGS
-===================================== */
+/* SETTINGS */
 
 function saveSettings(){
 
@@ -3632,7 +3029,6 @@ function saveSettings(){
     setInterval(() => {
 
         loadLatest();
-
         loadHistory();
 
     },interval);
@@ -3645,9 +3041,7 @@ function saveSettings(){
 }
 
 
-/* =====================================
-   LOCATION
-===================================== */
+/* LOCATION */
 
 function getLocation(){
 
@@ -3700,9 +3094,7 @@ function getLocation(){
 }
 
 
-/* =====================================
-   HEXA CHATBOT
-===================================== */
+/* HEXA CHATBOT */
 
 function toggleHexa(){
 
@@ -3712,15 +3104,17 @@ function toggleHexa(){
     );
 
 
-    box.style.display === "block"
+    if(box.style.display === "block"){
 
-    ?
+        box.style.display = "none";
 
-    box.style.display = "none"
+    }
 
-    :
+    else{
 
-    box.style.display = "block";
+        box.style.display = "block";
+
+    }
 
 }
 
@@ -3741,13 +3135,9 @@ async function sendChat(){
 
 
     addChatMessage(
-
         "user",
-
         "You",
-
         message
-
     );
 
 
@@ -3860,7 +3250,21 @@ function localHexa(message){
     }
 
 
-    return "I'm Hexa 🤖, your FloodGuard AI assistant powered by Hexa Tech. Ask me about flood risk, sensors, monitoring or safety.";
+    if(text.includes("alert")){
+
+        return "Emergency alerts are generated when FloodGuard AI detects increasing flood risk based on sensor readings.";
+
+    }
+
+
+    if(text.includes("zone")){
+
+        return "The Flood Risk Zones page displays monitoring areas with SAFE, WATCH and HIGH risk classifications.";
+
+    }
+
+
+    return "I'm Hexa 🤖, your FloodGuard AI assistant powered by Hexa Tech. Ask me about flood risk, sensors, monitoring, alerts or safety.";
 
 }
 
