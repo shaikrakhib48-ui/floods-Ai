@@ -9,26 +9,22 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&display=swap');
 
 :root{
-    --bg:#020712;
-    --panel:rgba(7,18,34,.78);
-    --panel2:rgba(10,25,45,.88);
-
+    --bg:#020611;
+    --panel:rgba(7,19,37,.76);
+    --panel2:rgba(9,27,48,.9);
     --cyan:#00e5ff;
-    --blue:#397cff;
+    --blue:#3478ff;
     --purple:#9b6cff;
-    --green:#21e6a1;
+    --green:#20e3a2;
     --yellow:#ffd43b;
     --orange:#ff9f43;
     --red:#ff4d6d;
-
-    --text:#f5fbff;
-    --muted:#8fa5b8;
-
-    --border:rgba(0,229,255,.16);
+    --text:#f4fbff;
+    --muted:#8ca3b8;
+    --border:rgba(0,229,255,.17);
 }
 
 *{
@@ -44,167 +40,107 @@ html{
 body{
     min-height:100vh;
     overflow-x:hidden;
-
-    font-family:Inter,Arial,sans-serif;
     color:var(--text);
-
+    font-family:Inter,Arial,sans-serif;
     background:
-    radial-gradient(circle at 15% 15%,rgba(0,229,255,.12),transparent 28%),
-    radial-gradient(circle at 85% 15%,rgba(155,108,255,.12),transparent 30%),
-    radial-gradient(circle at 50% 100%,rgba(57,124,255,.12),transparent 40%),
-    var(--bg);
-
+        radial-gradient(circle at 15% 10%,rgba(0,229,255,.13),transparent 28%),
+        radial-gradient(circle at 85% 20%,rgba(155,108,255,.12),transparent 30%),
+        #020611;
     transition:background 1s ease;
 }
 
-/* =========================
-BACKGROUND
-========================= */
+/* =========================================================
+   PREMIUM BACKGROUND
+========================================================= */
 
 .background-grid{
     position:fixed;
     inset:0;
-
     pointer-events:none;
     z-index:-10;
 
     background-image:
-
-    linear-gradient(
-    rgba(0,229,255,.025) 1px,
-    transparent 1px
-    ),
-
-    linear-gradient(
-    90deg,
-    rgba(0,229,255,.025) 1px,
-    transparent 1px
-    );
+    linear-gradient(rgba(0,229,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,255,.025) 1px,transparent 1px);
 
     background-size:55px 55px;
 }
 
+.background-grid:after{
+    content:"";
+    position:absolute;
+    inset:0;
+
+    background:
+    radial-gradient(circle at center,transparent 30%,rgba(2,6,17,.75) 100%);
+}
+
 .orb{
     position:fixed;
-
     width:450px;
     height:450px;
-
     border-radius:50%;
-
     filter:blur(100px);
-
-    opacity:.13;
-
+    opacity:.14;
     pointer-events:none;
-
-    z-index:-8;
+    z-index:-5;
 }
 
 .orb1{
     background:var(--cyan);
-
     top:-180px;
     left:5%;
-
-    animation:orbFloat 14s ease-in-out infinite;
+    animation:orbFloat 14s infinite ease-in-out;
 }
 
 .orb2{
     background:var(--purple);
-
-    top:25%;
     right:-200px;
-
-    animation:orbFloat 18s ease-in-out infinite reverse;
+    top:30%;
+    animation:orbFloat 18s infinite ease-in-out reverse;
 }
 
 .orb3{
     background:var(--blue);
-
     bottom:-220px;
     left:35%;
-
-    animation:orbFloat 20s ease-in-out infinite;
+    animation:orbFloat 20s infinite ease-in-out;
 }
 
 @keyframes orbFloat{
-
     0%,100%{
         transform:translate(0,0);
     }
 
     50%{
-        transform:translate(70px,-45px);
+        transform:translate(60px,-50px);
     }
-
 }
 
 .weather-effects{
     position:fixed;
-
     inset:0;
-
-    pointer-events:none;
-
     overflow:hidden;
-
-    z-index:-5;
+    pointer-events:none;
+    z-index:-3;
 }
 
-/* PARTICLES */
-
-.particle{
-
-    position:absolute;
-
-    width:3px;
-    height:3px;
-
-    border-radius:50%;
-
-    background:white;
-
-    opacity:.5;
-
-    animation:particleMove linear infinite;
-
-}
-
-@keyframes particleMove{
-
-    from{
-        transform:translateY(110vh);
-        opacity:0;
-    }
-
-    20%{
-        opacity:.7;
-    }
-
-    to{
-        transform:translateY(-10vh);
-        opacity:0;
-    }
-
-}
-
-/* RAIN */
+/* =========================================================
+   WEATHER EFFECTS
+========================================================= */
 
 .rain-drop{
-
     position:absolute;
-
     width:2px;
-    height:75px;
+    height:80px;
 
     background:
     linear-gradient(
-    transparent,
-    rgba(140,220,255,.85)
+        transparent,
+        rgba(130,220,255,.9)
     );
 
-    transform:rotate(15deg);
+    transform:rotate(14deg);
 
     animation:rainFall linear infinite;
 }
@@ -214,32 +150,29 @@ BACKGROUND
     from{
         transform:
         translateY(-120px)
-        rotate(15deg);
+        rotate(14deg);
     }
 
     to{
         transform:
         translateY(110vh)
-        rotate(15deg);
+        rotate(14deg);
     }
 
 }
 
-/* CLOUD */
-
 .cloud{
-
     position:absolute;
 
     width:180px;
     height:60px;
 
-    background:
-    rgba(190,215,235,.08);
-
     border-radius:100px;
 
-    filter:blur(2px);
+    background:
+    rgba(190,220,240,.08);
+
+    filter:blur(3px);
 
     animation:cloudMove linear infinite;
 }
@@ -258,23 +191,52 @@ BACKGROUND
 
 .cloud:before{
 
-    width:80px;
-    height:80px;
+    width:90px;
+    height:90px;
 
-    left:25px;
-    top:-35px;
+    left:20px;
+    top:-40px;
 }
 
 .cloud:after{
 
-    width:100px;
-    height:100px;
+    width:110px;
+    height:110px;
 
-    right:20px;
-    top:-50px;
+    right:15px;
+    top:-55px;
 }
 
 @keyframes cloudMove{
+
+    from{
+        transform:translateX(-300px);
+    }
+
+    to{
+        transform:translateX(110vw);
+    }
+
+}
+
+.fog{
+
+    position:absolute;
+
+    width:600px;
+    height:180px;
+
+    border-radius:50%;
+
+    background:
+    rgba(220,235,245,.09);
+
+    filter:blur(55px);
+
+    animation:fogMove 14s infinite alternate ease-in-out;
+}
+
+@keyframes fogMove{
 
     from{
         transform:translateX(-250px);
@@ -286,38 +248,64 @@ BACKGROUND
 
 }
 
-/* FOG */
-
-.fog{
+.snowflake{
 
     position:absolute;
 
-    width:500px;
-    height:180px;
+    color:white;
 
-    border-radius:50%;
+    opacity:.8;
 
-    background:
-    rgba(220,235,245,.08);
-
-    filter:blur(55px);
-
-    animation:fogMove 13s ease-in-out infinite alternate;
+    animation:snowFall linear infinite;
 }
 
-@keyframes fogMove{
+@keyframes snowFall{
 
     from{
-        transform:translateX(-200px);
+
+        transform:
+        translateY(-50px)
+        rotate(0deg);
+
     }
 
     to{
-        transform:translateX(110vw);
+
+        transform:
+        translateY(110vh)
+        rotate(360deg);
+
     }
 
 }
 
-/* LIGHTNING */
+.sun-ray{
+
+    position:absolute;
+
+    width:4px;
+    height:200px;
+
+    background:
+    linear-gradient(
+        transparent,
+        rgba(255,210,90,.25),
+        transparent
+    );
+
+    transform-origin:bottom;
+
+    animation:sunRay 5s infinite ease-in-out;
+}
+
+@keyframes sunRay{
+
+    50%{
+        opacity:.35;
+        transform:scaleY(1.2);
+    }
+
+}
 
 .lightning{
 
@@ -325,17 +313,15 @@ BACKGROUND
 
     inset:0;
 
+    pointer-events:none;
+
     background:white;
 
     opacity:0;
 
-    pointer-events:none;
+    z-index:100;
 
-    z-index:-4;
-}
-
-.lightning.active{
-    animation:lightningFlash 6s infinite;
+    animation:lightningFlash 8s infinite;
 }
 
 @keyframes lightningFlash{
@@ -344,23 +330,23 @@ BACKGROUND
         opacity:0;
     }
 
-    92%{
+    91%{
         opacity:.22;
     }
 
-    93%{
+    92%{
         opacity:0;
     }
 
-    95%{
-        opacity:.14;
+    94%{
+        opacity:.15;
     }
 
 }
 
-/* =========================
-PREMIUM LOADER
-========================= */
+/* =========================================================
+   PREMIUM FLOOD LOADER
+========================================================= */
 
 .loader{
 
@@ -372,25 +358,24 @@ PREMIUM LOADER
 
     display:flex;
 
-    flex-direction:column;
-
     align-items:center;
 
     justify-content:center;
 
+    overflow:hidden;
+
     background:
 
     radial-gradient(
-    circle at center,
-    rgba(0,229,255,.08),
-    transparent 35%
-    ),
-
-    #020611;
+        circle at center,
+        #081a35,
+        #02040b 70%
+    );
 
     transition:
     opacity .8s ease,
     visibility .8s ease;
+
 }
 
 .loader.hidden{
@@ -398,23 +383,365 @@ PREMIUM LOADER
     opacity:0;
 
     visibility:hidden;
+
+    pointer-events:none;
+
 }
 
-.loader-system{
+.loader-scene{
+
+    position:absolute;
+
+    inset:0;
+
+    overflow:hidden;
+
+    perspective:1000px;
+
+}
+
+/* DIGITAL CITY */
+
+.city{
+
+    position:absolute;
+
+    bottom:22%;
+
+    left:50%;
+
+    width:850px;
+
+    height:230px;
+
+    transform:
+    translateX(-50%);
+
+    display:flex;
+
+    align-items:flex-end;
+
+    justify-content:center;
+
+    gap:10px;
+
+    opacity:.75;
+
+}
+
+.building{
+
+    width:45px;
+
+    background:
+    linear-gradient(
+        90deg,
+        #07101c,
+        #102b42
+    );
+
+    border:
+    1px solid rgba(0,229,255,.18);
+
+    box-shadow:
+    0 0 20px rgba(0,229,255,.08);
 
     position:relative;
 
-    width:250px;
-    height:250px;
+}
+
+.building:after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:10px;
+
+    background:
+
+    repeating-linear-gradient(
+        to bottom,
+        rgba(0,229,255,.25) 0px,
+        rgba(0,229,255,.25) 4px,
+        transparent 4px,
+        transparent 14px
+    );
+
+}
+
+.b1{height:90px;}
+.b2{height:150px;}
+.b3{height:110px;}
+.b4{height:210px;}
+.b5{height:130px;}
+.b6{height:175px;}
+.b7{height:100px;}
+.b8{height:200px;}
+.b9{height:140px;}
+.b10{height:180px;}
+
+/* FLOOD WATER */
+
+.flood-water{
+
+    position:absolute;
+
+    bottom:-30px;
+
+    left:-10%;
+
+    width:120%;
+
+    height:38%;
+
+    background:
+
+    linear-gradient(
+        to bottom,
+        rgba(0,229,255,.35),
+        rgba(0,90,180,.8)
+    );
+
+    border-radius:
+    45% 55% 0 0;
+
+    animation:
+    floodRise 4s ease-out forwards;
+
+    box-shadow:
+    0 -20px 70px rgba(0,229,255,.25);
+
+}
+
+@keyframes floodRise{
+
+    from{
+        transform:translateY(180px);
+    }
+
+    to{
+        transform:translateY(0);
+    }
+
+}
+
+.wave{
+
+    position:absolute;
+
+    width:140%;
+
+    height:80px;
+
+    left:-20%;
+
+    border-radius:50%;
+
+    background:
+    rgba(120,230,255,.25);
+
+    filter:blur(2px);
+
+    animation:
+    waveMove 4s infinite ease-in-out;
+
+}
+
+.wave1{
+
+    top:-35px;
+
+}
+
+.wave2{
+
+    top:10px;
+
+    opacity:.55;
+
+    animation-delay:-2s;
+
+}
+
+@keyframes waveMove{
+
+    0%,100%{
+        transform:translateX(-40px);
+    }
+
+    50%{
+        transform:translateX(40px);
+    }
+
+}
+
+/* HUD */
+
+.loader-hud{
+
+    position:relative;
+
+    z-index:10;
+
+    width:min(520px,90%);
+
+    text-align:center;
+
+}
+
+.robot-core{
+
+    width:170px;
+
+    height:170px;
+
+    margin:auto;
+
+    position:relative;
 
     display:flex;
 
     align-items:center;
 
     justify-content:center;
+
 }
 
-/* OUTER HUD */
+/* FUTURISTIC ROBOT */
+
+.robot-head{
+
+    position:relative;
+
+    width:85px;
+
+    height:72px;
+
+    border-radius:
+    22px 22px 28px 28px;
+
+    background:
+
+    linear-gradient(
+        135deg,
+        #e8faff,
+        #68cfff 40%,
+        #1b6dff
+    );
+
+    box-shadow:
+
+    0 0 25px rgba(0,229,255,.8),
+    inset 0 0 15px rgba(255,255,255,.7);
+
+    animation:
+    robotFloat 3s infinite ease-in-out;
+
+}
+
+.robot-head:before{
+
+    content:"";
+
+    position:absolute;
+
+    width:55px;
+
+    height:20px;
+
+    border-radius:15px;
+
+    background:#07101d;
+
+    top:24px;
+
+    left:15px;
+
+}
+
+.robot-head:after{
+
+    content:"◉   ◉";
+
+    position:absolute;
+
+    top:22px;
+
+    left:21px;
+
+    color:var(--cyan);
+
+    font-size:13px;
+
+    letter-spacing:2px;
+
+    text-shadow:
+    0 0 10px var(--cyan);
+
+}
+
+.robot-antenna{
+
+    position:absolute;
+
+    width:4px;
+
+    height:25px;
+
+    background:var(--cyan);
+
+    top:-25px;
+
+    left:40px;
+
+    box-shadow:
+    0 0 15px var(--cyan);
+
+}
+
+.robot-antenna:after{
+
+    content:"";
+
+    position:absolute;
+
+    width:10px;
+
+    height:10px;
+
+    border-radius:50%;
+
+    background:var(--purple);
+
+    left:-3px;
+
+    top:-8px;
+
+    box-shadow:
+    0 0 18px var(--purple);
+
+}
+
+@keyframes robotFloat{
+
+    0%,100%{
+
+        transform:
+        translateY(0)
+        rotateY(0deg);
+
+    }
+
+    50%{
+
+        transform:
+        translateY(-10px)
+        rotateY(8deg);
+
+    }
+
+}
 
 .loader-ring{
 
@@ -422,136 +749,35 @@ PREMIUM LOADER
 
     border-radius:50%;
 
-    border:
-    2px solid transparent;
+    border:2px solid transparent;
+
 }
 
-.ring-one{
+.lr1{
 
-    width:230px;
-    height:230px;
+    width:165px;
+
+    height:165px;
 
     border-top-color:var(--cyan);
-    border-right-color:rgba(0,229,255,.15);
 
-    animation:spin 2.5s linear infinite;
-}
-
-.ring-two{
-
-    width:180px;
-    height:180px;
-
-    border-left-color:var(--purple);
     border-bottom-color:var(--blue);
 
-    animation:spinReverse 1.8s linear infinite;
+    animation:spin 3s linear infinite;
+
 }
 
-.ring-three{
+.lr2{
 
     width:130px;
+
     height:130px;
 
-    border-top:
-    2px solid var(--cyan);
+    border-left-color:var(--purple);
 
-    border-bottom:
-    2px solid var(--purple);
+    border-right-color:var(--cyan);
 
-    animation:spin 1.3s linear infinite;
-}
-
-/* HEXAGON */
-
-.loader-hex{
-
-    width:85px;
-    height:85px;
-
-    clip-path:
-    polygon(
-    25% 6%,
-    75% 6%,
-    100% 50%,
-    75% 94%,
-    25% 94%,
-    0 50%
-    );
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    background:
-
-    linear-gradient(
-    135deg,
-    var(--cyan),
-    var(--blue),
-    var(--purple)
-    );
-
-    box-shadow:
-
-    0 0 30px rgba(0,229,255,.7),
-    0 0 80px rgba(155,108,255,.35);
-
-    animation:
-    hexFloat 2.5s ease-in-out infinite;
-}
-
-.loader-robot{
-
-    font-size:38px;
-
-    filter:
-    drop-shadow(
-    0 0 8px white
-    );
-}
-
-.loader-scan{
-
-    position:absolute;
-
-    width:230px;
-    height:230px;
-
-    border-radius:50%;
-
-    border:
-    1px solid rgba(0,229,255,.12);
-
-    animation:
-    scanPulse 2s ease-out infinite;
-}
-
-@keyframes scanPulse{
-
-    from{
-        transform:scale(.6);
-        opacity:1;
-    }
-
-    to{
-        transform:scale(1.3);
-        opacity:0;
-    }
-
-}
-
-@keyframes hexFloat{
-
-    0%,100%{
-        transform:translateY(0);
-    }
-
-    50%{
-        transform:translateY(-10px);
-    }
+    animation:spinReverse 2s linear infinite;
 
 }
 
@@ -571,68 +797,76 @@ PREMIUM LOADER
 
 }
 
-.loader-brand{
+.loader-title{
 
-    margin-top:30px;
+    margin-top:20px;
 
     font-family:Orbitron;
 
-    font-size:28px;
+    font-size:30px;
 
-    letter-spacing:6px;
-
-    font-weight:800;
+    letter-spacing:5px;
 
     background:
 
     linear-gradient(
-    90deg,
-    var(--cyan),
-    white,
-    var(--purple)
+        90deg,
+        var(--cyan),
+        white,
+        var(--purple)
     );
 
     -webkit-background-clip:text;
 
     color:transparent;
+
 }
 
-.loader-powered{
+.loader-sub{
 
     margin-top:10px;
 
+    color:#a8c1d4;
+
     font-size:10px;
 
-    color:var(--muted);
-
     letter-spacing:3px;
+
 }
 
-.loader-text{
+.boot-text{
 
-    margin-top:20px;
+    margin-top:22px;
+
+    font-family:Orbitron;
 
     color:var(--cyan);
 
     font-size:10px;
 
-    letter-spacing:3px;
+    letter-spacing:2px;
 
-    text-align:center;
+    min-height:16px;
+
 }
 
-.loader-bar{
+.loader-progress-box{
 
-    width:280px;
-    height:5px;
+    width:100%;
 
-    margin-top:22px;
+    height:6px;
+
+    margin-top:18px;
+
+    background:#0c2033;
 
     border-radius:20px;
 
     overflow:hidden;
 
-    background:#102033;
+    border:
+    1px solid rgba(0,229,255,.15);
+
 }
 
 .loader-progress{
@@ -644,17 +878,18 @@ PREMIUM LOADER
     background:
 
     linear-gradient(
-    90deg,
-    var(--blue),
-    var(--cyan),
-    var(--purple)
+        90deg,
+        var(--blue),
+        var(--cyan),
+        var(--purple)
     );
 
     animation:
-    loadingProgress 3.5s linear forwards;
+    loaderProgress 4s ease forwards;
+
 }
 
-@keyframes loadingProgress{
+@keyframes loaderProgress{
 
     to{
         width:100%;
@@ -662,9 +897,21 @@ PREMIUM LOADER
 
 }
 
-/* =========================
-APP
-========================= */
+.powered{
+
+    margin-top:16px;
+
+    color:#6f8ca3;
+
+    font-size:9px;
+
+    letter-spacing:3px;
+
+}
+
+/* =========================================================
+   APP
+========================================================= */
 
 .app{
 
@@ -672,11 +919,9 @@ APP
 
     margin:auto;
 
-    padding:
-    25px 0 70px;
-}
+    padding:25px 0 70px;
 
-/* TOPBAR */
+}
 
 .topbar{
 
@@ -688,7 +933,8 @@ APP
 
     gap:20px;
 
-    margin-bottom:20px;
+    margin-bottom:22px;
+
 }
 
 .brand{
@@ -698,11 +944,13 @@ APP
     align-items:center;
 
     gap:15px;
+
 }
 
 .brand-icon{
 
     width:58px;
+
     height:58px;
 
     border-radius:18px;
@@ -718,26 +966,26 @@ APP
     background:
 
     linear-gradient(
-    135deg,
-    var(--blue),
-    var(--cyan)
+        135deg,
+        var(--blue),
+        var(--cyan)
     );
 
     box-shadow:
+    0 0 35px rgba(0,229,255,.28);
 
-    0 0 35px rgba(0,229,255,.25);
+    animation:antiGravity 4s infinite ease-in-out;
 
-    animation:
-    antiGravity 4s ease-in-out infinite;
 }
 
 .brand h1{
 
     font-family:Orbitron;
 
-    font-size:21px;
+    font-size:20px;
 
     letter-spacing:1px;
+
 }
 
 .brand p{
@@ -748,7 +996,8 @@ APP
 
     font-size:9px;
 
-    letter-spacing:1px;
+    letter-spacing:1.2px;
+
 }
 
 @keyframes antiGravity{
@@ -767,26 +1016,28 @@ APP
 
     display:flex;
 
+    align-items:center;
+
     gap:10px;
 
     flex-wrap:wrap;
+
 }
 
 .badge,
 .weather-status{
 
-    padding:11px 14px;
+    padding:10px 14px;
 
     border-radius:13px;
-
-    background:var(--panel);
 
     border:
     1px solid var(--border);
 
-    font-size:11px;
+    background:var(--panel);
 
-    backdrop-filter:blur(15px);
+    font-size:10px;
+
 }
 
 .live-dot{
@@ -794,6 +1045,7 @@ APP
     display:inline-block;
 
     width:8px;
+
     height:8px;
 
     border-radius:50%;
@@ -804,6 +1056,7 @@ APP
     0 0 12px var(--green);
 
     animation:blink 1.3s infinite;
+
 }
 
 @keyframes blink{
@@ -813,8 +1066,6 @@ APP
     }
 
 }
-
-/* NAV */
 
 .nav{
 
@@ -827,28 +1078,29 @@ APP
     padding-bottom:10px;
 
     margin-bottom:20px;
+
 }
 
 .nav button{
 
     white-space:nowrap;
 
+    padding:12px 17px;
+
+    border-radius:13px;
+
     border:
     1px solid var(--border);
 
     background:
-    rgba(8,20,37,.75);
+    rgba(7,20,37,.75);
 
     color:#aabccc;
-
-    padding:
-    12px 17px;
-
-    border-radius:13px;
 
     cursor:pointer;
 
     transition:.25s;
+
 }
 
 .nav button:hover,
@@ -859,9 +1111,9 @@ APP
     background:
 
     linear-gradient(
-    135deg,
-    rgba(57,124,255,.4),
-    rgba(0,229,255,.12)
+        135deg,
+        rgba(52,120,255,.4),
+        rgba(0,229,255,.13)
     );
 
     border-color:
@@ -869,20 +1121,21 @@ APP
 
     transform:
     translateY(-2px);
-}
 
-/* PAGES */
+}
 
 .page{
 
     display:none;
 
-    animation:
-    pageIn .4s ease;
+    animation:pageIn .45s ease;
+
 }
 
 .page.active{
+
     display:block;
+
 }
 
 @keyframes pageIn{
@@ -907,8 +1160,6 @@ APP
 
 }
 
-/* CARDS */
-
 .grid{
 
     display:grid;
@@ -917,6 +1168,7 @@ APP
     repeat(4,1fr);
 
     gap:16px;
+
 }
 
 .card{
@@ -932,9 +1184,9 @@ APP
     background:
 
     linear-gradient(
-    145deg,
-    var(--panel2),
-    rgba(4,14,27,.82)
+        145deg,
+        var(--panel2),
+        rgba(4,13,27,.85)
     );
 
     border:
@@ -944,9 +1196,10 @@ APP
     blur(20px);
 
     box-shadow:
-    0 20px 50px rgba(0,0,0,.22);
+    0 20px 55px rgba(0,0,0,.25);
 
     transition:.3s;
+
 }
 
 .card:hover{
@@ -955,28 +1208,8 @@ APP
     translateY(-5px);
 
     border-color:
-    rgba(0,229,255,.35);
-}
+    rgba(0,229,255,.4);
 
-.card:before{
-
-    content:"";
-
-    position:absolute;
-
-    width:160px;
-    height:160px;
-
-    border-radius:50%;
-
-    background:
-    rgba(0,229,255,.04);
-
-    filter:
-    blur(35px);
-
-    right:-80px;
-    top:-80px;
 }
 
 .stat-label{
@@ -986,23 +1219,25 @@ APP
     font-size:10px;
 
     letter-spacing:1.3px;
+
 }
 
 .stat-value{
 
-    margin:
-    12px 0 7px;
+    margin:12px 0 7px;
 
     font-size:27px;
 
     font-weight:700;
+
 }
 
 .stat-bottom{
 
-    color:#6f8799;
+    color:#71889b;
 
     font-size:10px;
+
 }
 
 .big-grid{
@@ -1015,10 +1250,13 @@ APP
     gap:18px;
 
     margin-top:18px;
+
 }
 
 .chart-box{
+
     height:320px;
+
 }
 
 .section-title{
@@ -1029,26 +1267,31 @@ APP
 
     align-items:center;
 
+    gap:10px;
+
     margin-bottom:18px;
+
 }
 
 .section-title h3{
+
     font-size:14px;
+
 }
 
-/* RISK */
-
 .risk-panel{
+
     text-align:center;
+
 }
 
 .risk-ring{
 
     width:190px;
+
     height:190px;
 
-    margin:
-    20px auto;
+    margin:20px auto;
 
     border-radius:50%;
 
@@ -1059,20 +1302,21 @@ APP
 
     flex-direction:column;
 
-    justify-content:center;
-
     align-items:center;
+
+    justify-content:center;
 
     background:
 
     radial-gradient(
-    circle,
-    rgba(33,230,161,.1),
-    transparent 70%
+        circle,
+        rgba(32,227,162,.1),
+        transparent 70%
     );
 
     animation:
-    antiGravity 4s infinite;
+    antiGravity 4s infinite ease-in-out;
+
 }
 
 .risk-ring h1{
@@ -1080,13 +1324,15 @@ APP
     font-family:Orbitron;
 
     font-size:42px;
+
 }
 
 .risk-ring p{
 
+    color:var(--muted);
+
     font-size:10px;
 
-    color:var(--muted);
 }
 
 .ai-box{
@@ -1102,51 +1348,53 @@ APP
 
     border:
     1px solid rgba(0,229,255,.12);
+
 }
 
 .ai-box p{
 
-    color:#b7c8d6;
+    color:#bfd0dc;
 
     font-size:12px;
 
-    line-height:1.7;
+    line-height:1.8;
+
 }
 
-/* =========================
-BUTTONS & INPUT
-========================= */
+/* =========================================================
+   BUTTONS AND INPUTS
+========================================================= */
+
+button,
+input{
+
+    font-family:inherit;
+
+}
 
 input{
 
-    width:100%;
-
-    padding:
-    13px 14px;
+    padding:13px 14px;
 
     border-radius:12px;
+
+    outline:none;
 
     border:
     1px solid var(--border);
 
-    outline:none;
-
     color:white;
 
     background:
-    rgba(3,12,23,.85);
-}
+    rgba(3,12,23,.8);
 
-button{
-    font-family:inherit;
 }
 
 .primary-btn{
 
     border:none;
 
-    padding:
-    12px 17px;
+    padding:12px 17px;
 
     border-radius:12px;
 
@@ -1159,12 +1407,13 @@ button{
     background:
 
     linear-gradient(
-    135deg,
-    var(--blue),
-    var(--cyan)
+        135deg,
+        var(--blue),
+        var(--cyan)
     );
 
     transition:.25s;
+
 }
 
 .primary-btn:hover{
@@ -1173,29 +1422,30 @@ button{
     translateY(-2px);
 
     box-shadow:
-    0 10px 30px rgba(0,229,255,.25);
+    0 10px 30px rgba(0,229,255,.2);
+
 }
 
 .secondary-btn{
 
-    border:
-    1px solid var(--border);
-
-    padding:
-    11px 15px;
+    padding:11px 15px;
 
     border-radius:12px;
-
-    background:var(--panel);
 
     color:#c8d9e5;
 
     cursor:pointer;
+
+    background:var(--panel);
+
+    border:
+    1px solid var(--border);
+
 }
 
-/* =========================
-WEATHER
-========================= */
+/* =========================================================
+   WEATHER
+========================================================= */
 
 .weather-search{
 
@@ -1204,13 +1454,15 @@ WEATHER
     gap:10px;
 
     flex-wrap:wrap;
+
 }
 
 .weather-search input{
 
     flex:1;
 
-    min-width:220px;
+    min-width:200px;
+
 }
 
 .weather-main{
@@ -1218,26 +1470,28 @@ WEATHER
     display:grid;
 
     grid-template-columns:
-    1.3fr 1fr;
+    1.25fr 1fr;
 
     gap:18px;
 
     margin-top:18px;
+
 }
 
 .weather-hero{
 
-    min-height:250px;
+    min-height:280px;
+
 }
 
 .weather-temp{
 
     font-family:Orbitron;
 
-    font-size:64px;
+    font-size:65px;
 
-    margin:
-    20px 0 5px;
+    margin:20px 0 5px;
+
 }
 
 .weather-condition{
@@ -1245,6 +1499,7 @@ WEATHER
     color:var(--cyan);
 
     font-size:15px;
+
 }
 
 .weather-icon{
@@ -1252,12 +1507,14 @@ WEATHER
     position:absolute;
 
     right:30px;
+
     top:55px;
 
-    font-size:75px;
+    font-size:78px;
 
     animation:
-    antiGravity 4s infinite;
+    antiGravity 4s infinite ease-in-out;
+
 }
 
 .weather-details{
@@ -1268,6 +1525,7 @@ WEATHER
     repeat(2,1fr);
 
     gap:12px;
+
 }
 
 .detail{
@@ -1281,6 +1539,7 @@ WEATHER
 
     border:
     1px solid rgba(255,255,255,.05);
+
 }
 
 .detail small{
@@ -1290,6 +1549,7 @@ WEATHER
     color:var(--muted);
 
     font-size:9px;
+
 }
 
 .detail strong{
@@ -1299,6 +1559,7 @@ WEATHER
     margin-top:7px;
 
     font-size:16px;
+
 }
 
 .forecast-grid{
@@ -1310,15 +1571,13 @@ WEATHER
 
     gap:10px;
 
-    margin-top:18px;
 }
 
 .forecast{
 
     text-align:center;
 
-    padding:
-    15px 8px;
+    padding:15px 8px;
 
     border-radius:16px;
 
@@ -1327,6 +1586,7 @@ WEATHER
 
     border:
     1px solid var(--border);
+
 }
 
 .forecast p{
@@ -1334,6 +1594,7 @@ WEATHER
     font-size:10px;
 
     color:var(--muted);
+
 }
 
 .forecast .icon{
@@ -1341,11 +1602,12 @@ WEATHER
     font-size:25px;
 
     margin:10px 0;
+
 }
 
-/* =========================
-SENSORS
-========================= */
+/* =========================================================
+   SENSORS
+========================================================= */
 
 .sensor-grid{
 
@@ -1355,6 +1617,7 @@ SENSORS
     repeat(3,1fr);
 
     gap:15px;
+
 }
 
 .sensor{
@@ -1369,12 +1632,14 @@ SENSORS
     1px solid var(--border);
 
     transition:.25s;
+
 }
 
 .sensor:hover{
 
     transform:
     translateY(-5px);
+
 }
 
 .sensor strong{
@@ -1384,6 +1649,7 @@ SENSORS
     margin-top:9px;
 
     font-size:23px;
+
 }
 
 .sensor p{
@@ -1391,15 +1657,15 @@ SENSORS
     color:var(--muted);
 
     font-size:11px;
-}
 
-/* TABLE */
+}
 
 table{
 
     width:100%;
 
     border-collapse:collapse;
+
 }
 
 th,
@@ -1413,42 +1679,18 @@ td{
     1px solid rgba(255,255,255,.06);
 
     font-size:11px;
+
 }
 
 th{
+
     color:var(--muted);
+
 }
 
-/* ALERT */
-
-.alert{
-
-    padding:17px;
-
-    margin-bottom:12px;
-
-    border-radius:15px;
-
-    background:
-    rgba(255,77,109,.06);
-
-    border:
-    1px solid rgba(255,77,109,.15);
-
-    border-left:
-    4px solid var(--red);
-}
-
-.alert.safe{
-
-    background:
-    rgba(33,230,161,.05);
-
-    border-left-color:
-    var(--green);
-}
-
-/* MAP */
+/* =========================================================
+   MAP
+========================================================= */
 
 .map{
 
@@ -1463,20 +1705,21 @@ th{
     background:
 
     linear-gradient(
-    rgba(0,229,255,.05) 1px,
-    transparent 1px
+        rgba(0,229,255,.05) 1px,
+        transparent 1px
     ),
 
     linear-gradient(
-    90deg,
-    rgba(0,229,255,.05) 1px,
-    transparent 1px
+        90deg,
+        rgba(0,229,255,.05) 1px,
+        transparent 1px
     ),
 
     #06111f;
 
     background-size:
     40px 40px;
+
 }
 
 .zone{
@@ -1484,6 +1727,7 @@ th{
     position:absolute;
 
     width:130px;
+
     height:130px;
 
     border-radius:50%;
@@ -1500,6 +1744,7 @@ th{
 
     animation:
     antiGravity 4s infinite;
+
 }
 
 .safe-zone{
@@ -1510,7 +1755,8 @@ th{
     color:var(--green);
 
     background:
-    rgba(33,230,161,.08);
+    rgba(32,227,162,.08);
+
 }
 
 .watch-zone{
@@ -1522,6 +1768,7 @@ th{
 
     background:
     rgba(255,212,59,.08);
+
 }
 
 .high-zone{
@@ -1533,6 +1780,7 @@ th{
 
     background:
     rgba(255,77,109,.08);
+
 }
 
 .z1{
@@ -1555,27 +1803,60 @@ th{
     right:38%;
 }
 
-/* =========================
-HEXA CHATBOT
-========================= */
+/* =========================================================
+   ALERTS
+========================================================= */
+
+.alert{
+
+    padding:17px;
+
+    border-radius:15px;
+
+    margin-bottom:12px;
+
+    background:
+    rgba(255,77,109,.06);
+
+    border:
+    1px solid rgba(255,77,109,.15);
+
+    border-left:
+    4px solid var(--red);
+
+}
+
+.alert.safe{
+
+    background:
+    rgba(32,227,162,.05);
+
+    border-left-color:
+    var(--green);
+
+}
+
+/* =========================================================
+   HEXA CHATBOT
+========================================================= */
 
 .hexa-orb{
 
     position:fixed;
 
-    top:22px;
-    right:25px;
+    top:20px;
+
+    right:22px;
 
     width:72px;
+
     height:72px;
 
-    z-index:10000;
+    border-radius:50%;
 
     cursor:grab;
 
-    user-select:none;
-
-    touch-action:none;
+    z-index:10000;
 
     display:flex;
 
@@ -1583,21 +1864,24 @@ HEXA CHATBOT
 
     justify-content:center;
 
-    border-radius:50%;
+    user-select:none;
+
+    touch-action:none;
 
     background:
 
     radial-gradient(
-    circle at 35% 25%,
-    rgba(255,255,255,.9),
-    transparent 12%
+        circle at 30% 25%,
+        white,
+        rgba(255,255,255,.3) 7%,
+        transparent 22%
     ),
 
     linear-gradient(
-    135deg,
-    #6c3cff,
-    var(--blue),
-    var(--cyan)
+        135deg,
+        #12283e,
+        #00bcd4,
+        #7757ff
     );
 
     border:
@@ -1606,94 +1890,120 @@ HEXA CHATBOT
     box-shadow:
 
     0 0 25px rgba(0,229,255,.65),
-
-    0 0 65px rgba(155,108,255,.45);
+    0 0 70px rgba(155,108,255,.35);
 
     animation:
-    hexaFloat 3s ease-in-out infinite;
+    hexaFloat 3s infinite ease-in-out;
+
 }
 
-/* FUTURISTIC ROBOT FACE */
-
-.robot-logo{
-
-    position:relative;
+.hexa-face{
 
     width:42px;
-    height:35px;
+
+    height:34px;
 
     border-radius:
-    12px 12px 16px 16px;
+    12px 12px 15px 15px;
+
+    position:relative;
 
     background:
 
     linear-gradient(
-    135deg,
-    #081b35,
-    #123b5f
+        135deg,
+        #efffff,
+        #72dcff,
+        #3879ff
     );
 
-    border:
-    2px solid var(--cyan);
-
     box-shadow:
-    inset 0 0 12px rgba(0,229,255,.4);
+    inset 0 0 10px white;
+
 }
 
-.robot-logo:before{
+.hexa-face:before{
 
     content:"";
 
     position:absolute;
 
-    width:6px;
-    height:6px;
+    width:27px;
 
-    border-radius:50%;
+    height:10px;
 
-    background:var(--cyan);
+    background:#06111e;
 
-    left:17px;
-    top:-10px;
+    border-radius:10px;
 
-    box-shadow:
-    0 0 10px var(--cyan);
+    top:11px;
+
+    left:7px;
+
 }
 
-.robot-eyes{
+.hexa-face:after{
+
+    content:"● ●";
 
     position:absolute;
 
-    top:10px;
-    left:7px;
+    top:5px;
 
-    width:24px;
+    left:10px;
 
-    display:flex;
+    color:#00e5ff;
 
-    justify-content:space-between;
+    font-size:9px;
+
+    letter-spacing:3px;
+
+    text-shadow:
+    0 0 8px var(--cyan);
+
 }
 
-.robot-eye{
+.hexa-orb span{
 
-    width:8px;
+    position:absolute;
+
+    top:7px;
+
+    width:3px;
+
     height:8px;
-
-    border-radius:50%;
 
     background:var(--cyan);
 
     box-shadow:
     0 0 10px var(--cyan);
 
-    animation:
-    eyePulse 2s infinite;
 }
 
-@keyframes eyePulse{
+.hexa-orb span:after{
+
+    content:"";
+
+    position:absolute;
+
+    width:7px;
+
+    height:7px;
+
+    border-radius:50%;
+
+    background:var(--purple);
+
+    top:-5px;
+
+    left:-2px;
+
+}
+
+@keyframes hexaFloat{
 
     50%{
-        opacity:.45;
+        transform:translateY(-9px);
     }
 
 }
@@ -1712,14 +2022,7 @@ HEXA CHATBOT
     1px solid rgba(0,229,255,.3);
 
     animation:
-    spin 7s linear infinite;
-}
-
-@keyframes hexaFloat{
-
-    50%{
-        transform:translateY(-8px);
-    }
+    spin 6s linear infinite;
 
 }
 
@@ -1730,9 +2033,11 @@ HEXA CHATBOT
     position:fixed;
 
     top:105px;
+
     right:25px;
 
     width:390px;
+
     height:550px;
 
     z-index:9999;
@@ -1742,16 +2047,17 @@ HEXA CHATBOT
     border-radius:24px;
 
     background:
-    rgba(5,18,34,.96);
+    rgba(4,17,33,.96);
 
     backdrop-filter:
     blur(25px);
 
     border:
-    1px solid rgba(0,229,255,.28);
+    1px solid rgba(0,229,255,.25);
 
     box-shadow:
     0 30px 80px rgba(0,0,0,.7);
+
 }
 
 .hexa-header{
@@ -1766,38 +2072,7 @@ HEXA CHATBOT
 
     border-bottom:
     1px solid var(--border);
-}
 
-.hexa-title{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:10px;
-}
-
-.hexa-mini-robot{
-
-    width:35px;
-    height:30px;
-
-    border-radius:10px;
-
-    background:
-    linear-gradient(
-    135deg,
-    var(--blue),
-    var(--cyan)
-    );
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    font-size:17px;
 }
 
 .hexa-name{
@@ -1807,6 +2082,7 @@ HEXA CHATBOT
     color:var(--cyan);
 
     letter-spacing:2px;
+
 }
 
 .hexa-sub{
@@ -1816,6 +2092,7 @@ HEXA CHATBOT
     font-size:9px;
 
     color:var(--muted);
+
 }
 
 .close{
@@ -1829,6 +2106,7 @@ HEXA CHATBOT
     font-size:25px;
 
     cursor:pointer;
+
 }
 
 .messages{
@@ -1838,31 +2116,32 @@ HEXA CHATBOT
     overflow-y:auto;
 
     padding:8px 2px;
+
 }
 
 .message{
 
     max-width:85%;
 
-    padding:
-    12px 14px;
+    padding:12px 14px;
 
-    margin:
-    10px 0;
+    margin:10px 0;
 
     border-radius:16px;
 
     font-size:12px;
 
     line-height:1.6;
+
 }
 
 .bot{
 
-    background:#0d233a;
+    background:#0c243d;
 
     border:
     1px solid var(--border);
+
 }
 
 .user{
@@ -1872,10 +2151,11 @@ HEXA CHATBOT
     background:
 
     linear-gradient(
-    135deg,
-    #174f7d,
-    #087d9c
+        135deg,
+        #174f7d,
+        #087f9d
     );
+
 }
 
 .chat-input{
@@ -1885,10 +2165,13 @@ HEXA CHATBOT
     gap:7px;
 
     margin-top:10px;
+
 }
 
 .chat-input input{
+
     flex:1;
+
 }
 
 .mic-btn{
@@ -1899,17 +2182,18 @@ HEXA CHATBOT
 
     border-radius:12px;
 
-    cursor:pointer;
-
     color:white;
+
+    cursor:pointer;
 
     background:
 
     linear-gradient(
-    135deg,
-    var(--purple),
-    var(--blue)
+        135deg,
+        var(--purple),
+        var(--blue)
     );
+
 }
 
 .mic-btn.listening{
@@ -1918,6 +2202,7 @@ HEXA CHATBOT
 
     animation:
     micPulse 1s infinite;
+
 }
 
 @keyframes micPulse{
@@ -1933,19 +2218,21 @@ HEXA CHATBOT
 
 }
 
-/* TOAST */
+/* =========================================================
+   TOAST
+========================================================= */
 
 .toast{
 
     position:fixed;
 
-    bottom:25px;
     right:25px;
+
+    bottom:25px;
 
     z-index:20000;
 
-    padding:
-    14px 18px;
+    padding:14px 18px;
 
     border-radius:13px;
 
@@ -1956,31 +2243,32 @@ HEXA CHATBOT
 
     font-size:12px;
 
+    opacity:0;
+
     transform:
     translateY(100px);
 
-    opacity:0;
-
     transition:.35s;
+
 }
 
 .toast.show{
 
+    opacity:1;
+
     transform:
     translateY(0);
 
-    opacity:1;
 }
 
-/* =========================
-MOBILE
-========================= */
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 
 @media(max-width:1000px){
 
     .grid{
-        grid-template-columns:
-        repeat(2,1fr);
+        grid-template-columns:repeat(2,1fr);
     }
 
     .big-grid,
@@ -1989,8 +2277,7 @@ MOBILE
     }
 
     .forecast-grid{
-        grid-template-columns:
-        repeat(4,1fr);
+        grid-template-columns:repeat(4,1fr);
     }
 
 }
@@ -2002,10 +2289,8 @@ MOBILE
     }
 
     .topbar{
-
-        align-items:flex-start;
-
         flex-direction:column;
+        align-items:flex-start;
     }
 
     .grid,
@@ -2014,8 +2299,7 @@ MOBILE
     }
 
     .forecast-grid{
-        grid-template-columns:
-        repeat(2,1fr);
+        grid-template-columns:repeat(2,1fr);
     }
 
     .hexa-box{
@@ -2026,10 +2310,10 @@ MOBILE
 
         right:10px;
 
-        width:
-        calc(100% - 20px);
+        width:calc(100% - 20px);
 
         height:520px;
+
     }
 
     .messages{
@@ -2037,11 +2321,14 @@ MOBILE
     }
 
     .weather-temp{
-        font-size:50px;
+        font-size:52px;
+    }
+
+    .city{
+        transform:translateX(-50%) scale(.7);
     }
 
 }
-
 </style>
 </head>
 
@@ -2053,124 +2340,124 @@ MOBILE
 <div class="orb orb2"></div>
 <div class="orb orb3"></div>
 
-<div
-class="weather-effects"
-id="weatherEffects">
-</div>
+<div class="weather-effects" id="weatherEffects"></div>
 
-<div
-class="lightning"
-id="lightning">
-</div>
+<div class="lightning" id="lightning"></div>
 
-<!-- =====================
-LOADER
-===================== -->
+<!-- =====================================================
+     PREMIUM FLOOD LOADER
+===================================================== -->
 
-<div
-class="loader"
-id="loader">
+<div class="loader" id="loader">
 
-    <div class="loader-system">
+    <div class="loader-scene">
 
-        <div class="loader-scan"></div>
+        <div class="city">
 
-        <div
-        class="loader-ring ring-one">
+            <div class="building b1"></div>
+            <div class="building b2"></div>
+            <div class="building b3"></div>
+            <div class="building b4"></div>
+            <div class="building b5"></div>
+            <div class="building b6"></div>
+            <div class="building b7"></div>
+            <div class="building b8"></div>
+            <div class="building b9"></div>
+            <div class="building b10"></div>
+
         </div>
 
-        <div
-        class="loader-ring ring-two">
+        <div class="flood-water">
+
+            <div class="wave wave1"></div>
+            <div class="wave wave2"></div>
+
         </div>
 
-        <div
-        class="loader-ring ring-three">
-        </div>
+    </div>
 
-        <div class="loader-hex">
+    <div class="loader-hud">
 
-            <div class="loader-robot">
-                🤖
+        <div class="robot-core">
+
+            <div class="loader-ring lr1"></div>
+            <div class="loader-ring lr2"></div>
+
+            <div class="robot-head">
+
+                <div class="robot-antenna"></div>
+
             </div>
 
         </div>
 
-    </div>
+        <div class="loader-title">
+            FLOODGUARD AI
+        </div>
 
-    <div class="loader-brand">
-        FLOODGUARD AI
-    </div>
+        <div class="loader-sub">
+            ADVANCED FLOOD INTELLIGENCE SYSTEM
+        </div>
 
-    <div class="loader-powered">
-        POWERED BY HEXA TECH
-    </div>
+        <div class="boot-text" id="loaderText">
+            INITIALIZING AI CORE...
+        </div>
 
-    <div
-    class="loader-text"
-    id="loaderText">
+        <div class="loader-progress-box">
 
-        INITIALIZING FLOOD INTELLIGENCE
+            <div class="loader-progress"></div>
 
-    </div>
+        </div>
 
-    <div class="loader-bar">
-
-        <div
-        class="loader-progress">
+        <div class="powered">
+            POWERED BY HEXA TECH
         </div>
 
     </div>
 
 </div>
 
-<!-- =====================
-APP
-===================== -->
+<!-- =====================================================
+     APPLICATION
+===================================================== -->
 
 <div class="app">
 
 <header class="topbar">
 
-<div class="brand">
+    <div class="brand">
 
-    <div class="brand-icon">
-        🌊
-    </div>
+        <div class="brand-icon">🌊</div>
 
-    <div>
+        <div>
 
-        <h1>
-            FLOODGUARD AI
-        </h1>
+            <h1>FLOODGUARD AI</h1>
 
-        <p>
-            AI FLOOD INTELLIGENCE
-            • POWERED BY HEXA TECH
-        </p>
+            <p>
+                AI FLOOD INTELLIGENCE • POWERED BY HEXA TECH
+            </p>
+
+        </div>
 
     </div>
 
-</div>
+    <div class="top-actions">
 
-<div class="top-actions">
+        <div class="badge">
 
-    <div class="badge">
+            <span class="live-dot"></span>
 
-        <span class="live-dot"></span>
+            LIVE MONITORING
 
-        LIVE MONITORING
+        </div>
 
-    </div>
+        <div class="weather-status" id="topWeather">
 
-    <div
-    class="weather-status"
-    id="topWeather">
+            🌍 Weather Ready
 
-        🌍 Loading Weather...
+        </div>
 
     </div>
-
-</div>
 
 </header>
 
@@ -2178,135 +2465,116 @@ APP
 
 <div class="nav">
 
-<button
-class="active"
+<button class="active"
 onclick="showPage('dashboard',this)">
 📊 Dashboard
 </button>
 
-<button
-onclick="showPage('weather',this)">
+<button onclick="showPage('weather',this)">
 🌦️ Global Weather
 </button>
 
-<button
-onclick="showPage('monitoring',this)">
+<button onclick="showPage('monitoring',this)">
 📡 Live Monitoring
 </button>
 
-<button
-onclick="showPage('zones',this)">
+<button onclick="showPage('zones',this)">
 🗺️ Risk Zones
 </button>
 
-<button
-onclick="showPage('alerts',this)">
+<button onclick="showPage('alerts',this)">
 🚨 Alerts
 </button>
 
-<button
-onclick="showPage('analytics',this)">
+<button onclick="showPage('analytics',this)">
 📈 Analytics
 </button>
 
-<button
-onclick="showPage('prediction',this)">
+<button onclick="showPage('prediction',this)">
 🧠 AI Prediction
 </button>
 
 </div>
 
-<!-- =====================
-DASHBOARD
-===================== -->
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
 
-<section
-class="page active"
-id="dashboard">
+<section class="page active" id="dashboard">
 
 <div class="grid">
 
 <div class="card">
 
-<div class="stat-label">
-AI FLOOD RISK
-</div>
+    <div class="stat-label">
+        AI FLOOD RISK
+    </div>
 
-<div
-class="stat-value"
-id="riskStatus">
-SAFE
-</div>
+    <div class="stat-value"
+    id="riskStatus">
+        SAFE
+    </div>
 
-<div
-class="stat-bottom"
-id="riskScore">
-Risk Score: 0/100
-</div>
+    <div class="stat-bottom"
+    id="riskScore">
+        Risk Score: 0/100
+    </div>
 
 </div>
-
 
 <div class="card">
 
-<div class="stat-label">
-WATER LEVEL
-</div>
+    <div class="stat-label">
+        WATER LEVEL
+    </div>
 
-<div
-class="stat-value"
-id="waterLevel">
-0 cm
-</div>
+    <div class="stat-value"
+    id="waterLevel">
+        --
+    </div>
 
-<div class="stat-bottom">
-Live sensor intelligence
-</div>
+    <div class="stat-bottom">
+        Sensor simulation
+    </div>
 
 </div>
-
 
 <div class="card">
 
-<div class="stat-label">
-RAINFALL
-</div>
+    <div class="stat-label">
+        PRECIPITATION
+    </div>
 
-<div
-class="stat-value"
-id="rainfall">
-0 mm
-</div>
+    <div class="stat-value"
+    id="rainfall">
+        --
+    </div>
 
-<div class="stat-bottom">
-Current precipitation
-</div>
+    <div class="stat-bottom">
+        Live weather data
+    </div>
 
 </div>
-
 
 <div class="card">
 
-<div class="stat-label">
-CURRENT WEATHER
-</div>
+    <div class="stat-label">
+        CURRENT WEATHER
+    </div>
 
-<div
-class="stat-value"
-id="dashboardWeather">
---
-</div>
+    <div class="stat-value"
+    id="dashboardWeather">
+        --
+    </div>
 
-<div
-class="stat-bottom"
-id="currentLocation">
-Loading location...
-</div>
+    <div class="stat-bottom"
+    id="currentLocation">
+        Searching location...
+    </div>
 
 </div>
 
 </div>
-
 
 <div class="big-grid">
 
@@ -2315,61 +2583,43 @@ Loading location...
 <div class="section-title">
 
 <h3>
-📡 Live Water Level History
+📡 Water Level History
 </h3>
 
-<span
-style="
-color:var(--cyan);
-font-size:10px;
-">
-
+<span style="color:var(--cyan);font-size:10px;">
 REAL-TIME
-
 </span>
 
 </div>
 
 <div class="chart-box">
 
-<canvas
-id="waterChart">
-</canvas>
+<canvas id="waterChart"></canvas>
 
 </div>
 
 </div>
 
-
-<div
-class="card risk-panel">
+<div class="card risk-panel">
 
 <h3>
-🧠 AI INTELLIGENCE
+🤖 AI INTELLIGENCE
 </h3>
 
-<div
-class="risk-ring"
+<div class="risk-ring"
 id="riskRing">
 
-<h1
-id="ringScore">
-0
-</h1>
+<h1 id="ringScore">0</h1>
 
-<p>
-RISK SCORE
-</p>
+<p>RISK SCORE</p>
 
 </div>
 
 <div class="ai-box">
 
-<p
-id="aiInsight">
+<p id="aiInsight">
 
-FloodGuard AI is analyzing
-environmental conditions.
+FloodGuard AI is analyzing environmental conditions.
 
 </p>
 
@@ -2381,14 +2631,11 @@ environmental conditions.
 
 </section>
 
+<!-- =====================================================
+     WEATHER
+===================================================== -->
 
-<!-- =====================
-WEATHER
-===================== -->
-
-<section
-class="page"
-id="weather">
+<section class="page" id="weather">
 
 <div class="card">
 
@@ -2398,8 +2645,7 @@ id="weather">
 🌍 Global Weather Intelligence
 </h3>
 
-<button
-class="secondary-btn"
+<button class="secondary-btn"
 onclick="useCurrentLocation()">
 
 📍 My Location
@@ -2412,11 +2658,10 @@ onclick="useCurrentLocation()">
 
 <input
 id="locationInput"
-placeholder="Search any city worldwide..."
+placeholder="Search any city or country..."
 value="Vijayawada">
 
-<button
-class="primary-btn"
+<button class="primary-btn"
 onclick="searchWeather()">
 
 🔎 Search Live Weather
@@ -2427,46 +2672,33 @@ onclick="searchWeather()">
 
 </div>
 
-
 <div class="weather-main">
 
-<div
-class="card weather-hero">
+<div class="card weather-hero">
 
-<div
-class="weather-icon"
+<div class="weather-icon"
 id="weatherIcon">
-
 🌤️
-
 </div>
 
-<div
-class="stat-label"
+<div class="stat-label"
 id="weatherLocation">
-
 VIJAYAWADA
-
 </div>
 
-<div
-class="weather-temp"
+<div class="weather-temp"
 id="temperature">
-
 --°
-
 </div>
 
-<div
-class="weather-condition"
+<div class="weather-condition"
 id="weatherCondition">
 
-Loading...
+Loading weather...
 
 </div>
 
-<div
-style="
+<div style="
 margin-top:15px;
 color:var(--muted);
 font-size:12px;
@@ -2474,15 +2706,29 @@ font-size:12px;
 
 Feels like:
 
-<b
-id="feelsLike">
+<b id="feelsLike">
 --°C
 </b>
 
 </div>
 
+<div style="
+margin-top:12px;
+font-size:11px;
+color:var(--muted);
+">
+
+🌅 Sunrise:
+<span id="sunrise">--</span>
+
+&nbsp;&nbsp;
+
+🌇 Sunset:
+<span id="sunset">--</span>
+
 </div>
 
+</div>
 
 <div class="card">
 
@@ -2502,13 +2748,11 @@ Live Details
 💧 HUMIDITY
 </small>
 
-<strong
-id="humidity">
+<strong id="humidity">
 --%
 </strong>
 
 </div>
-
 
 <div class="detail">
 
@@ -2516,13 +2760,23 @@ id="humidity">
 💨 WIND SPEED
 </small>
 
-<strong
-id="windSpeed">
+<strong id="windSpeed">
 -- km/h
 </strong>
 
 </div>
 
+<div class="detail">
+
+<small>
+🧭 WIND DIRECTION
+</small>
+
+<strong id="windDirection">
+--°
+</strong>
+
+</div>
 
 <div class="detail">
 
@@ -2530,13 +2784,11 @@ id="windSpeed">
 🔽 PRESSURE
 </small>
 
-<strong
-id="pressure">
+<strong id="pressure">
 -- hPa
 </strong>
 
 </div>
-
 
 <div class="detail">
 
@@ -2544,13 +2796,11 @@ id="pressure">
 ☁️ CLOUD COVER
 </small>
 
-<strong
-id="cloudCover">
+<strong id="cloudCover">
 --%
 </strong>
 
 </div>
-
 
 <div class="detail">
 
@@ -2558,23 +2808,32 @@ id="cloudCover">
 🌧️ RAIN
 </small>
 
-<strong
-id="rainAmount">
+<strong id="rainAmount">
 -- mm
 </strong>
 
 </div>
 
+<div class="detail">
+
+<small>
+❄️ SNOW
+</small>
+
+<strong id="snowAmount">
+-- cm
+</strong>
+
+</div>
 
 <div class="detail">
 
 <small>
-🌡️ FEELS LIKE
+👁️ VISIBILITY
 </small>
 
-<strong
-id="feelsLikeDetail">
--- °C
+<strong id="visibility">
+-- km
 </strong>
 
 </div>
@@ -2585,9 +2844,7 @@ id="feelsLikeDetail">
 
 </div>
 
-
-<div
-class="card"
+<div class="card"
 style="margin-top:18px;">
 
 <div class="section-title">
@@ -2598,22 +2855,20 @@ style="margin-top:18px;">
 
 </div>
 
-<div
-class="forecast-grid"
+<div class="forecast-grid"
 id="forecastGrid">
+
 </div>
 
 </div>
 
 </section>
 
+<!-- =====================================================
+     MONITORING
+===================================================== -->
 
-<!-- =====================
-MONITORING
-===================== -->
-
-<section
-class="page"
+<section class="page"
 id="monitoring">
 
 <div class="card">
@@ -2624,8 +2879,7 @@ id="monitoring">
 📡 Live Sensor Network
 </h3>
 
-<button
-class="primary-btn"
+<button class="primary-btn"
 onclick="refreshSensors()">
 
 Refresh
@@ -2638,82 +2892,59 @@ Refresh
 
 <div class="sensor">
 
-<p>
-🌊 Water Level
-</p>
+<p>🌊 Water Level</p>
 
-<strong
-id="sensorWater">
-0 cm
+<strong id="sensorWater">
+--
 </strong>
 
 </div>
 
-
 <div class="sensor">
 
-<p>
-🌧️ Rainfall
-</p>
+<p>🌧️ Precipitation</p>
 
-<strong
-id="sensorRain">
-0 mm
+<strong id="sensorRain">
+--
 </strong>
 
 </div>
 
-
 <div class="sensor">
 
-<p>
-🌡️ Temperature
-</p>
+<p>🌡️ Temperature</p>
 
-<strong
-id="sensorTemp">
-0 °C
+<strong id="sensorTemp">
+--
 </strong>
 
 </div>
 
-
 <div class="sensor">
 
-<p>
-💧 Humidity
-</p>
+<p>💧 Humidity</p>
 
-<strong
-id="sensorHumidity">
-0%
+<strong id="sensorHumidity">
+--
 </strong>
 
 </div>
 
-
 <div class="sensor">
 
-<p>
-💨 Flow Rate
-</p>
+<p>💨 Flow Rate</p>
 
-<strong
-id="sensorFlow">
-0 L/min
+<strong id="sensorFlow">
+--
 </strong>
 
 </div>
 
-
 <div class="sensor">
 
-<p>
-🧠 Risk Status
-</p>
+<p>🧠 Risk Status</p>
 
-<strong
-id="sensorRisk">
+<strong id="sensorRisk">
 SAFE
 </strong>
 
@@ -2723,21 +2954,11 @@ SAFE
 
 </div>
 
+<div class="card"
+style="margin-top:18px;overflow:auto;">
 
-<div
-class="card"
-style="
-margin-top:18px;
-overflow:auto;
-">
-
-<h3
-style="
-margin-bottom:15px;
-">
-
+<h3 style="margin-bottom:15px;">
 Sensor Records
-
 </h3>
 
 <table>
@@ -2746,32 +2967,18 @@ Sensor Records
 
 <tr>
 
-<th>
-DEVICE
-</th>
-
-<th>
-LOCATION
-</th>
-
-<th>
-WATER
-</th>
-
-<th>
-RAIN
-</th>
-
-<th>
-RISK
-</th>
+<th>DEVICE</th>
+<th>LOCATION</th>
+<th>WATER</th>
+<th>RAIN</th>
+<th>RISK</th>
 
 </tr>
 
 </thead>
 
-<tbody
-id="sensorTable">
+<tbody id="sensorTable">
+
 </tbody>
 
 </table>
@@ -2780,13 +2987,11 @@ id="sensorTable">
 
 </section>
 
+<!-- =====================================================
+     ZONES
+===================================================== -->
 
-<!-- =====================
-ZONES
-===================== -->
-
-<section
-class="page"
+<section class="page"
 id="zones">
 
 <div class="card">
@@ -2797,8 +3002,7 @@ id="zones">
 🗺️ Flood Risk Zones
 </h3>
 
-<span
-style="
+<span style="
 color:var(--muted);
 font-size:11px;
 ">
@@ -2809,80 +3013,52 @@ Click a zone
 
 </div>
 
-
 <div class="map">
 
-<div
-class="zone safe-zone z1"
+<div class="zone safe-zone z1"
 onclick="selectZone('North Zone','SAFE')">
 
-<b>
-NORTH
-</b>
+<b>NORTH</b>
 
-<small>
-SAFE
-</small>
+<small>SAFE</small>
 
 </div>
 
-
-<div
-class="zone watch-zone z2"
+<div class="zone watch-zone z2"
 onclick="selectZone('Central Zone','WATCH')">
 
-<b>
-CENTRAL
-</b>
+<b>CENTRAL</b>
 
-<small>
-WATCH
-</small>
+<small>WATCH</small>
 
 </div>
 
-
-<div
-class="zone high-zone z3"
+<div class="zone high-zone z3"
 onclick="selectZone('River Zone','HIGH')">
 
-<b>
-RIVER
-</b>
+<b>RIVER</b>
 
-<small>
-HIGH
-</small>
+<small>HIGH</small>
 
 </div>
 
-
-<div
-class="zone safe-zone z4"
+<div class="zone safe-zone z4"
 onclick="selectZone('South Zone','SAFE')">
 
-<b>
-SOUTH
-</b>
+<b>SOUTH</b>
 
-<small>
-SAFE
-</small>
+<small>SAFE</small>
 
 </div>
 
 </div>
 
-
-<div
-class="ai-box"
+<div class="ai-box"
 style="margin-top:18px;">
 
-<p
-id="zoneInfo">
+<p id="zoneInfo">
 
-Select a monitoring zone
-to view flood status.
+Select a monitoring zone to view its flood status.
 
 </p>
 
@@ -2892,13 +3068,11 @@ to view flood status.
 
 </section>
 
+<!-- =====================================================
+     ALERTS
+===================================================== -->
 
-<!-- =====================
-ALERTS
-===================== -->
-
-<section
-class="page"
+<section class="page"
 id="alerts">
 
 <div class="card">
@@ -2909,8 +3083,7 @@ id="alerts">
 🚨 Emergency Alert Center
 </h3>
 
-<button
-class="primary-btn"
+<button class="primary-btn"
 onclick="generateAlert()">
 
 Generate Test Alert
@@ -2919,19 +3092,16 @@ Generate Test Alert
 
 </div>
 
-<div
-id="alertList">
+<div id="alertList">
 
-<div
-class="alert safe">
+<div class="alert safe">
 
 <h3>
 🟢 System Operational
 </h3>
 
 <p>
-FloodGuard AI monitoring
-systems are active.
+FloodGuard AI monitoring systems are active.
 </p>
 
 </div>
@@ -2942,13 +3112,11 @@ systems are active.
 
 </section>
 
+<!-- =====================================================
+     ANALYTICS
+===================================================== -->
 
-<!-- =====================
-ANALYTICS
-===================== -->
-
-<section
-class="page"
+<section class="page"
 id="analytics">
 
 <div class="card">
@@ -2963,9 +3131,7 @@ id="analytics">
 
 <div class="chart-box">
 
-<canvas
-id="analyticsChart">
-</canvas>
+<canvas id="analyticsChart"></canvas>
 
 </div>
 
@@ -2973,13 +3139,11 @@ id="analyticsChart">
 
 </section>
 
+<!-- =====================================================
+     AI PREDICTION
+===================================================== -->
 
-<!-- =====================
-AI PREDICTION
-===================== -->
-
-<section
-class="page"
+<section class="page"
 id="prediction">
 
 <div class="big-grid">
@@ -2990,72 +3154,57 @@ id="prediction">
 🧠 AI Predictive Engine
 </h3>
 
-<p
-style="
+<p style="
 color:var(--muted);
 font-size:12px;
 margin:12px 0 20px;
 ">
 
-Enter environmental values
-to calculate flood risk.
+Enter environmental values to calculate flood risk.
 
 </p>
 
-<label>
-Water Level (cm)
-</label>
+<label>Water Level (cm)</label>
+
+<br>
 
 <input
 type="number"
 id="predictWater"
-value="45">
+value="45"
+style="width:100%;margin:8px 0 15px;">
 
+<label>Rainfall (mm)</label>
 
-<br><br>
-
-
-<label>
-Rainfall (mm)
-</label>
+<br>
 
 <input
 type="number"
 id="predictRain"
-value="20">
+value="20"
+style="width:100%;margin:8px 0 15px;">
 
+<label>Flow Rate (L/min)</label>
 
-<br><br>
-
-
-<label>
-Flow Rate (L/min)
-</label>
+<br>
 
 <input
 type="number"
 id="predictFlow"
-value="15">
+value="15"
+style="width:100%;margin:8px 0 15px;">
 
+<label>Humidity (%)</label>
 
-<br><br>
-
-
-<label>
-Humidity (%)
-</label>
+<br>
 
 <input
 type="number"
 id="predictHumidity"
-value="65">
+value="65"
+style="width:100%;margin:8px 0 18px;">
 
-
-<br><br>
-
-
-<button
-class="primary-btn"
+<button class="primary-btn"
 onclick="runPrediction()">
 
 Run AI Prediction
@@ -3064,35 +3213,26 @@ Run AI Prediction
 
 </div>
 
-
-<div
-class="card risk-panel">
+<div class="card risk-panel">
 
 <h3>
 AI RESULT
 </h3>
 
-<div
-class="risk-ring"
+<div class="risk-ring"
 id="predictionRing">
 
-<h1
-id="predictionScore">
-
+<h1 id="predictionScore">
 --
-
 </h1>
 
-<p>
-RISK SCORE
-</p>
+<p>RISK SCORE</p>
 
 </div>
 
 <div class="ai-box">
 
-<p
-id="predictionResult">
+<p id="predictionResult">
 
 Waiting for analysis...
 
@@ -3108,88 +3248,64 @@ Waiting for analysis...
 
 </div>
 
+<!-- =====================================================
+     HEXA CHATBOT
+===================================================== -->
 
-<!-- =====================
-HEXA CHATBOT
-===================== -->
-
-<div
-class="hexa-orb"
+<div class="hexa-orb"
 id="hexaOrb"
 title="Talk to HEXA">
 
-<div class="robot-logo">
+<span></span>
 
-<div class="robot-eyes">
-
-<div class="robot-eye"></div>
-
-<div class="robot-eye"></div>
+<div class="hexa-face"></div>
 
 </div>
 
-</div>
-
-</div>
-
-
-<div
-class="hexa-box"
+<div class="hexa-box"
 id="hexaBox">
 
 <div class="hexa-header">
 
-<div class="hexa-title">
-
-<div class="hexa-mini-robot">
-🤖
-</div>
-
 <div>
 
 <div class="hexa-name">
+
 HEXA AI
+
 </div>
 
 <div class="hexa-sub">
+
 FLOOD INTELLIGENCE ASSISTANT
-</div>
 
 </div>
 
 </div>
 
-
-<button
-class="close"
+<button class="close"
 onclick="closeHexa()">
 
 ×
+
 </button>
 
 </div>
 
-
-<div
-class="messages"
+<div class="messages"
 id="chatMessages">
 
 <div class="message bot">
 
-<b>
-HEXA AI
-</b>
+<b>HEXA AI 🤖</b>
 
 <br><br>
 
-Hello! I am HEXA,
-your intelligent FloodGuard
-AI assistant. 🌊
+Hello! I am HEXA, your intelligent FloodGuard assistant.
 
 <br><br>
 
-🎙️ Use the microphone
-to speak with me.
+🎙️ Use the microphone to ask questions.
 
 <br><br>
 
@@ -3200,23 +3316,18 @@ Ask me about:
 🌦️ Weather<br>
 🌊 Flood risk<br>
 📡 Sensors<br>
-🚨 Alerts<br>
+🌧️ Rainfall<br>
 📍 Location
 
 </div>
 
 </div>
 
-
 <div class="chat-input">
 
 <input
 id="chatInput"
-placeholder="Ask HEXA..."
-onkeypress="
-if(event.key==='Enter')
-sendChat()
-">
+placeholder="Ask HEXA anything...">
 
 <button
 class="mic-btn"
@@ -3226,7 +3337,6 @@ onclick="startVoice()">
 🎙️
 
 </button>
-
 
 <button
 class="primary-btn"
@@ -3240,34 +3350,30 @@ onclick="sendChat()">
 
 </div>
 
-
-<div
-class="toast"
+<div class="toast"
 id="toast">
-</div>
 
+</div>
 
 <script>
 
-/* ===================================
-GLOBAL VARIABLES
-=================================== */
+/* =========================================================
+   GLOBAL VARIABLES
+========================================================= */
 
 let weatherData = null;
-
-let currentCity = "Vijayawada";
+let currentCity = "Vijayawada, India";
 
 let history = [];
 
 let waterChart = null;
-
 let analyticsChart = null;
 
+let latestSensor = null;
 
-/* ===================================
-LOADER
-GUARANTEED TO DISAPPEAR
-=================================== */
+/* =========================================================
+   SAFE LOADER
+========================================================= */
 
 function hideLoader(){
 
@@ -3278,40 +3384,49 @@ function hideLoader(){
 
         loader.classList.add("hidden");
 
-        setTimeout(()=>{
-
-            loader.style.display="none";
-
-        },800);
-
     }
 
 }
 
+/* =========================================================
+   INITIALIZATION
+========================================================= */
 
-/* ===================================
-INITIALIZATION
-=================================== */
+window.addEventListener("DOMContentLoaded",function(){
 
-window.addEventListener("load",()=>{
+    initializeHistory();
 
-    const messages=[
+    renderCharts();
 
-        "INITIALIZING FLOODGUARD AI",
+    searchWeather();
 
-        "CONNECTING WEATHER INTELLIGENCE",
+    setInterval(function(){
 
-        "ACTIVATING SENSOR NETWORK",
+        refreshSensors();
 
-        "STARTING HEXA AI",
+    },10000);
 
+});
+
+/* LOADER ALWAYS DISAPPEARS */
+
+window.addEventListener("load",function(){
+
+    const bootMessages = [
+
+        "INITIALIZING AI CORE...",
+        "SCANNING GLOBAL WEATHER NETWORK...",
+        "ACTIVATING FLOOD INTELLIGENCE...",
+        "CALIBRATING SENSOR MATRIX...",
+        "STARTING HEXA AI...",
         "SYSTEM READY"
 
     ];
 
-    let index=0;
+    let index = 0;
 
-    const loaderInterval=setInterval(()=>{
+    const loaderInterval =
+    setInterval(function(){
 
         const text =
         document.getElementById("loaderText");
@@ -3319,395 +3434,197 @@ window.addEventListener("load",()=>{
         if(text){
 
             text.innerText =
-            messages[index %
-            messages.length];
+            bootMessages[
+            index % bootMessages.length
+            ];
 
         }
 
         index++;
 
-    },550);
+    },600);
 
-
-    /* GUARANTEED LOADER */
-
-    setTimeout(()=>{
+    setTimeout(function(){
 
         clearInterval(loaderInterval);
 
         hideLoader();
 
-    },3800);
-
-
-    /* SAFE INITIALIZATION */
-
-    try{
-
-        createParticles();
-
-    }catch(e){
-
-        console.log(e);
-
-    }
-
-
-    try{
-
-        initializeHistory();
-
-    }catch(e){
-
-        console.log(e);
-
-    }
-
-
-    try{
-
-        renderCharts();
-
-    }catch(e){
-
-        console.log(e);
-
-    }
-
-
-    try{
-
-        searchWeather();
-
-    }catch(e){
-
-        console.log(e);
-
-    }
-
-
-    setInterval(()=>{
-
-        try{
-
-            refreshSensors();
-
-        }catch(e){
-
-            console.log(e);
-
-        }
-
-    },10000);
+    },4500);
 
 });
 
+/* FALLBACK */
 
-/* EMERGENCY LOADER FALLBACK */
+setTimeout(hideLoader,6000);
 
-setTimeout(()=>{
-
-    hideLoader();
-
-},6000);
-
-
-/* ===================================
-NAVIGATION
-=================================== */
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
 function showPage(id,button){
 
     document
     .querySelectorAll(".page")
-    .forEach(page=>{
+    .forEach(function(page){
 
-        page.classList
-        .remove("active");
+        page.classList.remove("active");
 
     });
 
-
-    const page =
+    const selected =
     document.getElementById(id);
 
-    if(page){
+    if(selected){
 
-        page.classList
-        .add("active");
+        selected.classList.add("active");
 
     }
-
 
     document
     .querySelectorAll(".nav button")
-    .forEach(btn=>{
+    .forEach(function(btn){
 
-        btn.classList
-        .remove("active");
+        btn.classList.remove("active");
 
     });
 
-
     if(button){
 
-        button.classList
-        .add("active");
+        button.classList.add("active");
 
     }
 
+    if(id === "analytics"){
 
-    if(id==="analytics"){
-
-        setTimeout(()=>{
-
-            renderAnalytics();
-
-        },100);
+        setTimeout(renderAnalytics,100);
 
     }
 
 }
 
+/* =========================================================
+   WEATHER CODES
+========================================================= */
 
-/* ===================================
-PARTICLES
-=================================== */
+const weatherCodes = {
 
-function createParticles(){
+0:["Clear Sky","☀️","clear"],
 
-    const container =
-    document.getElementById(
-    "weatherEffects"
-    );
+1:["Mainly Clear","🌤️","clear"],
 
-    if(!container)return;
+2:["Partly Cloudy","⛅","cloud"],
 
+3:["Overcast","☁️","cloud"],
 
-    for(let i=0;i<30;i++){
+45:["Fog","🌫️","fog"],
 
-        const particle =
-        document.createElement("div");
+48:["Rime Fog","🌫️","fog"],
 
-        particle.className =
-        "particle";
+51:["Light Drizzle","🌦️","rain"],
 
-        particle.style.left =
-        Math.random()*100+"%";
+53:["Moderate Drizzle","🌦️","rain"],
 
-        particle.style.animationDuration =
-        7+Math.random()*10+"s";
+55:["Dense Drizzle","🌧️","rain"],
 
-        particle.style.animationDelay =
-        Math.random()*-10+"s";
+56:["Freezing Drizzle","🌧️","rain"],
 
-        container.appendChild(
-        particle
-        );
+57:["Heavy Freezing Drizzle","🌧️","rain"],
 
-    }
+61:["Slight Rain","🌦️","rain"],
 
-}
+63:["Moderate Rain","🌧️","rain"],
 
+65:["Heavy Rain","🌧️","rain"],
 
-/* ===================================
-WEATHER CODES
-=================================== */
+66:["Freezing Rain","🌧️","rain"],
 
-const weatherCodes={
+67:["Heavy Freezing Rain","🌧️","rain"],
 
-    0:[
-        "Clear Sky",
-        "☀️",
-        "clear"
-    ],
+71:["Light Snow","❄️","snow"],
 
-    1:[
-        "Mainly Clear",
-        "🌤️",
-        "clear"
-    ],
+73:["Moderate Snow","❄️","snow"],
 
-    2:[
-        "Partly Cloudy",
-        "⛅",
-        "cloud"
-    ],
+75:["Heavy Snow","❄️","snow"],
 
-    3:[
-        "Overcast",
-        "☁️",
-        "cloud"
-    ],
+77:["Snow Grains","❄️","snow"],
 
-    45:[
-        "Fog",
-        "🌫️",
-        "fog"
-    ],
+80:["Rain Showers","🌦️","rain"],
 
-    48:[
-        "Fog",
-        "🌫️",
-        "fog"
-    ],
+81:["Moderate Showers","🌧️","rain"],
 
-    51:[
-        "Light Drizzle",
-        "🌦️",
-        "rain"
-    ],
+82:["Violent Showers","🌧️","rain"],
 
-    53:[
-        "Drizzle",
-        "🌦️",
-        "rain"
-    ],
+85:["Snow Showers","❄️","snow"],
 
-    55:[
-        "Heavy Drizzle",
-        "🌧️",
-        "rain"
-    ],
+86:["Heavy Snow Showers","❄️","snow"],
 
-    61:[
-        "Light Rain",
-        "🌧️",
-        "rain"
-    ],
+95:["Thunderstorm","⛈️","storm"],
 
-    63:[
-        "Rain",
-        "🌧️",
-        "rain"
-    ],
+96:["Thunderstorm With Hail","⛈️","storm"],
 
-    65:[
-        "Heavy Rain",
-        "🌧️",
-        "rain"
-    ],
-
-    71:[
-        "Snow",
-        "❄️",
-        "snow"
-    ],
-
-    73:[
-        "Snow",
-        "❄️",
-        "snow"
-    ],
-
-    75:[
-        "Heavy Snow",
-        "❄️",
-        "snow"
-    ],
-
-    80:[
-        "Rain Showers",
-        "🌦️",
-        "rain"
-    ],
-
-    81:[
-        "Rain Showers",
-        "🌧️",
-        "rain"
-    ],
-
-    82:[
-        "Heavy Rain",
-        "🌧️",
-        "rain"
-    ],
-
-    95:[
-        "Thunderstorm",
-        "⛈️",
-        "storm"
-    ],
-
-    96:[
-        "Thunderstorm",
-        "⛈️",
-        "storm"
-    ],
-
-    99:[
-        "Severe Thunderstorm",
-        "⛈️",
-        "storm"
-    ]
+99:["Severe Thunderstorm","⛈️","storm"]
 
 };
 
-
-/* ===================================
-SEARCH WEATHER
-OPEN METEO
-=================================== */
+/* =========================================================
+   OPEN-METEO LOCATION SEARCH
+========================================================= */
 
 async function searchWeather(){
 
     const input =
-    document.getElementById(
-    "locationInput"
-    );
-
-    if(!input)return;
-
+    document.getElementById("locationInput");
 
     const city =
     input.value.trim();
 
-
     if(!city){
 
         showToast(
-        "Please enter a location"
+        "Please enter a city or country"
         );
 
         return;
 
     }
 
+    showToast(
+    "Searching worldwide weather..."
+    );
 
     try{
-
-        showToast(
-        "Searching live weather..."
-        );
-
 
         const geoURL =
 
         "https://geocoding-api.open-meteo.com/v1/search"
 
-        +"?name="
+        + "?name="
+        + encodeURIComponent(city)
 
-        +encodeURIComponent(city)
+        + "&count=1"
 
-        +"&count=1"
+        + "&language=en"
 
-        +"&language=en"
+        + "&format=json";
 
-        +"&format=json";
-
-
-        const geoResponse =
+        const response =
         await fetch(geoURL);
 
+        if(!response.ok){
+
+            throw new Error(
+            "Location service unavailable"
+            );
+
+        }
 
         const geo =
-        await geoResponse.json();
-
+        await response.json();
 
         if(
         !geo.results ||
-        !geo.results.length
+        geo.results.length === 0
         ){
 
             throw new Error(
@@ -3716,35 +3633,27 @@ async function searchWeather(){
 
         }
 
-
         const place =
         geo.results[0];
 
-
         currentCity =
-
         place.name
-
-        +(place.country
-        ?", "+place.country
-        :"");
-
+        + (place.admin1
+        ? ", " + place.admin1
+        : "")
+        + (place.country
+        ? ", " + place.country
+        : "");
 
         document
-        .getElementById(
-        "currentLocation"
-        )
+        .getElementById("currentLocation")
         .innerText =
         currentCity;
 
-
         document
-        .getElementById(
-        "weatherLocation"
-        )
+        .getElementById("weatherLocation")
         .innerText =
         currentCity.toUpperCase();
-
 
         await loadWeather(
 
@@ -3754,110 +3663,114 @@ async function searchWeather(){
 
         );
 
+    }
 
-    }catch(error){
+    catch(error){
 
-        console.log(error);
+        console.error(error);
 
         showToast(
-        "Unable to find location"
+        "Location not found. Try a city name."
         );
 
     }
 
 }
 
-
-/* ===================================
-LOAD WEATHER
-=================================== */
+/* =========================================================
+   OPEN-METEO WEATHER API
+========================================================= */
 
 async function loadWeather(lat,lon){
 
     try{
 
-        const url =
+        const currentVariables =
+
+        "temperature_2m,"
+        + "relative_humidity_2m,"
+        + "apparent_temperature,"
+        + "is_day,"
+        + "precipitation,"
+        + "rain,"
+        + "snowfall,"
+        + "weather_code,"
+        + "cloud_cover,"
+        + "pressure_msl,"
+        + "wind_speed_10m,"
+        + "wind_direction_10m";
+
+        const hourlyVariables =
+
+        "visibility";
+
+        const dailyVariables =
+
+        "weather_code,"
+        + "temperature_2m_max,"
+        + "temperature_2m_min,"
+        + "precipitation_sum,"
+        + "snowfall_sum,"
+        + "sunrise,"
+        + "sunset";
+
+        const weatherURL =
 
         "https://api.open-meteo.com/v1/forecast"
 
-        +"?latitude="+lat
+        + "?latitude="
+        + encodeURIComponent(lat)
 
-        +"&longitude="+lon
+        + "&longitude="
+        + encodeURIComponent(lon)
 
-        +"&current="
+        + "&current="
+        + currentVariables
 
-        +"temperature_2m,"
+        + "&hourly="
+        + hourlyVariables
 
-        +"relative_humidity_2m,"
+        + "&daily="
+        + dailyVariables
 
-        +"apparent_temperature,"
+        + "&timezone=auto"
 
-        +"precipitation,"
-
-        +"rain,"
-
-        +"weather_code,"
-
-        +"cloud_cover,"
-
-        +"pressure_msl,"
-
-        +"wind_speed_10m"
-
-        +"&daily="
-
-        +"weather_code,"
-
-        +"temperature_2m_max,"
-
-        +"temperature_2m_min,"
-
-        +"precipitation_sum"
-
-        +"&forecast_days=7"
-
-        +"&timezone=auto";
-
+        + "&forecast_days=7";
 
         const response =
-        await fetch(url);
-
+        await fetch(weatherURL);
 
         if(!response.ok){
 
             throw new Error(
-            "Weather service error"
+            "Weather request failed"
             );
 
         }
 
-
         const data =
         await response.json();
 
-
-        weatherData=data;
-
+        weatherData = data;
 
         updateWeatherUI(data);
 
-
         updateWeatherEffects(
-        data.current.weather_code
+            data.current.weather_code,
+            data.current.is_day
         );
 
-
         refreshSensors();
-
 
         showToast(
         "Live weather updated"
         );
 
+    }
 
-    }catch(error){
+    catch(error){
 
-        console.log(error);
+        console.error(error);
 
         showToast(
         "Weather service unavailable"
@@ -3867,20 +3780,14 @@ async function loadWeather(lat,lon){
 
 }
 
-
-/* ===================================
-UPDATE WEATHER UI
-=================================== */
+/* =========================================================
+   WEATHER UI
+========================================================= */
 
 function updateWeatherUI(data){
 
-    if(!data ||
-    !data.current)return;
-
-
     const current =
     data.current;
-
 
     const info =
 
@@ -3888,136 +3795,128 @@ function updateWeatherUI(data){
     current.weather_code
     ]
 
-    ||[
-        "Unknown",
-        "🌍",
-        "clear"
-    ];
-
+    || ["Unknown","🌍","clear"];
 
     document
-    .getElementById(
-    "temperature"
-    )
+    .getElementById("temperature")
     .innerText =
 
     Math.round(
     current.temperature_2m
-    )+"°";
-
+    ) + "°";
 
     document
-    .getElementById(
-    "feelsLike"
-    )
+    .getElementById("feelsLike")
     .innerText =
 
     Math.round(
     current.apparent_temperature
-    )+"°C";
-
-
-    document
-    .getElementById(
-    "feelsLikeDetail"
-    )
-    .innerText =
-
-    Math.round(
-    current.apparent_temperature
-    )+" °C";
-
+    ) + "°C";
 
     document
-    .getElementById(
-    "weatherCondition"
-    )
+    .getElementById("weatherCondition")
     .innerText =
     info[0];
 
-
     document
-    .getElementById(
-    "weatherIcon"
-    )
+    .getElementById("weatherIcon")
     .innerText =
     info[1];
 
-
     document
-    .getElementById(
-    "humidity"
-    )
+    .getElementById("humidity")
     .innerText =
 
-    current.relative_humidity_2m+"%";
-
+    current.relative_humidity_2m
+    + "%";
 
     document
-    .getElementById(
-    "windSpeed"
-    )
+    .getElementById("windSpeed")
     .innerText =
 
     current.wind_speed_10m
-    +" km/h";
-
+    + " km/h";
 
     document
-    .getElementById(
-    "pressure"
-    )
+    .getElementById("windDirection")
+    .innerText =
+
+    current.wind_direction_10m
+    + "°";
+
+    document
+    .getElementById("pressure")
     .innerText =
 
     Math.round(
     current.pressure_msl
-    )+" hPa";
-
+    )
+    + " hPa";
 
     document
-    .getElementById(
-    "cloudCover"
-    )
+    .getElementById("cloudCover")
     .innerText =
 
-    current.cloud_cover+"%";
-
+    current.cloud_cover
+    + "%";
 
     document
-    .getElementById(
-    "rainAmount"
-    )
+    .getElementById("rainAmount")
     .innerText =
 
-    current.rain+" mm";
-
+    (current.rain || 0)
+    + " mm";
 
     document
-    .getElementById(
-    "dashboardWeather"
-    )
+    .getElementById("snowAmount")
     .innerText =
-    info[1]+" "+info[0];
 
+    (current.snowfall || 0)
+    + " cm";
+
+    const visibility =
+    getCurrentVisibility(data);
 
     document
-    .getElementById(
-    "topWeather"
-    )
+    .getElementById("visibility")
     .innerText =
 
-    info[1]+" "
+    visibility + " km";
 
-    +Math.round(
+    document
+    .getElementById("dashboardWeather")
+    .innerText =
+    info[1];
+
+    document
+    .getElementById("topWeather")
+    .innerText =
+
+    info[1]
+    + " "
+    + Math.round(
     current.temperature_2m
     )
-
-    +"°C • "
-
-    +currentCity;
-
+    + "°C • "
+    + currentCity;
 
     if(data.daily){
+
+        document
+        .getElementById("sunrise")
+        .innerText =
+
+        formatTime(
+        data.daily.sunrise[0]
+        );
+
+        document
+        .getElementById("sunset")
+        .innerText =
+
+        formatTime(
+        data.daily.sunset[0]
+        );
 
         renderForecast(
         data.daily
@@ -4027,10 +3926,92 @@ function updateWeatherUI(data){
 
 }
 
+/* =========================================================
+   VISIBILITY
+========================================================= */
 
-/* ===================================
-FORECAST
-=================================== */
+function getCurrentVisibility(data){
+
+    if(
+    !data.hourly ||
+    !data.hourly.time ||
+    !data.hourly.visibility
+    ){
+
+        return "--";
+
+    }
+
+    const currentTime =
+    data.current.time;
+
+    let index =
+    data.hourly.time.indexOf(
+    currentTime
+    );
+
+    if(index < 0){
+
+        index = 0;
+
+    }
+
+    const meters =
+    data.hourly.visibility[index];
+
+    if(
+    meters === undefined ||
+    meters === null
+    ){
+
+        return "--";
+
+    }
+
+    return (
+    meters / 1000
+    ).toFixed(1);
+
+}
+
+/* =========================================================
+   TIME FORMAT
+========================================================= */
+
+function formatTime(timeString){
+
+    if(!timeString){
+
+        return "--";
+
+    }
+
+    const date =
+    new Date(timeString);
+
+    if(
+    Number.isNaN(
+    date.getTime()
+    )
+    ){
+
+        return timeString;
+
+    }
+
+    return date.toLocaleTimeString(
+        [],
+        {
+            hour:"2-digit",
+            minute:"2-digit"
+        }
+    );
+
+}
+
+/* =========================================================
+   FORECAST
+========================================================= */
 
 function renderForecast(daily){
 
@@ -4039,18 +4020,11 @@ function renderForecast(daily){
     "forecastGrid"
     );
 
-
-    if(!grid ||
-    !daily)return;
-
-
-    grid.innerHTML="";
-
+    grid.innerHTML = "";
 
     daily.time
     .slice(0,7)
-    .forEach((date,i)=>{
-
+    .forEach(function(date,i){
 
         const info =
 
@@ -4058,67 +4032,68 @@ function renderForecast(daily){
         daily.weather_code[i]
         ]
 
-        ||[
-            "Unknown",
-            "🌍"
-        ];
-
+        || ["Unknown","🌍"];
 
         const day =
-
-        new Date(date)
+        new Date(date + "T12:00:00")
         .toLocaleDateString(
-
-        "en",
-
-        {
-            weekday:"short"
-        }
-
+            "en",
+            {
+                weekday:"short"
+            }
         );
 
+        const snow =
 
-        grid.innerHTML += `
+        daily.snowfall_sum
+        ? daily.snowfall_sum[i]
+        : 0;
 
-        <div class="forecast">
+        grid.innerHTML +=
 
-        <p>
-        ${day}
-        </p>
+        '<div class="forecast">'
 
-        <div class="icon">
-        ${info[1]}
-        </div>
+        + '<p>' + day + '</p>'
 
-        <strong>
-        ${Math.round(
+        + '<div class="icon">'
+        + info[1]
+        + '</div>'
+
+        + '<strong>'
+        + Math.round(
         daily.temperature_2m_max[i]
-        )}°
-        </strong>
+        )
+        + '°'
+        + '</strong>'
 
-        <p>
-        ${Math.round(
+        + '<p>'
+        + Math.round(
         daily.temperature_2m_min[i]
-        )}°
-        </p>
+        )
+        + '°'
+        + '</p>'
 
-        <p>
-        🌧️
-        ${daily.precipitation_sum[i]} mm
-        </p>
+        + '<p>🌧️ '
+        + daily.precipitation_sum[i]
+        + ' mm</p>'
 
-        </div>
+        + (snow > 0
 
-        `;
+        ? '<p>❄️ '
+        + snow
+        + ' cm</p>'
+
+        : '')
+
+        + '</div>';
 
     });
 
 }
 
-
-/* ===================================
-CURRENT LOCATION
-=================================== */
+/* =========================================================
+   CURRENT LOCATION
+========================================================= */
 
 function useCurrentLocation(){
 
@@ -4132,62 +4107,46 @@ function useCurrentLocation(){
 
     }
 
-
     showToast(
     "Getting your location..."
     );
 
+    navigator.geolocation.getCurrentPosition(
 
-    navigator.geolocation
-    .getCurrentPosition(
-
-    async position=>{
-
+    async function(position){
 
         const lat =
         position.coords.latitude;
 
-
         const lon =
         position.coords.longitude;
 
-
         currentCity =
-        "Current Location";
-
+        "My Current Location";
 
         document
-        .getElementById(
-        "locationInput"
-        )
+        .getElementById("locationInput")
         .value =
-        "Current Location";
-
+        currentCity;
 
         document
-        .getElementById(
-        "currentLocation"
-        )
+        .getElementById("currentLocation")
         .innerText =
         currentCity;
 
-
         document
-        .getElementById(
-        "weatherLocation"
-        )
+        .getElementById("weatherLocation")
         .innerText =
-        "CURRENT LOCATION";
-
+        currentCity.toUpperCase();
 
         await loadWeather(
-        lat,
-        lon
+            lat,
+            lon
         );
 
     },
 
-    ()=>{
+    function(){
 
         showToast(
         "Location permission denied"
@@ -4199,184 +4158,247 @@ function useCurrentLocation(){
 
 }
 
+/* =========================================================
+   DYNAMIC WEATHER EFFECTS
+========================================================= */
 
-/* ===================================
-WEATHER EFFECTS
-=================================== */
-
-function updateWeatherEffects(code){
+function updateWeatherEffects(code,isDay){
 
     const effects =
     document.getElementById(
     "weatherEffects"
     );
 
-
-    if(!effects)return;
-
-
-    effects.innerHTML="";
-
+    effects.innerHTML = "";
 
     const lightning =
     document.getElementById(
     "lightning"
     );
 
-
-    lightning.classList
-    .remove("active");
-
+    lightning.style.display =
+    "none";
 
     const type =
 
     weatherCodes[code]
-    ?weatherCodes[code][2]
-    :"clear";
+    ? weatherCodes[code][2]
+    : "clear";
 
+    /* CLEAR */
 
-    if(type==="rain" ||
-    type==="storm"){
+    if(type === "clear"){
 
+        if(isDay){
 
-        for(let i=0;i<100;i++){
+            document.body.style.background =
 
-            const rain =
-            document.createElement(
-            "div"
-            );
+            "radial-gradient(circle at 80% 10%,rgba(255,210,80,.22),transparent 25%),"
 
+            + "radial-gradient(circle at 20% 20%,rgba(0,229,255,.13),transparent 30%),"
 
-            rain.className =
-            "rain-drop";
+            + "#030712";
 
+            for(let i=0;i<12;i++){
 
-            rain.style.left =
-            Math.random()*100+"%";
+                const ray =
+                document.createElement("div");
 
+                ray.className =
+                "sun-ray";
 
-            rain.style.animationDuration =
+                ray.style.left =
+                Math.random() * 100 + "%";
 
-            .5+
-            Math.random()*.7+"s";
+                ray.style.top =
+                Math.random() * 20 + "%";
 
+                effects.appendChild(ray);
 
-            rain.style.animationDelay =
-
-            Math.random()*-2+"s";
-
-
-            effects.appendChild(
-            rain
-            );
+            }
 
         }
 
+        else{
+
+            document.body.style.background =
+
+            "radial-gradient(circle at 80% 10%,rgba(130,100,255,.15),transparent 25%),"
+
+            + "radial-gradient(circle at 20% 20%,rgba(0,180,255,.08),transparent 30%),"
+
+            + "#02030b";
+
+        }
+
+    }
+
+    /* CLOUD */
+
+    if(type === "cloud"){
 
         document.body.style.background =
 
-        "radial-gradient(circle at top,rgba(50,100,160,.25),transparent 45%),#020813";
+        "radial-gradient(circle at top,rgba(100,130,170,.18),transparent 45%),#06101d";
 
-    }
-
-
-    if(type==="storm"){
-
-        lightning.classList
-        .add("active");
-
-    }
-
-
-    if(type==="cloud"){
-
-
-        for(let i=0;i<6;i++){
+        for(let i=0;i<7;i++){
 
             const cloud =
-            document.createElement(
-            "div"
-            );
-
+            document.createElement("div");
 
             cloud.className =
             "cloud";
 
-
             cloud.style.top =
-            Math.random()*70+"%";
-
+            Math.random() * 75 + "%";
 
             cloud.style.animationDuration =
 
-            18+
-            Math.random()*15+"s";
-
+            18
+            + Math.random() * 20
+            + "s";
 
             cloud.style.animationDelay =
 
-            Math.random()*-15+"s";
+            Math.random() * -15
+            + "s";
 
-
-            effects.appendChild(
-            cloud
-            );
+            effects.appendChild(cloud);
 
         }
 
     }
 
+    /* RAIN */
 
-    if(type==="fog"){
+    if(
+    type === "rain"
+    ||
+    type === "storm"
+    ){
 
+        document.body.style.background =
 
-        for(let i=0;i<5;i++){
+        "radial-gradient(circle at top,rgba(40,90,145,.28),transparent 45%),#020914";
+
+        for(let i=0;i<120;i++){
+
+            const rain =
+            document.createElement("div");
+
+            rain.className =
+            "rain-drop";
+
+            rain.style.left =
+            Math.random() * 100 + "%";
+
+            rain.style.animationDuration =
+
+            .45
+            + Math.random() * .7
+            + "s";
+
+            rain.style.animationDelay =
+
+            Math.random() * -2
+            + "s";
+
+            effects.appendChild(rain);
+
+        }
+
+    }
+
+    /* STORM */
+
+    if(type === "storm"){
+
+        lightning.style.display =
+        "block";
+
+    }
+
+    /* FOG */
+
+    if(type === "fog"){
+
+        document.body.style.background =
+        "#111b24";
+
+        for(let i=0;i<6;i++){
 
             const fog =
-            document.createElement(
-            "div"
-            );
-
+            document.createElement("div");
 
             fog.className =
             "fog";
 
-
             fog.style.top =
-            Math.random()*80+"%";
+            Math.random() * 85 + "%";
 
+            fog.style.animationDelay =
+            Math.random() * -8 + "s";
 
-            effects.appendChild(
-            fog
-            );
+            effects.appendChild(fog);
 
         }
 
     }
 
+    /* SNOW */
 
-    if(type==="clear"){
+    if(type === "snow"){
 
         document.body.style.background =
 
-        "radial-gradient(circle at 80% 10%,rgba(255,210,80,.18),transparent 25%),"
+        "radial-gradient(circle at top,rgba(180,220,255,.2),transparent 40%),#07111c";
 
-        +"radial-gradient(circle at 20% 20%,rgba(0,229,255,.12),transparent 30%),"
+        for(let i=0;i<100;i++){
 
-        +"#030712";
+            const snow =
+            document.createElement("div");
+
+            snow.className =
+            "snowflake";
+
+            snow.innerHTML =
+            "❄";
+
+            snow.style.left =
+            Math.random() * 100 + "%";
+
+            snow.style.fontSize =
+
+            8
+            + Math.random() * 14
+            + "px";
+
+            snow.style.animationDuration =
+
+            5
+            + Math.random() * 8
+            + "s";
+
+            snow.style.animationDelay =
+
+            Math.random() * -8
+            + "s";
+
+            effects.appendChild(snow);
+
+        }
 
     }
 
 }
 
-
-/* ===================================
-SENSOR DATA
-=================================== */
+/* =========================================================
+   SENSOR DATA
+========================================================= */
 
 function initializeHistory(){
 
-    for(let i=0;i<15;i++){
+    for(let i=0;i<12;i++){
 
         history.push(
         createSensorData()
@@ -4386,170 +4408,141 @@ function initializeHistory(){
 
 }
 
-
 function createSensorData(){
 
-    let rain=0;
+    let rain = 0;
 
-    let temp=30;
+    let temp = 30;
 
-    let humidity=65;
+    let humidity = 65;
 
-
-    if(weatherData &&
-    weatherData.current){
-
+    if(weatherData){
 
         rain =
 
-        weatherData.current.rain ||
-
-        weatherData.current.precipitation ||
-
-        0;
-
+        weatherData.current.precipitation
+        || 0;
 
         temp =
 
-        weatherData.current
-        .temperature_2m;
-
+        weatherData.current.temperature_2m;
 
         humidity =
 
-        weatherData.current
-        .relative_humidity_2m;
-
-
-    }else{
-
-
-        rain =
-        Math.round(
-        Math.random()*20
-        );
+        weatherData.current.relative_humidity_2m;
 
     }
 
+    else{
+
+        rain =
+        Math.random() * 15;
+
+    }
 
     const water =
 
     Math.max(
+        20,
 
-    20,
+        Math.round(
 
-    Math.round(
+            35
 
-    30
+            + rain * 2
 
-    +rain*2
+            + Math.random() * 18
 
-    +Math.random()*25
-
-    )
+        )
 
     );
-
 
     const flow =
 
     Math.round(
 
-    8
+        8
 
-    +rain*.8
+        + rain * .8
 
-    +Math.random()*20
+        + Math.random() * 20
 
     );
-
 
     const score =
 
     calculateRisk(
-
-    water,
-
-    rain,
-
-    flow,
-
-    humidity
-
+        water,
+        rain,
+        flow,
+        humidity
     );
-
 
     return{
 
-        water,
+        water:water,
 
-        rain,
+        rain:Number(
+        rain.toFixed(1)
+        ),
 
-        temp,
+        temp:temp,
 
-        humidity,
+        humidity:humidity,
 
-        flow,
+        flow:flow,
 
-        score,
+        score:score,
 
-        time:
-        new Date()
+        time:new Date()
 
     };
 
 }
 
-
-/* ===================================
-RISK CALCULATION
-=================================== */
+/* =========================================================
+   AI RISK
+========================================================= */
 
 function calculateRisk(
-
 water,
 rain,
 flow,
 humidity
-
 ){
 
+    const score =
+
+        water * .45
+
+        + rain * 1.2
+
+        + flow * .5
+
+        + humidity * .05;
+
     return Math.min(
-
-    100,
-
-    Math.round(
-
-    water*.45
-
-    +rain*1.2
-
-    +flow*.5
-
-    +humidity*.05
-
-    )
-
+        100,
+        Math.round(score)
     );
 
 }
 
-
 function riskStatus(score){
 
-    if(score>=80){
+    if(score >= 85){
 
         return "CRITICAL";
 
     }
 
-    if(score>=60){
+    if(score >= 65){
 
         return "HIGH";
 
     }
 
-    if(score>=35){
+    if(score >= 40){
 
         return "WATCH";
 
@@ -4559,251 +4552,196 @@ function riskStatus(score){
 
 }
 
+function getRiskColor(status){
 
-/* ===================================
-REFRESH SENSORS
-=================================== */
+    if(status === "WATCH"){
+
+        return "var(--yellow)";
+
+    }
+
+    if(status === "HIGH"){
+
+        return "var(--orange)";
+
+    }
+
+    if(status === "CRITICAL"){
+
+        return "var(--red)";
+
+    }
+
+    return "var(--green)";
+
+}
+
+/* =========================================================
+   REFRESH SENSORS
+========================================================= */
 
 function refreshSensors(){
 
     const data =
     createSensorData();
 
+    latestSensor =
+    data;
 
     history.push(data);
 
-
-    if(history.length>30){
+    if(history.length > 30){
 
         history.shift();
 
     }
 
-
     updateDashboard(data);
 
-
     renderCharts();
-
 
     renderTable();
 
 }
 
-
-/* ===================================
-UPDATE DASHBOARD
-=================================== */
+/* =========================================================
+   DASHBOARD UPDATE
+========================================================= */
 
 function updateDashboard(data){
 
     const status =
 
-    riskStatus(
-    data.score
-    );
+    riskStatus(data.score);
 
+    const color =
+
+    getRiskColor(status);
 
     document
-    .getElementById(
-    "waterLevel"
-    )
+    .getElementById("waterLevel")
     .innerText =
-    data.water+" cm";
 
+    data.water + " cm";
 
     document
-    .getElementById(
-    "rainfall"
-    )
+    .getElementById("rainfall")
     .innerText =
-    data.rain+" mm";
 
+    data.rain + " mm";
 
     document
-    .getElementById(
-    "riskStatus"
-    )
+    .getElementById("riskStatus")
     .innerText =
     status;
 
-
     document
-    .getElementById(
-    "riskScore"
-    )
+    .getElementById("riskScore")
     .innerText =
 
     "Risk Score: "
-
-    +data.score
-
-    +"/100";
-
+    + data.score
+    + "/100";
 
     document
-    .getElementById(
-    "ringScore"
-    )
+    .getElementById("ringScore")
     .innerText =
     data.score;
 
-
     document
-    .getElementById(
-    "sensorWater"
-    )
+    .getElementById("sensorWater")
     .innerText =
-    data.water+" cm";
-
+    data.water + " cm";
 
     document
-    .getElementById(
-    "sensorRain"
-    )
+    .getElementById("sensorRain")
     .innerText =
-    data.rain+" mm";
-
+    data.rain + " mm";
 
     document
-    .getElementById(
-    "sensorTemp"
-    )
+    .getElementById("sensorTemp")
     .innerText =
 
-    Math.round(
-    data.temp
-    )+" °C";
-
+    Math.round(data.temp)
+    + " °C";
 
     document
-    .getElementById(
-    "sensorHumidity"
-    )
+    .getElementById("sensorHumidity")
     .innerText =
-    data.humidity+"%";
 
+    Math.round(data.humidity)
+    + "%";
 
     document
-    .getElementById(
-    "sensorFlow"
-    )
+    .getElementById("sensorFlow")
     .innerText =
-    data.flow+" L/min";
 
+    data.flow
+    + " L/min";
 
     document
-    .getElementById(
-    "sensorRisk"
-    )
+    .getElementById("sensorRisk")
     .innerText =
     status;
 
-
-    let color =
-    "var(--green)";
-
-
-    if(status==="WATCH"){
-
-        color=
-        "var(--yellow)";
-
-    }
-
-
-    if(status==="HIGH"){
-
-        color=
-        "var(--orange)";
-
-    }
-
-
-    if(status==="CRITICAL"){
-
-        color=
-        "var(--red)";
-
-    }
-
-
     document
-    .getElementById(
-    "riskStatus"
-    )
+    .getElementById("riskStatus")
     .style.color =
     color;
 
-
     document
-    .getElementById(
-    "riskRing"
-    )
+    .getElementById("riskRing")
     .style.borderColor =
     color;
 
-
     document
-    .getElementById(
-    "aiInsight"
-    )
+    .getElementById("aiInsight")
     .innerHTML =
 
     "<b>Current Analysis</b>"
 
-    +"<br><br>"
+    + "<br><br>"
 
-    +"🌊 Water Level: "
+    + "🌊 Water Level: "
+    + data.water
+    + " cm"
 
-    +data.water
+    + "<br>"
 
-    +" cm<br>"
+    + "🌧️ Precipitation: "
+    + data.rain
+    + " mm"
 
-    +"🌧️ Rainfall: "
+    + "<br>"
 
-    +data.rain
+    + "💨 Flow Rate: "
+    + data.flow
+    + " L/min"
 
-    +" mm<br>"
+    + "<br>"
 
-    +"💨 Flow Rate: "
-
-    +data.flow
-
-    +" L/min<br>"
-
-    +"🧠 AI Status: "
-
-    +"<b>"
-
-    +status
-
-    +"</b>";
+    + "🧠 AI Status: <b>"
+    + status
+    + "</b>";
 
 }
 
-
-/* ===================================
-WATER CHART
-=================================== */
+/* =========================================================
+   CHART
+========================================================= */
 
 function renderCharts(){
-
-    if(typeof Chart==="undefined"){
-
-        return;
-
-    }
-
 
     const canvas =
     document.getElementById(
     "waterChart"
     );
 
+    if(!canvas){
 
-    if(!canvas)return;
+        return;
 
+    }
 
     if(waterChart){
 
@@ -4811,14 +4749,9 @@ function renderCharts(){
 
     }
 
-
     waterChart =
 
-    new Chart(
-
-    canvas,
-
-    {
+    new Chart(canvas,{
 
         type:"line",
 
@@ -4827,8 +4760,12 @@ function renderCharts(){
             labels:
 
             history.map(
-            (_,i)=>"T"+(i+1)
-            ),
+            function(_,i){
+
+                return "T"
+                + (i + 1);
+
+            }),
 
             datasets:[{
 
@@ -4838,8 +4775,11 @@ function renderCharts(){
                 data:
 
                 history.map(
-                x=>x.water
-                ),
+                function(item){
+
+                    return item.water;
+
+                }),
 
                 borderColor:
                 "#00e5ff",
@@ -4903,34 +4843,26 @@ function renderCharts(){
 
         }
 
-    }
-
-    );
+    });
 
 }
 
-
-/* ===================================
-ANALYTICS
-=================================== */
+/* =========================================================
+   ANALYTICS
+========================================================= */
 
 function renderAnalytics(){
-
-    if(typeof Chart==="undefined"){
-
-        return;
-
-    }
-
 
     const canvas =
     document.getElementById(
     "analyticsChart"
     );
 
+    if(!canvas){
 
-    if(!canvas)return;
+        return;
 
+    }
 
     if(analyticsChart){
 
@@ -4938,14 +4870,9 @@ function renderAnalytics(){
 
     }
 
-
     analyticsChart =
 
-    new Chart(
-
-    canvas,
-
-    {
+    new Chart(canvas,{
 
         type:"bar",
 
@@ -4954,8 +4881,12 @@ function renderAnalytics(){
             labels:
 
             history.map(
-            (_,i)=>"R"+(i+1)
-            ),
+            function(_,i){
+
+                return "R"
+                + (i + 1);
+
+            }),
 
             datasets:[
 
@@ -4967,8 +4898,11 @@ function renderAnalytics(){
                 data:
 
                 history.map(
-                x=>x.score
-                ),
+                function(item){
+
+                    return item.score;
+
+                }),
 
                 backgroundColor:
                 "rgba(0,229,255,.55)",
@@ -4980,13 +4914,16 @@ function renderAnalytics(){
             {
 
                 label:
-                "Rainfall",
+                "Precipitation",
 
                 data:
 
                 history.map(
-                x=>x.rain
-                ),
+                function(item){
+
+                    return item.rain;
+
+                }),
 
                 backgroundColor:
                 "rgba(155,108,255,.55)",
@@ -5047,16 +4984,13 @@ function renderAnalytics(){
 
         }
 
-    }
-
-    );
+    });
 
 }
 
-
-/* ===================================
-SENSOR TABLE
-=================================== */
+/* =========================================================
+   SENSOR TABLE
+========================================================= */
 
 function renderTable(){
 
@@ -5065,126 +4999,100 @@ function renderTable(){
     "sensorTable"
     );
 
+    if(!table){
 
-    if(!table)return;
+        return;
 
+    }
 
-    table.innerHTML="";
-
+    table.innerHTML = "";
 
     history
-
     .slice(-10)
-
     .reverse()
+    .forEach(function(data){
 
-    .forEach(data=>{
+        table.innerHTML +=
 
+        "<tr>"
 
-        table.innerHTML += `
+        + "<td>ESP32-FG-001</td>"
 
-        <tr>
+        + "<td>"
+        + currentCity
+        + "</td>"
 
-        <td>
-        ESP32-FG-001
-        </td>
+        + "<td>"
+        + data.water
+        + " cm</td>"
 
-        <td>
-        ${currentCity}
-        </td>
+        + "<td>"
+        + data.rain
+        + " mm</td>"
 
-        <td>
-        ${data.water} cm
-        </td>
+        + "<td>"
+        + riskStatus(data.score)
+        + "</td>"
 
-        <td>
-        ${data.rain} mm
-        </td>
-
-        <td>
-        ${riskStatus(data.score)}
-        </td>
-
-        </tr>
-
-        `;
+        + "</tr>";
 
     });
 
 }
 
-
-/* ===================================
-ZONES
-=================================== */
+/* =========================================================
+   ZONES
+========================================================= */
 
 function selectZone(area,status){
 
     document
-    .getElementById(
-    "zoneInfo"
-    )
+    .getElementById("zoneInfo")
     .innerHTML =
 
     "<b>Selected Area:</b> "
+    + area
 
-    +area
+    + "<br><br>"
 
-    +"<br><br>"
+    + "<b>Risk Status:</b> "
+    + status
 
-    +"<b>Risk Status:</b> "
+    + "<br><br>"
 
-    +status
-
-    +"<br><br>"
-
-    +"FloodGuard AI is actively monitoring this zone.";
-
+    + "FloodGuard AI is actively monitoring this zone.";
 
     showToast(
-    area+" selected"
+    area + " selected"
     );
 
 }
 
-
-/* ===================================
-ALERTS
-=================================== */
+/* =========================================================
+   ALERT
+========================================================= */
 
 function generateAlert(){
 
     const div =
-    document.createElement(
-    "div"
-    );
-
+    document.createElement("div");
 
     div.className =
     "alert";
-
 
     div.innerHTML =
 
     "<h3>🚨 TEST EMERGENCY ALERT</h3>"
 
-    +"<p>FloodGuard AI emergency "
+    + "<p>FloodGuard AI emergency notification test generated successfully.</p>"
 
-    +"notification test generated successfully.</p>"
-
-    +"<p><b>Location:</b> "
-
-    +currentCity
-
-    +"</p>";
-
+    + "<p><b>Location:</b> "
+    + currentCity
+    + "</p>";
 
     document
-    .getElementById(
-    "alertList"
-    )
+    .getElementById("alertList")
     .prepend(div);
-
 
     showToast(
     "Emergency test alert generated"
@@ -5192,135 +5100,75 @@ function generateAlert(){
 
 }
 
-
-/* ===================================
-AI PREDICTION
-=================================== */
+/* =========================================================
+   PREDICTION
+========================================================= */
 
 function runPrediction(){
 
     const water =
-
     Number(
     document
-    .getElementById(
-    "predictWater"
-    ).value
-    );
-
+    .getElementById("predictWater")
+    .value
+    ) || 0;
 
     const rain =
-
     Number(
     document
-    .getElementById(
-    "predictRain"
-    ).value
-    );
-
+    .getElementById("predictRain")
+    .value
+    ) || 0;
 
     const flow =
-
     Number(
     document
-    .getElementById(
-    "predictFlow"
-    ).value
-    );
-
+    .getElementById("predictFlow")
+    .value
+    ) || 0;
 
     const humidity =
-
     Number(
     document
-    .getElementById(
-    "predictHumidity"
-    ).value
-    );
-
+    .getElementById("predictHumidity")
+    .value
+    ) || 0;
 
     const score =
 
     calculateRisk(
-
-    water,
-
-    rain,
-
-    flow,
-
-    humidity
-
+        water,
+        rain,
+        flow,
+        humidity
     );
-
 
     const status =
+    riskStatus(score);
 
-    riskStatus(
-    score
-    );
-
+    const color =
+    getRiskColor(status);
 
     document
-    .getElementById(
-    "predictionScore"
-    )
+    .getElementById("predictionScore")
     .innerText =
     score;
 
-
     document
-    .getElementById(
-    "predictionResult"
-    )
-    .innerHTML =
-
-    "<b>Status:</b> "
-
-    +status
-
-    +"<br><br>"
-
-    +getRecommendation(
-    status
-    );
-
-
-    let color =
-    "var(--green)";
-
-
-    if(status==="WATCH"){
-
-        color=
-        "var(--yellow)";
-
-    }
-
-
-    if(status==="HIGH"){
-
-        color=
-        "var(--orange)";
-
-    }
-
-
-    if(status==="CRITICAL"){
-
-        color=
-        "var(--red)";
-
-    }
-
-
-    document
-    .getElementById(
-    "predictionRing"
-    )
+    .getElementById("predictionRing")
     .style.borderColor =
     color;
 
+    document
+    .getElementById("predictionResult")
+    .innerHTML =
+
+    "<b>Status:</b> "
+    + status
+
+    + "<br><br>"
+
+    + getRecommendation(status);
 
     showToast(
     "AI prediction completed"
@@ -5328,42 +5176,33 @@ function runPrediction(){
 
 }
 
-
 function getRecommendation(status){
 
-    if(status==="CRITICAL"){
+    if(status === "CRITICAL"){
 
-        return
-        "Emergency response should be activated. Follow official safety instructions.";
-
-    }
-
-
-    if(status==="HIGH"){
-
-        return
-        "Prepare emergency resources and continuously monitor conditions.";
+        return "Emergency response should be activated. Move people to safer locations and follow official instructions.";
 
     }
 
+    if(status === "HIGH"){
 
-    if(status==="WATCH"){
-
-        return
-        "Flood indicators are increasing. Continue close monitoring.";
+        return "Prepare emergency resources and continuously monitor conditions.";
 
     }
 
+    if(status === "WATCH"){
 
-    return
-    "Environmental conditions are currently stable.";
+        return "Flood indicators are increasing. Continue close monitoring.";
+
+    }
+
+    return "Environmental conditions are currently stable.";
 
 }
 
-
-/* ===================================
-HEXA CHATBOT
-=================================== */
+/* =========================================================
+   HEXA CHATBOT
+========================================================= */
 
 function openHexa(){
 
@@ -5372,62 +5211,30 @@ function openHexa(){
     "hexaBox"
     );
 
+    if(box.style.display === "block"){
 
-    if(
-    box.style.display==="block"
-    ){
-
-        box.style.display=
+        box.style.display =
         "none";
 
-    }else{
+    }
 
-        box.style.display=
+    else{
+
+        box.style.display =
         "block";
 
     }
 
 }
 
-
 function closeHexa(){
 
     document
-    .getElementById(
-    "hexaBox"
-    )
+    .getElementById("hexaBox")
     .style.display =
     "none";
 
 }
-
-
-/* CHATBOT ORB CLICK */
-
-const hexaOrb =
-document.getElementById(
-"hexaOrb"
-);
-
-
-let dragged=false;
-
-
-hexaOrb.addEventListener(
-"click",
-()=>{
-
-    if(!dragged){
-
-        openHexa();
-
-    }
-
-}
-);
-
-
-/* SEND CHAT */
 
 function sendChat(){
 
@@ -5436,266 +5243,227 @@ function sendChat(){
     "chatInput"
     );
 
-
     const message =
     input.value.trim();
 
+    if(!message){
 
-    if(!message)return;
+        return;
 
+    }
 
     addMessage(
-
-    "user",
-
-    "You",
-
-    message
-
+        "user",
+        "You",
+        message
     );
 
+    input.value = "";
 
-    input.value="";
-
-
-    setTimeout(()=>{
-
+    setTimeout(function(){
 
         const reply =
-        hexaReply(
-        message
-        );
-
+        hexaReply(message);
 
         addMessage(
-
-        "bot",
-
-        "HEXA AI",
-
-        reply
-
+            "bot",
+            "HEXA AI 🤖",
+            reply
         );
-
 
         speak(reply);
 
-
-    },500);
+    },400);
 
 }
-
-
-/* HEXA AI REPLIES */
 
 function hexaReply(message){
 
     const text =
     message.toLowerCase();
 
-
     if(
     text.includes("weather")
     ){
 
-
         if(weatherData){
 
-            const current =
+            const c =
             weatherData.current;
-
 
             const info =
 
             weatherCodes[
-            current.weather_code
+            c.weather_code
             ]
 
+            || ["Unknown","🌍"];
 
             return
 
-            "The current weather in "
+            "Current weather in "
 
-            +currentCity
+            + currentCity
 
-            +" is "
+            + " is "
 
-            +info[0]
+            + info[0]
 
-            +". Temperature is "
+            + ". Temperature is "
 
-            +Math.round(
-            current.temperature_2m
+            + Math.round(
+            c.temperature_2m
             )
 
-            +" degrees Celsius. Humidity is "
+            + " degrees Celsius. Humidity is "
 
-            +current.relative_humidity_2m
+            + c.relative_humidity_2m
 
-            +" percent.";
+            + " percent.";
 
         }
 
-
-        return
-        "Live weather information is currently loading.";
+        return "Weather data is currently loading.";
 
     }
-
 
     if(
     text.includes("temperature")
     ){
 
+        return weatherData
 
-        if(weatherData){
+        ? "Current temperature is "
+        + Math.round(
+        weatherData.current.temperature_2m
+        )
+        + " degrees Celsius."
 
-            return
-
-            "The current temperature is "
-
-            +Math.round(
-            weatherData.current
-            .temperature_2m
-            )
-
-            +" degrees Celsius.";
-
-        }
-
-
-        return
-        "Temperature data is loading.";
+        : "Temperature data is loading.";
 
     }
-
 
     if(
     text.includes("rain")
+    ||
+    text.includes("precipitation")
     ){
 
+        return weatherData
 
-        if(weatherData){
+        ? "Current precipitation is "
+        + (
+        weatherData.current.precipitation
+        || 0
+        )
+        + " millimeters."
 
-            return
-
-            "Current rainfall is "
-
-            +(weatherData.current.rain||0)
-
-            +" millimeters.";
-
-        }
-
-
-        return
-        "Rainfall information is loading.";
+        : "Weather data is loading.";
 
     }
 
+    if(
+    text.includes("visibility")
+    ){
+
+        return weatherData
+
+        ? "Current visibility is approximately "
+        + getCurrentVisibility(weatherData)
+        + " kilometers."
+
+        : "Visibility data is loading.";
+
+    }
+
+    if(
+    text.includes("wind")
+    ){
+
+        return weatherData
+
+        ? "Current wind speed is "
+        + weatherData.current.wind_speed_10m
+        + " kilometers per hour."
+
+        : "Wind data is loading.";
+
+    }
 
     if(
     text.includes("risk")
-
     ||
-
     text.includes("flood")
     ){
 
+        const data =
 
-        const last =
-        history[
-        history.length-1
+        latestSensor
+
+        || history[
+        history.length - 1
         ];
 
+        if(!data){
 
-        if(last){
-
-            return
-
-            "The current AI flood risk is "
-
-            +riskStatus(
-            last.score
-            )
-
-            +" with a risk score of "
-
-            +last.score
-
-            +" out of 100.";
+            return "Flood risk analysis is starting.";
 
         }
 
-
         return
-        "Flood risk analysis is starting.";
+
+        "Current AI flood risk is "
+
+        + riskStatus(data.score)
+
+        + " with a score of "
+
+        + data.score
+
+        + " out of 100.";
 
     }
-
 
     if(
     text.includes("location")
     ){
 
-
         return
 
         "FloodGuard AI is currently monitoring "
 
-        +currentCity+".";
+        + currentCity
+        + ".";
 
     }
-
 
     if(
     text.includes("sensor")
     ){
 
-
         return
 
-        "FloodGuard monitors water level, rainfall, temperature, humidity and water flow.";
+        "FloodGuard currently monitors simulated water level and flow data along with live weather conditions including rainfall, temperature and humidity.";
 
     }
-
-
-    if(
-    text.includes("alert")
-    ){
-
-
-        return
-
-        "The emergency alert system is active and ready to generate flood warnings.";
-
-    }
-
 
     if(
     text.includes("hello")
-
     ||
-
     text.includes("hi")
     ){
 
-
         return
 
-        "Hello! I am HEXA AI, your intelligent FloodGuard assistant. How can I help you?";
+        "Hello! I am HEXA, your FloodGuard AI assistant. How can I help you?";
 
     }
 
-
     return
 
-    "I am HEXA AI. You can ask me about live weather, temperature, rainfall, flood risk, sensors, alerts or the current location.";
+    "I am HEXA, your FloodGuard AI assistant. Ask me about weather, temperature, rainfall, wind, visibility, flood risk, sensors or the current location.";
 
 }
-
-
-/* ADD MESSAGE */
 
 function addMessage(
 type,
@@ -5708,44 +5476,50 @@ message
     "chatMessages"
     );
 
-
     const div =
-    document.createElement(
-    "div"
-    );
-
+    document.createElement("div");
 
     div.className =
-    "message "+type;
-
+    "message "
+    + type;
 
     div.innerHTML =
 
     "<b>"
+    + name
+    + "</b>"
 
-    +name
+    + "<br><br>"
 
-    +"</b>"
+    + message;
 
-    +"<br><br>"
-
-    +message;
-
-
-    container.appendChild(
-    div
-    );
-
+    container.appendChild(div);
 
     container.scrollTop =
     container.scrollHeight;
 
 }
 
+/* ENTER KEY */
 
-/* ===================================
-VOICE INPUT
-=================================== */
+document
+.getElementById("chatInput")
+.addEventListener(
+"keydown",
+function(event){
+
+    if(event.key === "Enter"){
+
+        sendChat();
+
+    }
+
+}
+);
+
+/* =========================================================
+   VOICE INPUT
+========================================================= */
 
 function startVoice(){
 
@@ -5753,10 +5527,7 @@ function startVoice(){
 
     window.SpeechRecognition
 
-    ||
-
-    window.webkitSpeechRecognition;
-
+    || window.webkitSpeechRecognition;
 
     if(!SpeechRecognition){
 
@@ -5768,71 +5539,60 @@ function startVoice(){
 
     }
 
-
     const recognition =
     new SpeechRecognition();
-
 
     const button =
     document.getElementById(
     "micButton"
     );
 
-
     recognition.lang =
     "en-IN";
-
 
     recognition.interimResults =
     false;
 
+    recognition.continuous =
+    false;
 
-    button.classList
-    .add("listening");
-
+    button.classList.add(
+    "listening"
+    );
 
     showToast(
     "Listening... Speak now"
     );
 
-
     recognition.start();
 
-
     recognition.onresult =
-    event=>{
-
+    function(event){
 
         const text =
 
         event.results[0][0]
         .transcript;
 
-
         document
-        .getElementById(
-        "chatInput"
-        )
+        .getElementById("chatInput")
         .value =
         text;
 
-
-        button.classList
-        .remove("listening");
-
+        button.classList.remove(
+        "listening"
+        );
 
         sendChat();
 
     };
 
-
     recognition.onerror =
-    ()=>{
+    function(){
 
-
-        button.classList
-        .remove("listening");
-
+        button.classList.remove(
+        "listening"
+        );
 
         showToast(
         "Voice recognition failed"
@@ -5840,312 +5600,270 @@ function startVoice(){
 
     };
 
-
     recognition.onend =
-    ()=>{
+    function(){
 
-
-        button.classList
-        .remove("listening");
+        button.classList.remove(
+        "listening"
+        );
 
     };
 
 }
 
-
-/* ===================================
-VOICE OUTPUT
-=================================== */
+/* =========================================================
+   VOICE OUTPUT
+========================================================= */
 
 function speak(text){
 
     if(
-    !("speechSynthesis"
-    in window)
+    !("speechSynthesis" in window)
     ){
 
         return;
 
     }
 
-
-    speechSynthesis.cancel();
-
+    window
+    .speechSynthesis
+    .cancel();
 
     const speech =
-
     new SpeechSynthesisUtterance(
     text
     );
 
+    speech.rate = 1;
 
-    speech.rate=1;
+    speech.pitch = 1;
 
-    speech.pitch=1;
-
-
-    speechSynthesis.speak(
-    speech
-    );
+    window
+    .speechSynthesis
+    .speak(speech);
 
 }
 
+/* =========================================================
+   DRAGGABLE HEXA
+========================================================= */
 
-/* ===================================
-DRAGGABLE HEXA
-=================================== */
+const hexaOrb =
+document.getElementById(
+"hexaOrb"
+);
 
-let dragging=false;
+let dragging = false;
 
-let startX=0;
+let moved = false;
 
-let startY=0;
+let startX = 0;
+let startY = 0;
 
-let initialX=0;
-
-let initialY=0;
-
+let initialX = 0;
+let initialY = 0;
 
 function startDrag(x,y){
 
-    dragging=true;
+    dragging = true;
 
-    dragged=false;
-
+    moved = false;
 
     const rect =
 
-    hexaOrb.getBoundingClientRect();
+    hexaOrb
+    .getBoundingClientRect();
 
-
-    initialX=
+    initialX =
     rect.left;
 
-
-    initialY=
+    initialY =
     rect.top;
 
+    startX = x;
 
-    startX=x;
-
-    startY=y;
+    startY = y;
 
 }
 
-
 function drag(x,y){
 
-    if(!dragging)return;
+    if(!dragging){
 
-
-    const dx=
-    x-startX;
-
-
-    const dy=
-    y-startY;
-
-
-    if(
-    Math.abs(dx)>5
-
-    ||
-
-    Math.abs(dy)>5
-    ){
-
-        dragged=true;
+        return;
 
     }
 
+    const dx =
+    x - startX;
 
-    let newX=
+    const dy =
+    y - startY;
 
-    initialX+dx;
+    if(
+    Math.abs(dx) > 5
+    ||
+    Math.abs(dy) > 5
+    ){
 
+        moved = true;
 
-    let newY=
+    }
 
-    initialY+dy;
+    let newX =
+    initialX + dx;
 
+    let newY =
+    initialY + dy;
 
-    newX=Math.max(
+    newX =
 
-    0,
+    Math.max(
 
-    Math.min(
+        0,
 
-    window.innerWidth-72,
+        Math.min(
 
-    newX
+            window.innerWidth - 75,
 
-    )
+            newX
 
-    );
-
-
-    newY=Math.max(
-
-    0,
-
-    Math.min(
-
-    window.innerHeight-72,
-
-    newY
-
-    )
+        )
 
     );
 
+    newY =
 
-    hexaOrb.style.left=
-    newX+"px";
+    Math.max(
 
+        0,
 
-    hexaOrb.style.top=
-    newY+"px";
+        Math.min(
 
+            window.innerHeight - 75,
 
-    hexaOrb.style.right=
+            newY
+
+        )
+
+    );
+
+    hexaOrb.style.left =
+    newX + "px";
+
+    hexaOrb.style.top =
+    newY + "px";
+
+    hexaOrb.style.right =
     "auto";
 
 }
 
-
 function stopDrag(){
 
-    if(dragging){
+    dragging =
+    false;
 
-        setTimeout(()=>{
+}
 
-            dragging=false;
+hexaOrb.addEventListener(
+"mousedown",
+function(event){
 
-        },50);
+    startDrag(
+        event.clientX,
+        event.clientY
+    );
+
+}
+);
+
+document.addEventListener(
+"mousemove",
+function(event){
+
+    drag(
+        event.clientX,
+        event.clientY
+    );
+
+}
+);
+
+document.addEventListener(
+"mouseup",
+function(){
+
+    stopDrag();
+
+}
+);
+
+hexaOrb.addEventListener(
+"touchstart",
+function(event){
+
+    const touch =
+    event.touches[0];
+
+    startDrag(
+        touch.clientX,
+        touch.clientY
+    );
+
+},
+{passive:true}
+);
+
+document.addEventListener(
+"touchmove",
+function(event){
+
+    if(!dragging){
+
+        return;
+
+    }
+
+    const touch =
+    event.touches[0];
+
+    drag(
+        touch.clientX,
+        touch.clientY
+    );
+
+},
+{passive:true}
+);
+
+document.addEventListener(
+"touchend",
+function(){
+
+    stopDrag();
+
+}
+);
+
+/* CLICK TO OPEN */
+
+hexaOrb.addEventListener(
+"click",
+function(){
+
+    if(!moved){
+
+        openHexa();
 
     }
 
 }
-
-
-/* MOUSE */
-
-hexaOrb.addEventListener(
-
-"mousedown",
-
-e=>{
-
-    startDrag(
-
-    e.clientX,
-
-    e.clientY
-
-    );
-
-}
-
 );
 
-
-document.addEventListener(
-
-"mousemove",
-
-e=>{
-
-    drag(
-
-    e.clientX,
-
-    e.clientY
-
-    );
-
-}
-
-);
-
-
-document.addEventListener(
-
-"mouseup",
-
-stopDrag
-
-);
-
-
-/* TOUCH */
-
-hexaOrb.addEventListener(
-
-"touchstart",
-
-e=>{
-
-
-    const touch =
-    e.touches[0];
-
-
-    startDrag(
-
-    touch.clientX,
-
-    touch.clientY
-
-    );
-
-},
-
-{passive:true}
-
-);
-
-
-document.addEventListener(
-
-"touchmove",
-
-e=>{
-
-
-    if(!dragging)return;
-
-
-    const touch =
-    e.touches[0];
-
-
-    drag(
-
-    touch.clientX,
-
-    touch.clientY
-
-    );
-
-},
-
-{passive:true}
-
-);
-
-
-document.addEventListener(
-
-"touchend",
-
-stopDrag
-
-);
-
-
-/* ===================================
-TOAST
-=================================== */
+/* =========================================================
+   TOAST
+========================================================= */
 
 function showToast(message){
 
@@ -6154,24 +5872,18 @@ function showToast(message){
     "toast"
     );
 
-
-    if(!toast)return;
-
-
     toast.innerText =
     message;
 
+    toast.classList.add(
+    "show"
+    );
 
-    toast.classList
-    .add("show");
+    setTimeout(function(){
 
-
-    setTimeout(()=>{
-
-
-        toast.classList
-        .remove("show");
-
+        toast.classList.remove(
+        "show"
+        );
 
     },3000);
 
