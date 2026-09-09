@@ -2,605 +2,809 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <title>FloodGuard AI | HEXA TECH</title>
 
-<!-- MAP -->
-<link
- rel="stylesheet"
- href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- CHART -->
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet.fullscreen@3.0.0/Control.FullScreen.css">
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.fullscreen@3.0.0/dist/Control.FullScreen.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&display=swap');
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
 
 :root{
-    --bg:#020914;
-    --panel:rgba(3,18,35,.88);
-    --panel2:rgba(4,25,48,.82);
-    --line:rgba(0,157,255,.35);
-    --blue:#08a8ff;
-    --cyan:#00eaff;
-    --green:#00f0a0;
-    --yellow:#ffc928;
+    --bg:#020817;
+    --panel:#061426;
+    --panel2:#081b31;
+    --cyan:#00d9ff;
+    --blue:#1677ff;
+    --purple:#8b5cf6;
+    --green:#00f5a0;
+    --yellow:#ffd43b;
+    --orange:#ff8a00;
     --red:#ff3158;
-    --text:#eaf7ff;
-    --muted:#83a9c7;
+    --text:#eef9ff;
+    --muted:#819ab5;
+    --border:rgba(0,203,255,.25);
 }
 
-html{
-    scroll-behavior:smooth;
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
 body{
-    min-height:100vh;
+    width:100%;
+    height:100vh;
+    overflow:hidden;
     background:
-      radial-gradient(circle at 70% 20%,rgba(0,150,255,.13),transparent 35%),
-      radial-gradient(circle at 20% 80%,rgba(0,230,255,.08),transparent 35%),
-      #020914;
+        radial-gradient(circle at 50% 0%,#062c4b 0%,#020817 45%);
     color:var(--text);
-    font-family:Inter,sans-serif;
-    overflow-x:hidden;
+    font-family:Inter,Arial,sans-serif;
 }
 
-/* =========================
+button,
+input{
+    font-family:inherit;
+}
+
+/* =====================================
+   ROBOT / AI ICON
+===================================== */
+
+.ai-icon{
+    width:52px;
+    height:52px;
+    filter:
+        drop-shadow(0 0 10px rgba(0,217,255,.7))
+        drop-shadow(0 0 25px rgba(77,77,255,.35));
+}
+
+.ai-icon.small{
+    width:38px;
+    height:38px;
+}
+
+.ai-icon.big{
+    width:110px;
+    height:110px;
+}
+
+/* =====================================
+   LOADING SCREEN
+===================================== */
+
+.loading-screen{
+    position:fixed;
+    inset:0;
+    z-index:99999;
+    background:#010611;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    transition:1s;
+}
+
+.loading-screen.hide{
+    opacity:0;
+    visibility:hidden;
+}
+
+.flood-bg{
+    position:absolute;
+    bottom:0;
+    width:100%;
+    height:45%;
+    background:
+        repeating-radial-gradient(
+            ellipse at 50% 100%,
+            transparent 0 20px,
+            rgba(0,217,255,.12) 21px 24px
+        );
+    animation:floodMove 4s linear infinite;
+}
+
+@keyframes floodMove{
+    from{transform:translateX(0)}
+    to{transform:translateX(-100px)}
+}
+
+.wave1,
+.wave2{
+    position:absolute;
+    bottom:-90px;
+    width:120%;
+    height:180px;
+    border-radius:50% 50% 0 0;
+    background:rgba(0,157,255,.10);
+    animation:wave 3s ease-in-out infinite;
+}
+
+.wave2{
+    bottom:-120px;
+    opacity:.7;
+    animation-delay:-1.3s;
+}
+
+@keyframes wave{
+    0%,100%{
+        transform:translateX(-3%);
+    }
+    50%{
+        transform:translateX(3%);
+    }
+}
+
+.loading-box{
+    position:relative;
+    z-index:3;
+    width:min(500px,90%);
+    text-align:center;
+    padding:40px;
+    border-radius:28px;
+    border:1px solid rgba(0,214,255,.35);
+    background:rgba(3,17,35,.82);
+    backdrop-filter:blur(25px);
+    box-shadow:
+        0 0 80px rgba(0,200,255,.15),
+        inset 0 0 40px rgba(0,200,255,.04);
+}
+
+.flood-logo{
+    font-size:75px;
+    animation:floodPulse 1.7s infinite;
+}
+
+@keyframes floodPulse{
+    0%,100%{
+        transform:translateY(0) scale(1);
+        filter:drop-shadow(0 0 10px #00d9ff);
+    }
+    50%{
+        transform:translateY(-10px) scale(1.06);
+        filter:drop-shadow(0 0 30px #00d9ff);
+    }
+}
+
+.loading-title{
+    font-family:Orbitron;
+    font-size:27px;
+    letter-spacing:2px;
+    margin-top:15px;
+}
+
+.loading-title span{
+    color:var(--cyan);
+}
+
+.loading-text{
+    margin-top:10px;
+    color:var(--muted);
+    font-size:12px;
+}
+
+.loading-bar{
+    margin-top:25px;
+    height:8px;
+    border-radius:20px;
+    background:#071a30;
+    overflow:hidden;
+}
+
+.loading-progress{
+    height:100%;
+    width:0;
+    background:
+        linear-gradient(
+            90deg,
+            #006eff,
+            #00d9ff,
+            #8b5cf6
+        );
+    box-shadow:0 0 20px #00d9ff;
+    animation:load 4s forwards;
+}
+
+@keyframes load{
+    to{width:100%}
+}
+
+.loading-status{
+    margin-top:12px;
+    color:var(--cyan);
+    font-family:Orbitron;
+    font-size:10px;
+}
+
+/* =====================================
+   APP
+===================================== */
+
+.app{
+    width:100%;
+    height:100vh;
+    display:flex;
+}
+
+/* =====================================
    SIDEBAR
-========================= */
+===================================== */
 
 .sidebar{
-    position:fixed;
-    left:0;
-    top:0;
-    bottom:0;
-    width:255px;
-    z-index:1000;
+    width:245px;
+    height:100%;
+    flex-shrink:0;
+    padding:16px;
     background:
-      linear-gradient(180deg,
-      rgba(2,17,33,.98),
-      rgba(1,10,22,.98));
-    border-right:1px solid rgba(0,170,255,.28);
-    box-shadow:10px 0 45px rgba(0,0,0,.35);
-    padding:20px 15px;
-    overflow-y:auto;
+        linear-gradient(
+            180deg,
+            rgba(3,19,39,.98),
+            rgba(2,11,25,.98)
+        );
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    z-index:20;
 }
 
 .brand{
     display:flex;
     align-items:center;
-    gap:12px;
-    padding:5px 8px 24px;
-    border-bottom:1px solid rgba(0,180,255,.16);
+    gap:10px;
+    padding:8px;
+    margin-bottom:15px;
 }
 
-.robot-mini{
-    width:58px;
-    height:58px;
-    flex-shrink:0;
-    filter:
-      drop-shadow(0 0 8px #00bfff)
-      drop-shadow(0 0 18px rgba(0,200,255,.5));
+.brand-text{
+    font-family:Orbitron;
+    font-size:17px;
+    font-weight:700;
 }
 
-.brand-text h1{
-    font-family:Orbitron,sans-serif;
-    font-size:20px;
-    letter-spacing:1px;
+.brand-text span{
+    color:var(--cyan);
 }
 
-.brand-text h1 span{
-    color:var(--blue);
-}
-
-.brand-text p{
-    font-size:10px;
-    color:#00cfff;
+.tech{
+    font-size:8px;
+    color:#5b8aaa;
     letter-spacing:4px;
-    margin-top:4px;
+    margin-top:3px;
 }
 
-.status{
-    margin:16px 5px;
-    padding:9px 12px;
-    border:1px solid rgba(0,255,170,.25);
+.system{
+    padding:10px;
     border-radius:12px;
-    background:rgba(0,255,160,.05);
-    display:flex;
-    align-items:center;
-    gap:8px;
-    font-size:12px;
-    color:#8effd0;
-}
-
-.status-dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:#00ff9d;
-    box-shadow:0 0 12px #00ff9d;
-    animation:pulse 1.5s infinite;
-}
-
-@keyframes pulse{
-    50%{opacity:.35;transform:scale(.75)}
-}
-
-.nav-title{
+    background:rgba(0,245,160,.06);
+    border:1px solid rgba(0,245,160,.18);
     font-size:10px;
-    color:#557e9d;
-    letter-spacing:2px;
-    margin:20px 10px 8px;
+    color:#9fffdc;
+    margin-bottom:15px;
+}
+
+.dot{
+    display:inline-block;
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 10px var(--green);
+    margin-right:7px;
 }
 
 .nav{
     display:flex;
     flex-direction:column;
-    gap:6px;
+    gap:4px;
 }
 
 .nav button{
     border:0;
     background:transparent;
-    color:#9cc3df;
-    padding:13px 14px;
+    color:#91aac5;
+    padding:12px;
     border-radius:12px;
-    text-align:left;
-    display:flex;
-    align-items:center;
-    gap:13px;
     cursor:pointer;
-    font-size:14px;
+    text-align:left;
+    font-size:12px;
     transition:.25s;
 }
 
-.nav button:hover{
-    color:white;
-    background:rgba(0,150,255,.12);
-}
-
+.nav button:hover,
 .nav button.active{
-    color:white;
+    color:#fff;
     background:
-      linear-gradient(90deg,
-      rgba(0,142,255,.45),
-      rgba(0,80,180,.12));
+        linear-gradient(
+            90deg,
+            rgba(0,120,255,.3),
+            rgba(0,205,255,.07)
+        );
     box-shadow:
-      inset 3px 0 0 #00bfff,
-      0 0 20px rgba(0,160,255,.1);
+        inset 3px 0 var(--cyan);
 }
 
 .nav-icon{
-    width:23px;
-    text-align:center;
-    font-size:20px;
+    display:inline-block;
+    width:27px;
+    font-size:17px;
 }
 
-.badge{
-    margin-left:auto;
-    background:#ff3158;
-    color:white;
-    width:22px;
-    height:22px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:11px;
+.sidebar-footer{
+    margin-top:auto;
+    padding:12px;
+    border-top:1px solid var(--border);
+    color:#597894;
+    font-size:9px;
+    line-height:1.7;
 }
 
-/* MAP STYLE */
-
-.map-selector{
-    margin-top:20px;
-    border-top:1px solid rgba(0,170,255,.16);
-    padding-top:17px;
-}
-
-.map-selector-title{
-    color:#5f8eac;
-    font-size:10px;
-    letter-spacing:2px;
-    margin:0 10px 10px;
-}
-
-.map-options{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:6px;
-}
-
-.map-option{
-    border:1px solid rgba(0,150,255,.2);
-    background:rgba(0,50,85,.2);
-    color:#8fb5d0;
-    padding:9px 5px;
-    border-radius:9px;
-    cursor:pointer;
-    font-size:10px;
-    transition:.25s;
-}
-
-.map-option:hover{
-    border-color:#00bfff;
-    color:white;
-}
-
-.map-option.active{
-    background:rgba(0,160,255,.18);
-    border-color:#00c8ff;
-    color:#fff;
-    box-shadow:0 0 12px rgba(0,180,255,.15);
-}
-
-/* SETTINGS */
-
-.settings{
-    margin-top:18px;
-    padding:15px;
-    border:1px solid rgba(0,150,255,.3);
-    border-radius:15px;
-    background:rgba(0,25,48,.5);
-}
-
-.settings h3{
-    font-size:13px;
-    margin-bottom:13px;
-}
-
-.setting-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:10px 0;
-    border-bottom:1px solid rgba(255,255,255,.06);
-    font-size:11px;
-    color:#9bc4df;
-}
-
-.switch{
-    width:34px;
-    height:18px;
-    border-radius:20px;
-    background:#16324b;
-    position:relative;
-    cursor:pointer;
-}
-
-.switch::after{
-    content:"";
-    position:absolute;
-    top:3px;
-    left:3px;
-    width:12px;
-    height:12px;
-    border-radius:50%;
-    background:#789;
-    transition:.25s;
-}
-
-.switch.on{
-    background:#008fe5;
-}
-
-.switch.on::after{
-    left:19px;
-    background:white;
-    box-shadow:0 0 8px #fff;
-}
-
-/* =========================
+/* =====================================
    MAIN
-========================= */
+===================================== */
 
 .main{
-    margin-left:255px;
-    min-height:100vh;
-    position:relative;
-}
-
-/* TOPBAR */
-
-.topbar{
-    height:78px;
-    position:relative;
-    z-index:100;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 25px;
-    border-bottom:1px solid rgba(0,150,255,.2);
-    background:rgba(1,10,20,.72);
-    backdrop-filter:blur(15px);
-}
-
-.page-title h2{
-    font-family:Orbitron,sans-serif;
-    font-size:23px;
-}
-
-.page-title h2 span{
-    color:#00aaff;
-}
-
-.page-title p{
-    font-size:11px;
-    color:#7297b2;
-    margin-top:4px;
-}
-
-.top-info{
-    display:flex;
-    align-items:center;
-    gap:25px;
-}
-
-.top-item{
-    font-size:12px;
-    color:#9fc3dc;
-}
-
-.top-item strong{
-    color:white;
-    display:block;
-    font-size:14px;
-}
-
-.online{
-    color:#00efa5;
-}
-
-/* =========================
-   DASHBOARD
-========================= */
-
-.dashboard{
-    position:relative;
-    min-height:calc(100vh - 78px);
-    padding:20px;
+    flex:1;
+    min-width:0;
+    height:100%;
+    padding:16px;
     overflow:hidden;
 }
 
-/* BACKGROUND MAP */
+/* =====================================
+   TOP BAR
+===================================== */
 
-#dashboardMap{
-    position:absolute;
-    inset:0;
-    z-index:0;
-    opacity:.42;
-    filter:saturate(.9) brightness(.7);
-}
-
-.map-overlay{
-    position:absolute;
-    inset:0;
-    z-index:1;
-    pointer-events:none;
-    background:
-      linear-gradient(90deg,
-      rgba(2,9,20,.96) 0%,
-      rgba(2,9,20,.55) 18%,
-      rgba(2,9,20,.25) 55%,
-      rgba(2,9,20,.72) 100%),
-      linear-gradient(180deg,
-      rgba(2,9,20,.25),
-      rgba(2,9,20,.8));
-}
-
-.dashboard-content{
-    position:relative;
-    z-index:5;
-}
-
-/* HEXA HERO */
-
-.hero{
-    min-height:150px;
-    display:grid;
-    grid-template-columns:110px 1fr 280px;
-    gap:18px;
-    align-items:center;
-    padding:18px 22px;
-    border:1px solid rgba(0,160,255,.35);
-    border-radius:20px;
-    background:rgba(1,14,28,.75);
-    backdrop-filter:blur(13px);
-    box-shadow:
-      0 15px 50px rgba(0,0,0,.3),
-      inset 0 0 40px rgba(0,120,255,.04);
-}
-
-.hero-robot{
-    width:105px;
-    height:105px;
-    filter:
-      drop-shadow(0 0 8px #00bfff)
-      drop-shadow(0 0 28px rgba(0,200,255,.45));
-}
-
-.hero h1{
-    font-size:30px;
-    font-family:Orbitron,sans-serif;
-}
-
-.hero h1 span{
-    color:#00b9ff;
-}
-
-.hero p{
-    color:#8db2cd;
-    margin-top:7px;
-    font-size:13px;
-}
-
-.hero small{
-    display:block;
-    margin-top:12px;
-    color:#5e91b2;
-}
-
-.voice-box{
-    border:1px solid rgba(0,160,255,.35);
-    background:rgba(0,60,100,.22);
-    border-radius:17px;
-    padding:17px;
+.topbar{
+    height:58px;
     display:flex;
     align-items:center;
-    gap:13px;
+    gap:14px;
+    margin-bottom:12px;
 }
 
-.voice-icon{
-    font-size:29px;
-    color:#00cfff;
+.search{
+    height:48px;
+    max-width:650px;
+    flex:1;
+    display:flex;
+    align-items:center;
+    padding:0 8px 0 15px;
+    border-radius:15px;
+    border:1px solid rgba(0,203,255,.35);
+    background:rgba(3,18,36,.9);
+    box-shadow:0 0 30px rgba(0,180,255,.05);
 }
 
-.voice-box p{
-    margin:0;
-    color:white;
+.search-icon{
+    color:var(--cyan);
+    font-size:20px;
+    margin-right:10px;
+}
+
+.search input{
+    flex:1;
+    min-width:0;
+    background:none;
+    border:0;
+    outline:0;
+    color:#fff;
     font-size:12px;
-    line-height:1.5;
 }
 
-/* GRID */
-
-.dashboard-grid{
-    margin-top:18px;
-    display:grid;
-    grid-template-columns:minmax(0,1fr) 420px;
-    gap:18px;
+.search input::placeholder{
+    color:#66839f;
 }
 
-.left-area,
-.right-area{
-    display:flex;
-    flex-direction:column;
-    gap:18px;
+.search button{
+    width:37px;
+    height:37px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:rgba(0,120,255,.15);
+    color:var(--cyan);
+    cursor:pointer;
 }
 
-/* CARDS */
-
-.card{
-    border:1px solid rgba(0,155,255,.3);
-    border-radius:18px;
-    background:rgba(2,17,33,.78);
-    backdrop-filter:blur(12px);
-    box-shadow:0 12px 35px rgba(0,0,0,.22);
-}
-
-.card-title{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:15px 17px;
-    border-bottom:1px solid rgba(0,150,255,.15);
-}
-
-.card-title h3{
-    font-size:14px;
-}
-
-.card-title span{
+.online{
+    margin-left:auto;
+    padding:12px 15px;
+    border-radius:13px;
+    border:1px solid rgba(0,245,160,.2);
+    background:rgba(0,245,160,.05);
     font-size:10px;
-    color:#00baff;
+    white-space:nowrap;
 }
 
-/* METRICS */
+.online span{
+    color:var(--green);
+}
+
+/* =====================================
+   CONTENT GRID
+===================================== */
+
+.content{
+    height:calc(100% - 70px);
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 330px;
+    gap:14px;
+    min-height:0;
+}
+
+.center{
+    min-width:0;
+    overflow-y:auto;
+    padding-right:2px;
+}
+
+.center::-webkit-scrollbar{
+    width:4px;
+}
+
+.center::-webkit-scrollbar-thumb{
+    background:#124b70;
+    border-radius:10px;
+}
+
+/* =====================================
+   HEADER
+===================================== */
+
+.page-title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:12px;
+}
+
+.page-title h1{
+    font-family:Orbitron;
+    font-size:19px;
+}
+
+.page-title h1 span{
+    color:var(--cyan);
+}
+
+.page-title p{
+    color:#7792ad;
+    font-size:10px;
+    margin-top:4px;
+}
+
+.live-pill{
+    padding:8px 12px;
+    border-radius:20px;
+    border:1px solid rgba(0,245,160,.2);
+    color:#a7ffe0;
+    background:rgba(0,245,160,.05);
+    font-size:9px;
+}
+
+/* =====================================
+   MAP CARD
+===================================== */
+
+.map-card{
+    border:1px solid rgba(0,200,255,.35);
+    border-radius:20px;
+    overflow:hidden;
+    background:#03101f;
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.3),
+        0 0 35px rgba(0,180,255,.05);
+}
+
+.map-head{
+    height:55px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 15px;
+    background:rgba(3,17,35,.95);
+    border-bottom:1px solid var(--border);
+}
+
+.map-title{
+    display:flex;
+    align-items:center;
+    gap:9px;
+}
+
+.map-title-icon{
+    width:34px;
+    height:34px;
+    border-radius:10px;
+    display:grid;
+    place-items:center;
+    background:rgba(0,195,255,.1);
+    color:var(--cyan);
+    font-size:17px;
+}
+
+.map-title strong{
+    font-size:12px;
+}
+
+.map-title small{
+    display:block;
+    color:#6d8aa6;
+    font-size:8px;
+    margin-top:3px;
+}
+
+.map-status{
+    font-size:9px;
+    color:var(--green);
+}
+
+#map{
+    width:100%;
+    height:460px;
+}
+
+/* leaflet */
+
+.leaflet-container{
+    background:#03101d;
+}
+
+.leaflet-control-zoom{
+    margin-left:12px!important;
+    margin-bottom:14px!important;
+}
+
+.leaflet-control-zoom a{
+    background:rgba(3,17,35,.95)!important;
+    color:#fff!important;
+    border-color:rgba(0,210,255,.4)!important;
+    width:38px!important;
+    height:38px!important;
+    line-height:38px!important;
+}
+
+.leaflet-control-zoom a:hover{
+    color:var(--cyan)!important;
+}
+
+.leaflet-control-fullscreen{
+    margin-right:12px!important;
+    margin-top:12px!important;
+}
+
+.leaflet-control-fullscreen a{
+    background:rgba(3,17,35,.95)!important;
+    color:white!important;
+    border:1px solid rgba(0,210,255,.4)!important;
+}
+
+/* =====================================
+   FLOOD LOADING INSIDE MAP
+===================================== */
+
+.map-loading{
+    position:absolute;
+    z-index:500;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width:260px;
+    padding:18px;
+    border-radius:16px;
+    background:rgba(2,14,30,.92);
+    border:1px solid rgba(0,210,255,.4);
+    backdrop-filter:blur(15px);
+    text-align:center;
+    box-shadow:0 0 40px rgba(0,180,255,.15);
+    pointer-events:none;
+}
+
+.map-flood{
+    font-size:35px;
+    animation:floodIcon 1.2s infinite;
+}
+
+@keyframes floodIcon{
+    0%,100%{
+        transform:translateY(0);
+    }
+    50%{
+        transform:translateY(-7px);
+    }
+}
+
+.map-loading strong{
+    display:block;
+    font-size:11px;
+    margin-top:7px;
+}
+
+.map-loading small{
+    display:block;
+    color:#6f91ad;
+    font-size:8px;
+    margin-top:4px;
+}
+
+.map-load-bar{
+    margin-top:12px;
+    height:5px;
+    border-radius:20px;
+    background:#06182c;
+    overflow:hidden;
+}
+
+.map-load-fill{
+    height:100%;
+    width:75%;
+    background:linear-gradient(90deg,#006eff,#00d9ff);
+    box-shadow:0 0 15px #00d9ff;
+    animation:mapload 2.8s infinite alternate;
+}
+
+@keyframes mapload{
+    from{width:35%}
+    to{width:92%}
+}
+
+/* =====================================
+   MAP OPTIONS BELOW MAP
+===================================== */
+
+.map-options{
+    padding:13px;
+    background:
+        linear-gradient(
+            180deg,
+            #061629,
+            #04101f
+        );
+    border-top:1px solid rgba(0,190,255,.2);
+}
+
+.map-options-title{
+    font-size:9px;
+    color:#6f8eaa;
+    letter-spacing:1.5px;
+    margin-bottom:9px;
+}
+
+.map-buttons{
+    display:grid;
+    grid-template-columns:repeat(8,1fr);
+    gap:7px;
+}
+
+.map-button{
+    min-height:62px;
+    border:1px solid rgba(0,185,255,.18);
+    border-radius:11px;
+    background:rgba(3,22,43,.8);
+    color:#8ea8c2;
+    cursor:pointer;
+    transition:.25s;
+    font-size:9px;
+}
+
+.map-button div{
+    font-size:18px;
+    margin-bottom:5px;
+}
+
+.map-button:hover,
+.map-button.active{
+    color:#fff;
+    border-color:var(--cyan);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(0,120,255,.24),
+            rgba(0,215,255,.08)
+        );
+    box-shadow:
+        0 0 18px rgba(0,200,255,.12),
+        inset 0 0 15px rgba(0,200,255,.04);
+}
+
+.map-button.active{
+    color:var(--cyan);
+}
+
+/* =====================================
+   METRICS
+===================================== */
 
 .metrics{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:12px;
+    grid-template-columns:repeat(4,1fr);
+    gap:9px;
+    margin-top:12px;
 }
 
 .metric{
-    padding:17px;
-    min-height:125px;
-    border:1px solid rgba(0,150,255,.3);
-    border-radius:16px;
-    background:rgba(2,18,36,.82);
+    padding:13px;
+    border-radius:15px;
+    border:1px solid var(--border);
+    background:rgba(4,20,39,.88);
 }
 
-.metric-icon{
-    font-size:22px;
-}
-
-.metric h4{
-    color:#82aac7;
-    font-size:11px;
-    margin-top:10px;
+.metric-label{
+    color:#7190ad;
+    font-size:8px;
 }
 
 .metric-value{
-    font-family:Orbitron,sans-serif;
-    font-size:25px;
+    font-family:Orbitron;
+    font-size:21px;
     margin-top:7px;
 }
 
 .metric-change{
-    font-size:10px;
-    margin-top:6px;
-    color:#00e6a0;
-}
-
-/* MAP CARD */
-
-.map-card{
-    height:490px;
-    position:relative;
-    overflow:hidden;
-}
-
-#riskMap{
-    width:100%;
-    height:100%;
-}
-
-.map-label{
-    position:absolute;
-    top:15px;
-    left:15px;
-    z-index:500;
-    background:rgba(2,15,30,.9);
-    border:1px solid rgba(0,160,255,.35);
-    padding:12px 15px;
-    border-radius:12px;
-    backdrop-filter:blur(8px);
-}
-
-.map-label strong{
-    font-size:13px;
-}
-
-.map-label p{
-    font-size:10px;
-    color:#789bb4;
+    color:var(--green);
+    font-size:8px;
     margin-top:4px;
 }
 
-/* CHART */
+/* =====================================
+   RIGHT PANEL
+===================================== */
 
-.chart-box{
-    padding:15px;
-    height:280px;
+.right{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    overflow-y:auto;
 }
 
-/* ALERTS */
+.right::-webkit-scrollbar{
+    width:4px;
+}
+
+.card{
+    border:1px solid var(--border);
+    border-radius:18px;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(5,23,45,.95),
+            rgba(2,13,27,.95)
+        );
+    overflow:hidden;
+}
+
+.card-header{
+    padding:13px 14px;
+    border-bottom:1px solid rgba(0,190,255,.13);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:11px;
+    font-weight:700;
+}
+
+.card-header span{
+    color:var(--cyan);
+    font-size:8px;
+}
 
 .alert{
-    margin:0 14px;
-    padding:14px 0;
-    border-bottom:1px solid rgba(255,255,255,.08);
+    padding:11px 13px;
     display:flex;
-    gap:12px;
-    align-items:center;
+    gap:9px;
+    border-bottom:1px solid rgba(0,190,255,.08);
 }
 
 .alert:last-child{
@@ -608,1023 +812,796 @@ body{
 }
 
 .alert-icon{
-    width:38px;
-    height:38px;
-    border-radius:10px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:rgba(255,50,80,.1);
-    color:#ff4365;
-    font-size:20px;
+    width:29px;
+    height:29px;
+    flex-shrink:0;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    background:rgba(255,49,88,.12);
 }
 
-.alert-info{
-    flex:1;
+.alert strong{
+    display:block;
+    font-size:9px;
 }
 
-.alert-info strong{
-    font-size:12px;
+.alert small{
+    color:#6f8ba6;
+    font-size:8px;
 }
 
-.alert-info p{
-    color:#6f98b6;
-    font-size:10px;
+.badge{
+    display:inline-block;
     margin-top:4px;
+    padding:3px 6px;
+    border-radius:10px;
+    font-size:7px;
 }
 
 .high{
-    color:#ff4165!important;
+    color:#ff6d88;
+    background:rgba(255,49,88,.12);
 }
 
 .medium{
-    color:#ffc72b!important;
+    color:#ffd43b;
+    background:rgba(255,212,59,.1);
 }
 
-.low{
-    color:#00eaa0!important;
+.blue{
+    color:#4ddfff;
+    background:rgba(0,210,255,.1);
 }
 
-/* FORECAST */
+/* =====================================
+   OVERVIEW
+===================================== */
 
-.forecast{
-    padding:15px;
-}
-
-.forecast-row{
-    display:flex;
-    align-items:end;
+.overview{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
     gap:7px;
-    height:145px;
-}
-
-.forecast-day{
-    flex:1;
-    text-align:center;
-    height:100%;
-    display:flex;
-    flex-direction:column;
-    justify-content:end;
-    gap:6px;
-}
-
-.bar{
-    width:100%;
-    border-radius:5px 5px 2px 2px;
-    background:linear-gradient(
-      180deg,
-      #00d8ff,
-      #0758b5);
-    box-shadow:0 0 12px rgba(0,190,255,.2);
-}
-
-.forecast-day span{
-    font-size:9px;
-    color:#7196af;
-}
-
-/* BOTTOM FEATURES */
-
-.features{
-    margin-top:18px;
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:13px;
-}
-
-.feature{
-    padding:18px;
-    min-height:140px;
-    border:1px solid rgba(0,150,255,.28);
-    border-radius:16px;
-    background:rgba(2,18,35,.82);
-    transition:.25s;
-}
-
-.feature:hover{
-    transform:translateY(-3px);
-    border-color:#00bfff;
-    box-shadow:0 10px 30px rgba(0,150,255,.12);
-}
-
-.feature-icon{
-    font-size:26px;
-}
-
-.feature h3{
-    font-size:12px;
-    margin-top:12px;
-}
-
-.feature p{
-    color:#6f96b2;
-    font-size:10px;
-    line-height:1.5;
-    margin-top:7px;
-}
-
-/* =========================
-   SECTIONS
-========================= */
-
-.page-section{
-    display:none;
-    padding:25px;
-    min-height:calc(100vh - 78px);
-    position:relative;
-    z-index:10;
-}
-
-.page-section.active{
-    display:block;
-}
-
-.section-card{
-    max-width:1200px;
-    margin:auto;
-    padding:25px;
-    background:rgba(2,17,33,.9);
-    border:1px solid rgba(0,160,255,.3);
-    border-radius:20px;
-}
-
-.section-card h2{
-    font-family:Orbitron,sans-serif;
-    margin-bottom:8px;
-}
-
-.section-card>p{
-    color:#7199b5;
-    font-size:12px;
-    margin-bottom:20px;
-}
-
-/* PREDICTION */
-
-.predict-grid{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:12px;
-}
-
-.input-box{
-    padding:15px;
-    border:1px solid rgba(0,150,255,.25);
-    border-radius:13px;
-}
-
-.input-box label{
-    display:block;
-    color:#789bb5;
-    font-size:11px;
-    margin-bottom:8px;
-}
-
-.input-box input{
-    width:100%;
-    background:#04182c;
-    border:1px solid rgba(0,160,255,.25);
-    border-radius:8px;
     padding:10px;
-    color:white;
-    outline:none;
 }
 
-.predict-btn{
-    margin-top:15px;
-    padding:12px 20px;
-    border:0;
+.overview-item{
+    padding:11px 8px;
+    border:1px solid rgba(0,180,255,.15);
     border-radius:10px;
-    background:linear-gradient(90deg,#008fff,#00cfff);
-    color:white;
-    cursor:pointer;
-    font-weight:700;
+    text-align:center;
 }
 
-.result{
-    margin-top:20px;
-    padding:20px;
-    border-radius:14px;
-    background:rgba(0,100,180,.1);
-    border:1px solid rgba(0,170,255,.25);
-}
-
-/* REPORTS */
-
-.report-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:15px;
-}
-
-.report-card{
-    padding:20px;
-    border:1px solid rgba(0,150,255,.25);
-    border-radius:15px;
-    background:rgba(0,30,55,.5);
-}
-
-.report-card h3{
-    font-size:13px;
-}
-
-.report-card strong{
+.overview-item b{
     display:block;
-    font-size:28px;
     font-family:Orbitron;
-    margin-top:12px;
+    font-size:16px;
+    margin-top:5px;
 }
 
-/* =========================
-   HEXA CHAT
-========================= */
+.overview-item small{
+    color:#6f8ba6;
+    font-size:7px;
+}
 
-.chat-orb{
-    position:fixed;
-    right:25px;
-    bottom:25px;
-    width:67px;
-    height:67px;
-    border-radius:50%;
-    border:2px solid #00bfff;
-    background:
-      radial-gradient(circle,
-      #062d4c,
-      #031426 65%);
-    z-index:2000;
-    cursor:pointer;
+/* =====================================
+   FUTURISTIC AI CHATBOT
+===================================== */
+
+.chat{
+    flex:1;
+    min-height:280px;
     display:flex;
-    align-items:center;
-    justify-content:center;
-    box-shadow:
-      0 0 15px #00aaff,
-      0 0 40px rgba(0,170,255,.45);
-    animation:float 3s ease-in-out infinite;
-}
-
-.chat-orb svg{
-    width:48px;
-    height:48px;
-}
-
-@keyframes float{
-    50%{transform:translateY(-6px)}
-}
-
-.chat-box{
-    position:fixed;
-    right:25px;
-    bottom:105px;
-    width:350px;
-    height:470px;
-    z-index:1999;
-    display:none;
     flex-direction:column;
-    border:1px solid rgba(0,180,255,.45);
-    border-radius:20px;
-    background:rgba(1,13,27,.96);
-    box-shadow:0 20px 70px rgba(0,0,0,.5);
-    overflow:hidden;
-    backdrop-filter:blur(20px);
-}
-
-.chat-box.open{
-    display:flex;
 }
 
 .chat-header{
-    padding:14px;
     display:flex;
     align-items:center;
-    gap:10px;
-    border-bottom:1px solid rgba(0,150,255,.2);
+    gap:8px;
+    padding:11px;
+    border-bottom:1px solid var(--border);
 }
 
-.chat-header svg{
-    width:43px;
-    height:43px;
+.ai-name{
+    font-size:11px;
+    font-weight:700;
 }
 
-.chat-header strong{
-    font-size:13px;
-}
-
-.chat-header small{
+.ai-name small{
     display:block;
-    color:#00eaa0;
+    color:var(--green);
+    font-size:8px;
     margin-top:3px;
 }
 
-.voice-toggle{
+.voice{
     margin-left:auto;
-    border:1px solid rgba(0,160,255,.3);
-    background:rgba(0,100,180,.12);
-    color:white;
-    padding:7px 9px;
-    border-radius:8px;
+    width:33px;
+    height:33px;
+    border-radius:9px;
+    border:1px solid var(--border);
+    background:rgba(0,140,255,.12);
+    color:#fff;
     cursor:pointer;
-    font-size:11px;
 }
 
 .chat-messages{
     flex:1;
     overflow-y:auto;
-    padding:15px;
+    padding:10px;
 }
 
-.message{
-    max-width:85%;
-    padding:11px 13px;
+.msg{
+    display:flex;
+    gap:7px;
+    margin-bottom:9px;
+}
+
+.msg.user{
+    justify-content:flex-end;
+}
+
+.msg.user .bubble{
+    background:rgba(0,110,255,.2);
+}
+
+.bubble{
+    max-width:82%;
+    padding:9px 10px;
     border-radius:12px;
-    font-size:11px;
-    line-height:1.5;
-    margin-bottom:10px;
-}
-
-.bot{
-    background:rgba(0,120,210,.13);
-    border:1px solid rgba(0,150,255,.18);
-}
-
-.user{
-    margin-left:auto;
-    background:rgba(0,210,160,.12);
-    border:1px solid rgba(0,230,170,.18);
+    border:1px solid rgba(0,190,255,.2);
+    background:rgba(0,35,65,.65);
+    font-size:8px;
+    line-height:1.55;
 }
 
 .chat-input{
     display:flex;
-    gap:7px;
-    padding:11px;
-    border-top:1px solid rgba(0,150,255,.2);
+    gap:5px;
+    padding:8px;
+    border-top:1px solid var(--border);
 }
 
 .chat-input input{
     flex:1;
-    background:#041528;
-    border:1px solid rgba(0,150,255,.25);
+    min-width:0;
+    padding:9px;
     border-radius:9px;
-    padding:10px;
+    border:1px solid rgba(0,190,255,.2);
+    background:#031224;
     color:white;
-    outline:none;
+    outline:0;
+    font-size:8px;
 }
 
 .chat-input button{
-    width:42px;
+    width:35px;
     border:0;
     border-radius:9px;
-    background:#008fe5;
+    background:linear-gradient(135deg,#006eff,#00cfff);
     color:white;
     cursor:pointer;
 }
 
-/* TOAST */
+/* =====================================
+   RESPONSIVE
+===================================== */
 
-.toast{
-    position:fixed;
-    top:90px;
-    right:25px;
-    z-index:3000;
-    background:rgba(2,18,34,.95);
-    border:1px solid #00baff;
-    padding:13px 18px;
-    border-radius:10px;
-    font-size:12px;
-    transform:translateX(150%);
-    transition:.3s;
-}
-
-.toast.show{
-    transform:translateX(0);
-}
-
-/* LEAFLET */
-
-.leaflet-control-zoom a{
-    background:#04182b!important;
-    color:#00cfff!important;
-    border-color:#15557a!important;
-}
-
-.leaflet-control-attribution{
-    background:rgba(0,10,20,.7)!important;
-    color:#7199b4!important;
-}
-
-/* MOBILE */
-
-@media(max-width:1000px){
+@media(max-width:1200px){
 
     .sidebar{
         width:210px;
     }
 
-    .main{
-        margin-left:210px;
+    .content{
+        grid-template-columns:minmax(0,1fr) 290px;
     }
 
-    .dashboard-grid{
-        grid-template-columns:1fr;
+    .map-buttons{
+        grid-template-columns:repeat(4,1fr);
     }
 
-    .hero{
-        grid-template-columns:80px 1fr;
-    }
-
-    .hero-robot{
-        width:75px;
-        height:75px;
-    }
-
-    .voice-box{
-        grid-column:1/-1;
-    }
-
-    .features{
-        grid-template-columns:repeat(2,1fr);
-    }
 }
 
-@media(max-width:700px){
+@media(max-width:900px){
+
+    body{
+        overflow:auto;
+    }
+
+    .app{
+        height:auto;
+        min-height:100vh;
+    }
 
     .sidebar{
-        position:relative;
-        width:100%;
-        height:auto;
-        border-right:0;
-        border-bottom:1px solid rgba(0,150,255,.25);
+        width:75px;
+        padding:10px;
+    }
+
+    .brand-text,
+    .tech,
+    .system,
+    .nav button span:not(.nav-icon),
+    .sidebar-footer{
+        display:none;
+    }
+
+    .brand{
+        justify-content:center;
     }
 
     .main{
-        margin-left:0;
+        padding:10px;
     }
 
-    .nav{
+    .content{
+        grid-template-columns:1fr;
+        height:auto;
+    }
+
+    .right{
         display:grid;
-        grid-template-columns:repeat(2,1fr);
+        grid-template-columns:1fr 1fr;
     }
 
-    .settings{
+    #map{
+        height:420px;
+    }
+
+}
+
+@media(max-width:600px){
+
+    .sidebar{
         display:none;
     }
 
     .topbar{
         height:auto;
-        padding:15px;
     }
 
-    .top-info{
+    .online{
         display:none;
     }
 
-    .hero{
-        grid-template-columns:1fr;
-        text-align:center;
+    .content{
+        display:block;
     }
 
-    .hero-robot{
-        margin:auto;
+    .right{
+        display:block;
+        margin-top:12px;
+    }
+
+    #map{
+        height:360px;
+    }
+
+    .map-buttons{
+        grid-template-columns:repeat(4,1fr);
     }
 
     .metrics{
-        grid-template-columns:1fr;
+        grid-template-columns:repeat(2,1fr);
     }
 
-    .features{
-        grid-template-columns:1fr;
-    }
-
-    .predict-grid{
-        grid-template-columns:1fr;
-    }
-
-    .report-grid{
-        grid-template-columns:1fr;
-    }
-
-    .chat-box{
-        right:10px;
-        left:10px;
-        width:auto;
-    }
 }
+
 </style>
 </head>
 
 <body>
 
-<!-- ==================================================
-     HEXA ROBOT SVG
-================================================== -->
+<!-- =====================================================
+     SVG FUTURISTIC AI ICON
+===================================================== -->
 
-<svg style="display:none">
+<svg width="0" height="0" style="position:absolute">
 
-<symbol id="robotLogo" viewBox="0 0 100 100">
+<symbol id="aiRobot" viewBox="0 0 200 200">
 
-    <defs>
-        <linearGradient id="robotBlue" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#00eaff"/>
-            <stop offset="100%" stop-color="#0077ff"/>
-        </linearGradient>
-    </defs>
+    <circle
+        cx="100"
+        cy="100"
+        r="86"
+        fill="none"
+        stroke="#00d9ff"
+        stroke-width="3"
+        opacity=".4"
+    />
 
-    <!-- antenna -->
-    <line x1="50" y1="13" x2="50" y2="5"
-          stroke="#00dfff" stroke-width="3"/>
+    <circle
+        cx="100"
+        cy="100"
+        r="72"
+        fill="none"
+        stroke="#7c5cff"
+        stroke-width="2"
+        stroke-dasharray="10 7"
+    />
 
-    <circle cx="50" cy="4" r="4"
-            fill="#00eaff"/>
+    <line
+        x1="100"
+        y1="19"
+        x2="100"
+        y2="38"
+        stroke="#00d9ff"
+        stroke-width="6"
+    />
 
-    <!-- ears -->
-    <rect x="8" y="40" width="12" height="22" rx="5"
-          fill="#061d35"
-          stroke="url(#robotBlue)"
-          stroke-width="3"/>
+    <circle
+        cx="100"
+        cy="13"
+        r="7"
+        fill="#00f5a0"
+    />
 
-    <rect x="80" y="40" width="12" height="22" rx="5"
-          fill="#061d35"
-          stroke="url(#robotBlue)"
-          stroke-width="3"/>
+    <rect
+        x="42"
+        y="38"
+        width="116"
+        height="104"
+        rx="35"
+        fill="#061a31"
+        stroke="#00d9ff"
+        stroke-width="5"
+    />
 
-    <!-- head -->
-    <rect x="17" y="20" width="66" height="60"
-          rx="19"
-          fill="#071a2d"
-          stroke="url(#robotBlue)"
-          stroke-width="4"/>
+    <rect
+        x="57"
+        y="56"
+        width="86"
+        height="66"
+        rx="25"
+        fill="#020b18"
+        stroke="#236dff"
+        stroke-width="3"
+    />
 
-    <!-- face -->
-    <rect x="27" y="32" width="46" height="31"
-          rx="13"
-          fill="#020d19"/>
+    <circle
+        cx="80"
+        cy="86"
+        r="11"
+        fill="#00d9ff"
+    />
 
-    <!-- eyes -->
-    <circle cx="40" cy="47" r="6"
-            fill="#00eaff"/>
+    <circle
+        cx="120"
+        cy="86"
+        r="11"
+        fill="#8b5cf6"
+    />
 
-    <circle cx="60" cy="47" r="6"
-            fill="#00eaff"/>
+    <circle
+        cx="80"
+        cy="86"
+        r="4"
+        fill="white"
+    />
 
-    <circle cx="40" cy="47" r="2"
-            fill="white"/>
+    <circle
+        cx="120"
+        cy="86"
+        r="4"
+        fill="white"
+    />
 
-    <circle cx="60" cy="47" r="2"
-            fill="white"/>
+    <path
+        d="M78 105 Q100 117 122 105"
+        fill="none"
+        stroke="#00d9ff"
+        stroke-width="4"
+        stroke-linecap="round"
+    />
 
-    <!-- mouth -->
-    <path d="M39 58 Q50 65 61 58"
-          fill="none"
-          stroke="#00bfff"
-          stroke-width="3"
-          stroke-linecap="round"/>
+    <rect
+        x="31"
+        y="72"
+        width="14"
+        height="40"
+        rx="7"
+        fill="#0b4168"
+        stroke="#00d9ff"
+        stroke-width="3"
+    />
 
-    <!-- neck -->
-    <rect x="42" y="79" width="16" height="9"
-          rx="4"
-          fill="#073052"
-          stroke="#00bfff"/>
+    <rect
+        x="155"
+        y="72"
+        width="14"
+        height="40"
+        rx="7"
+        fill="#0b4168"
+        stroke="#00d9ff"
+        stroke-width="3"
+    />
+
+    <path
+        d="M58 143 Q100 128 142 143 L151 174 Q100 193 49 174 Z"
+        fill="#06182d"
+        stroke="#246dff"
+        stroke-width="4"
+    />
+
+    <circle
+        cx="100"
+        cy="159"
+        r="11"
+        fill="#00d9ff"
+    />
+
+    <circle
+        cx="100"
+        cy="159"
+        r="5"
+        fill="white"
+    />
 
 </symbol>
 
 </svg>
 
-<!-- ==================================================
-     LEFT SIDEBAR
-================================================== -->
+
+<!-- =====================================================
+     FLOOD LOADING SCREEN
+===================================================== -->
+
+<div class="loading-screen" id="loadingScreen">
+
+    <div class="flood-bg"></div>
+    <div class="wave1"></div>
+    <div class="wave2"></div>
+
+    <div class="loading-box">
+
+        <div class="flood-logo">🌊</div>
+
+        <div class="loading-title">
+            FLOODGUARD <span>AI</span>
+        </div>
+
+        <div class="loading-text">
+            Initializing Global Flood Intelligence Network
+        </div>
+
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+
+        <div
+            class="loading-status"
+            id="loadingStatus"
+        >
+            INITIALIZING FLOOD MONITORING...
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     APPLICATION
+===================================================== -->
+
+<div class="app">
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
 
 <aside class="sidebar">
 
     <div class="brand">
 
-        <svg class="robot-mini">
-            <use href="#robotLogo"></use>
+        <svg class="ai-icon">
+            <use href="#aiRobot"></use>
         </svg>
 
-        <div class="brand-text">
-            <h1>FloodGuard <span>AI</span></h1>
-            <p>HEXA TECH</p>
+        <div>
+
+            <div class="brand-text">
+                FloodGuard <span>AI</span>
+            </div>
+
+            <div class="tech">
+                HEXA TECH
+            </div>
+
         </div>
 
     </div>
 
-    <div class="status">
-        <span class="status-dot"></span>
-        System Online
+
+    <div class="system">
+        <span class="dot"></span>
+        GLOBAL SYSTEM ONLINE
     </div>
 
-    <div class="nav-title">MAIN MENU</div>
 
     <div class="nav">
 
-        <button class="active" onclick="showPage('dashboard',this)">
+        <button class="active">
             <span class="nav-icon">⌂</span>
             Dashboard
         </button>
 
-        <button onclick="showPage('risk',this)">
-            <span class="nav-icon">🗺</span>
+        <button onclick="riskMap()">
+            <span class="nav-icon">🌊</span>
             Risk Map
         </button>
 
-        <button onclick="showPage('prediction',this)">
-            <span class="nav-icon">◈</span>
+        <button onclick="prediction()">
+            <span class="nav-icon">🧠</span>
             AI Predictions
         </button>
 
-        <button onclick="showPage('alerts',this)">
-            <span class="nav-icon">♢</span>
+        <button onclick="showToast('12 active flood alerts')">
+            <span class="nav-icon">⚠</span>
             Alerts
-            <span class="badge">3</span>
         </button>
 
-        <button onclick="showPage('reports',this)">
+        <button onclick="showToast('Reports module opened')">
             <span class="nav-icon">▤</span>
             Reports
         </button>
 
-        <button onclick="showPage('live',this)">
-            <span class="nav-icon">⌁</span>
+        <button onclick="showToast('Live sensor data connected')">
+            <span class="nav-icon">◈</span>
             Live Data
+        </button>
+
+        <button onclick="showToast('Settings opened')">
+            <span class="nav-icon">⚙</span>
+            Settings
         </button>
 
     </div>
 
-    <!-- MAP OPTIONS -->
 
-    <div class="map-selector">
+    <div class="sidebar-footer">
 
-        <div class="map-selector-title">
-            MAP STYLE
-        </div>
+        FloodGuard AI v3.0
 
-        <div class="map-options">
+        <br>
 
-            <button class="map-option active"
-                    onclick="changeMap('standard',this)">
-                🌐 Standard
-            </button>
+        Powered by HEXA TECH
 
-            <button class="map-option"
-                    onclick="changeMap('satellite',this)">
-                🛰 Satellite
-            </button>
+        <br>
 
-            <button class="map-option"
-                    onclick="changeMap('terrain',this)">
-                ⛰ Terrain
-            </button>
-
-            <button class="map-option"
-                    onclick="changeMap('light',this)">
-                ☀ Light
-            </button>
-
-            <button class="map-option"
-                    onclick="changeMap('roads',this)">
-                🛣 Roads
-            </button>
-
-            <button class="map-option"
-                    onclick="changeMap('rainfall',this)">
-                🌧 Rainfall
-            </button>
-
-            <button class="map-option"
-                    onclick="changeMap('flood',this)">
-                🌊 Flood Risk
-            </button>
-
-            <button class="map-option"
-                    onclick="changeMap('weather',this)">
-                🌡 Weather
-            </button>
-
-        </div>
-
-    </div>
-
-    <!-- SETTINGS -->
-
-    <div class="settings">
-
-        <h3>⚙ Settings</h3>
-
-        <div class="setting-row">
-            Dark Interface
-            <div class="switch on"
-                 onclick="toggleSwitch(this)"></div>
-        </div>
-
-        <div class="setting-row">
-            Voice Assistant
-            <div class="switch on"
-                 onclick="toggleVoice(this)"></div>
-        </div>
-
-        <div class="setting-row">
-            Notifications
-            <div class="switch on"
-                 onclick="toggleSwitch(this)"></div>
-        </div>
+        Technology Today | Safer Tomorrows
 
     </div>
 
 </aside>
 
-<!-- ==================================================
+
+<!-- =====================================================
      MAIN
-================================================== -->
+===================================================== -->
 
 <main class="main">
 
-    <!-- TOP BAR -->
+    <!-- TOP -->
 
     <header class="topbar">
 
-        <div class="page-title">
-            <h2>FloodGuard <span>AI</span></h2>
-            <p>Smarter Alerts. Safer Tomorrow.</p>
+        <div class="search">
+
+            <div class="search-icon">
+                ⌕
+            </div>
+
+            <input
+                id="searchInput"
+                placeholder="Search any location... Delhi, New York, Tokyo..."
+                onkeydown="
+                    if(event.key==='Enter')
+                    searchLocation()
+                "
+            >
+
+            <button
+                onclick="useLocation()"
+                title="Current location"
+            >
+                ◎
+            </button>
+
+            <button
+                onclick="searchLocation()"
+            >
+                →
+            </button>
+
         </div>
 
-        <div class="top-info">
 
-            <div class="top-item">
-                <span class="online">● System Online</span>
-            </div>
+        <div class="online">
 
-            <div class="top-item">
-                <strong id="clock">--:--</strong>
-                India
-            </div>
-
-            <div class="top-item">
-                <strong id="temperature">28°C</strong>
-                Partly Cloudy
-            </div>
+            <span>●</span>
+            System Online
 
         </div>
 
     </header>
 
-    <!-- ==================================================
-         DASHBOARD
-    ================================================== -->
 
-    <section id="dashboard" class="dashboard page active">
+    <!-- CONTENT -->
 
-        <!-- BACKGROUND MAP -->
+    <div class="content">
 
-        <div id="dashboardMap"></div>
+        <!-- CENTER -->
 
-        <div class="map-overlay"></div>
+        <section class="center">
 
-        <div class="dashboard-content">
-
-            <!-- HEXA HERO -->
-
-            <div class="hero">
-
-                <svg class="hero-robot">
-                    <use href="#robotLogo"></use>
-                </svg>
+            <div class="page-title">
 
                 <div>
 
                     <h1>
-                        Hello, I'm
-                        <span>Hexa</span>
+                        Global <span>Flood Intelligence</span>
                     </h1>
 
                     <p>
-                        Your AI Flood Protection Assistant.
+                        Real-time geographical monitoring and
+                        flood-risk analysis
                     </p>
-
-                    <small>
-                        I'm here to help you stay informed,
-                        safe and prepared.
-                    </small>
 
                 </div>
 
-                <div class="voice-box">
-
-                    <div class="voice-icon">🔊</div>
-
-                    <p>
-                        Hello, I'm Hexa. Let's keep our
-                        communities safe from floods.
-                    </p>
-
+                <div class="live-pill">
+                    ● LIVE MONITORING
                 </div>
 
             </div>
 
-            <div class="dashboard-grid">
 
-                <!-- LEFT -->
+            <!-- ==========================================
+                 MAP
+            =========================================== -->
 
-                <div class="left-area">
+            <div class="map-card">
 
-                    <div class="metrics">
+                <div class="map-head">
 
-                        <div class="metric">
-                            <div class="metric-icon">🌊</div>
-                            <h4>Water Level</h4>
-                            <div class="metric-value"
-                                 id="waterValue">
-                                4.2 m
-                            </div>
-                            <div class="metric-change">
-                                ↓ 12% vs last 24h
-                            </div>
+                    <div class="map-title">
+
+                        <div class="map-title-icon">
+                            🌐
                         </div>
 
-                        <div class="metric">
-                            <div class="metric-icon">🌧</div>
-                            <h4>Rainfall 24h</h4>
-                            <div class="metric-value"
-                                 id="rainValue">
-                                86 mm
-                            </div>
-                            <div class="metric-change">
-                                ↓ 18% vs last 24h
-                            </div>
-                        </div>
+                        <div>
 
-                        <div class="metric">
-                            <div class="metric-icon">🚨</div>
-                            <h4>Active Alerts</h4>
-                            <div class="metric-value"
-                                 id="alertValue">
-                                3
-                            </div>
-                            <div class="metric-change"
-                                 style="color:#ffc928">
-                                Monitor Closely
-                            </div>
+                            <strong>
+                                Global Flood Monitoring Map
+                            </strong>
+
+                            <small>
+                                Search • Satellite • Terrain • Weather • Risk
+                            </small>
+
                         </div>
 
                     </div>
 
-                    <!-- MAP -->
-
-                    <div class="card map-card">
-
-                        <div class="map-label">
-                            <strong>🌧 Live Flood Intelligence Map</strong>
-                            <p>
-                                Current map:
-                                <span id="mapMode">
-                                    Standard
-                                </span>
-                            </p>
-                        </div>
-
-                        <div id="riskMap"></div>
-
+                    <div class="map-status">
+                        ● LIVE
                     </div>
 
-                    <!-- CHART -->
+                </div>
 
-                    <div class="card">
 
-                        <div class="card-title">
-                            <h3>📊 Water Level History</h3>
-                            <span>LIVE</span>
+                <div style="position:relative">
+
+                    <div id="map"></div>
+
+
+                    <!-- FLOOD MAP LOADING -->
+
+                    <div
+                        class="map-loading"
+                        id="mapLoading"
+                    >
+
+                        <div class="map-flood">
+                            🌊
                         </div>
 
-                        <div class="chart-box">
-                            <canvas id="waterChart"></canvas>
+                        <strong>
+                            Flood Intelligence Loading
+                        </strong>
+
+                        <small>
+                            Processing global water systems...
+                        </small>
+
+                        <div class="map-load-bar">
+                            <div class="map-load-fill"></div>
                         </div>
 
                     </div>
 
                 </div>
 
-                <!-- RIGHT -->
 
-                <div class="right-area">
+                <!-- ======================================
+                     MAP OPTIONS BELOW MAP
+                ======================================= -->
 
-                    <!-- ALERTS -->
+                <div class="map-options">
 
-                    <div class="card">
-
-                        <div class="card-title">
-                            <h3>🚨 Recent Alerts</h3>
-                            <span>View All →</span>
-                        </div>
-
-                        <div class="alert">
-
-                            <div class="alert-icon">
-                                ⚠
-                            </div>
-
-                            <div class="alert-info">
-                                <strong>Yamuna River</strong>
-                                <p class="high">
-                                    High Flood Risk
-                                </p>
-                            </div>
-
-                            <small>2h</small>
-
-                        </div>
-
-                        <div class="alert">
-
-                            <div class="alert-icon">
-                                ⚠
-                            </div>
-
-                            <div class="alert-info">
-                                <strong>Kosi River</strong>
-                                <p class="medium">
-                                    Moderate Risk
-                                </p>
-                            </div>
-
-                            <small>4h</small>
-
-                        </div>
-
-                        <div class="alert">
-
-                            <div class="alert-icon">
-                                🌊
-                            </div>
-
-                            <div class="alert-info">
-                                <strong>Godavari Basin</strong>
-                                <p>
-                                    Rising Water Level
-                                </p>
-                            </div>
-
-                            <small>6h</small>
-
-                        </div>
-
+                    <div class="map-options-title">
+                        MAP VIEW OPTIONS
                     </div>
 
-                    <!-- FORECAST -->
+                    <div class="map-buttons">
 
-                    <div class="card">
+                        <button
+                            class="map-button active"
+                            onclick="changeMap('standard',this)"
+                        >
+                            <div>🌐</div>
+                            Standard
+                        </button>
 
-                        <div class="card-title">
-                            <h3>📈 7-Day Flood Forecast</h3>
-                            <span>AI MODEL</span>
-                        </div>
+                        <button
+                            class="map-button"
+                            onclick="changeMap('satellite',this)"
+                        >
+                            <div>🛰️</div>
+                            Satellite
+                        </button>
 
-                        <div class="forecast">
+                        <button
+                            class="map-button"
+                            onclick="changeMap('terrain',this)"
+                        >
+                            <div>⛰️</div>
+                            Terrain
+                        </button>
 
-                            <div class="forecast-row">
+                        <button
+                            class="map-button"
+                            onclick="changeMap('light',this)"
+                        >
+                            <div>☀️</div>
+                            Light
+                        </button>
 
-                                <div class="forecast-day">
-                                    <div class="bar"
-                                         style="height:35%"></div>
-                                    <span>May 23</span>
-                                </div>
+                        <button
+                            class="map-button"
+                            onclick="changeMap('roads',this)"
+                        >
+                            <div>🛣️</div>
+                            Roads
+                        </button>
 
-                                <div class="forecast-day">
-                                    <div class="bar"
-                                         style="height:50%"></div>
-                                    <span>May 24</span>
-                                </div>
+                        <button
+                            class="map-button"
+                            onclick="changeMap('rainfall',this)"
+                        >
+                            <div>🌧️</div>
+                            Rainfall
+                        </button>
 
-                                <div class="forecast-day">
-                                    <div class="bar"
-                                         style="height:60%"></div>
-                                    <span>May 25</span>
-                                </div>
+                        <button
+                            class="map-button"
+                            onclick="changeMap('flood',this)"
+                        >
+                            <div>🌊</div>
+                            Flood Risk
+                        </button>
 
-                                <div class="forecast-day">
-                                    <div class="bar"
-                                         style="height:82%"></div>
-                                    <span>May 26</span>
-                                </div>
-
-                                <div class="forecast-day">
-                                    <div class="bar"
-                                         style="height:92%"></div>
-                                    <span>May 27</span>
-                                </div>
-
-                                <div class="forecast-day">
-                                    <div class="bar"
-                                         style="height:67%"></div>
-                                    <span>May 28</span>
-                                </div>
-
-                                <div class="forecast-day">
-                                    <div class="bar"
-                                         style="height:45%"></div>
-                                    <span>May 29</span>
-                                </div>
-
-                            </div>
-
-                        </div>
+                        <button
+                            class="map-button"
+                            onclick="changeMap('weather',this)"
+                        >
+                            <div>🌤️</div>
+                            Weather
+                        </button>
 
                     </div>
 
@@ -1632,1384 +1609,1478 @@ body{
 
             </div>
 
-            <!-- FEATURES -->
 
-            <div class="features">
+            <!-- METRICS -->
 
-                <div class="feature"
-                     onclick="showPage('prediction')">
+            <div class="metrics">
 
-                    <div class="feature-icon">🧠</div>
+                <div class="metric">
 
-                    <h3>AI Predictions</h3>
+                    <div class="metric-label">
+                        🌊 WATER LEVEL
+                    </div>
 
-                    <p>
-                        Get accurate flood forecasts
-                        using intelligent AI models.
-                    </p>
+                    <div
+                        class="metric-value"
+                        id="water"
+                    >
+                        4.2 m
+                    </div>
 
-                </div>
-
-                <div class="feature"
-                     onclick="showPage('risk')">
-
-                    <div class="feature-icon">🗺</div>
-
-                    <h3>Interactive Risk Map</h3>
-
-                    <p>
-                        Explore real-time flood risk
-                        zones and affected areas.
-                    </p>
+                    <div class="metric-change">
+                        ↓ 12% vs 24h
+                    </div>
 
                 </div>
 
-                <div class="feature"
-                     onclick="showPage('alerts')">
 
-                    <div class="feature-icon">🔔</div>
+                <div class="metric">
 
-                    <h3>Instant Alerts</h3>
+                    <div class="metric-label">
+                        🌧️ GLOBAL RAINFALL
+                    </div>
 
-                    <p>
-                        Receive early warnings and
-                        safety notifications.
-                    </p>
+                    <div
+                        class="metric-value"
+                        id="rain"
+                    >
+                        86 mm
+                    </div>
 
-                </div>
-
-                <div class="feature">
-
-                    <div class="feature-icon">🛡</div>
-
-                    <h3>Community Safety</h3>
-
-                    <p>
-                        Help build a safer and more
-                        resilient community.
-                    </p>
+                    <div class="metric-change">
+                        ↓ 18% vs 24h
+                    </div>
 
                 </div>
 
-            </div>
 
-        </div>
+                <div class="metric">
 
-    </section>
+                    <div class="metric-label">
+                        🚨 ACTIVE ALERTS
+                    </div>
 
-    <!-- ==================================================
-         RISK MAP PAGE
-    ================================================== -->
+                    <div
+                        class="metric-value"
+                        id="alerts"
+                    >
+                        12
+                    </div>
 
-    <section id="risk"
-             class="page-section">
+                    <div
+                        class="metric-change"
+                        style="color:#ff6684"
+                    >
+                        ↑ 3 new
+                    </div>
 
-        <div class="section-card">
-
-            <h2>🗺 Interactive Risk Map</h2>
-
-            <p>
-                Switch between Standard, Satellite,
-                Terrain, Light, Roads, Rainfall,
-                Flood Risk and Weather layers.
-            </p>
-
-            <div style="
-                height:650px;
-                border-radius:15px;
-                overflow:hidden;
-            ">
-                <div id="fullMap"
-                     style="height:100%;width:100%;">
-                </div>
-            </div>
-
-        </div>
-
-    </section>
-
-    <!-- ==================================================
-         PREDICTION
-    ================================================== -->
-
-    <section id="prediction"
-             class="page-section">
-
-        <div class="section-card">
-
-            <h2>🤖 AI Flood Prediction</h2>
-
-            <p>
-                Enter current environmental values
-                to estimate flood risk.
-            </p>
-
-            <div class="predict-grid">
-
-                <div class="input-box">
-                    <label>Water Level (m)</label>
-                    <input id="pWater"
-                           type="number"
-                           value="4.2">
                 </div>
 
-                <div class="input-box">
-                    <label>Rainfall (mm)</label>
-                    <input id="pRain"
-                           type="number"
-                           value="86">
-                </div>
 
-                <div class="input-box">
-                    <label>Flow Rate</label>
-                    <input id="pFlow"
-                           type="number"
-                           value="60">
-                </div>
+                <div class="metric">
 
-                <div class="input-box">
-                    <label>Humidity (%)</label>
-                    <input id="pHumidity"
-                           type="number"
-                           value="78">
-                </div>
+                    <div class="metric-label">
+                        🛡️ RISK SCORE
+                    </div>
 
-            </div>
-
-            <button class="predict-btn"
-                    onclick="predictFlood()">
-                Run AI Prediction
-            </button>
-
-            <div class="result"
-                 id="predictionResult">
-                AI prediction will appear here.
-            </div>
-
-        </div>
-
-    </section>
-
-    <!-- ==================================================
-         ALERTS
-    ================================================== -->
-
-    <section id="alerts"
-             class="page-section">
-
-        <div class="section-card">
-
-            <h2>🚨 Emergency Alerts</h2>
-
-            <p>
-                Monitor active flood warnings.
-            </p>
-
-            <div class="report-grid">
-
-                <div class="report-card">
-                    <h3>Yamuna River</h3>
-                    <strong style="color:#ff3158">
-                        HIGH
-                    </strong>
-                    <p>
-                        Immediate monitoring required.
-                    </p>
-                </div>
-
-                <div class="report-card">
-                    <h3>Kosi River</h3>
-                    <strong style="color:#ffc928">
-                        WATCH
-                    </strong>
-                    <p>
-                        Rising water levels detected.
-                    </p>
-                </div>
-
-                <div class="report-card">
-                    <h3>Godavari Basin</h3>
-                    <strong style="color:#00d8ff">
-                        RISING
-                    </strong>
-                    <p>
-                        Continuous monitoring active.
-                    </p>
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-    <!-- ==================================================
-         REPORTS
-    ================================================== -->
-
-    <section id="reports"
-             class="page-section">
-
-        <div class="section-card">
-
-            <h2>📊 FloodGuard Reports</h2>
-
-            <p>
-                Environmental monitoring statistics.
-            </p>
-
-            <div class="report-grid">
-
-                <div class="report-card">
-                    <h3>Average Water Level</h3>
-                    <strong>4.2m</strong>
-                </div>
-
-                <div class="report-card">
-                    <h3>Rainfall</h3>
-                    <strong>86mm</strong>
-                </div>
-
-                <div class="report-card">
-                    <h3>Risk Score</h3>
-                    <strong style="color:#ffc928">
+                    <div
+                        class="metric-value"
+                        id="risk"
+                    >
                         67%
-                    </strong>
+                    </div>
+
+                    <div
+                        class="metric-change"
+                        style="color:#ffd43b"
+                    >
+                        Moderate Risk
+                    </div>
+
                 </div>
 
             </div>
 
-        </div>
+        </section>
 
-    </section>
 
-    <!-- ==================================================
-         LIVE DATA
-    ================================================== -->
+        <!-- ==========================================
+             RIGHT SIDE
+        =========================================== -->
 
-    <section id="live"
-             class="page-section">
+        <aside class="right">
 
-        <div class="section-card">
+            <!-- ALERTS -->
 
-            <h2>📡 Live Sensor Data</h2>
+            <div class="card">
 
-            <p>
-                Simulated sensor stream. Connect
-                your ESP32 backend to replace these
-                values with real sensor readings.
-            </p>
+                <div class="card-header">
 
-            <div class="report-grid">
+                    🚨 Live Flood Alerts
 
-                <div class="report-card">
-                    <h3>Water Sensor</h3>
-                    <strong id="liveWater">
-                        4.2m
-                    </strong>
+                    <span>
+                        VIEW ALL
+                    </span>
+
                 </div>
 
-                <div class="report-card">
-                    <h3>Rain Sensor</h3>
-                    <strong id="liveRain">
-                        86mm
-                    </strong>
+
+                <div class="alert">
+
+                    <div class="alert-icon">
+                        🔴
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Yamuna River · Delhi
+                        </strong>
+
+                        <small>
+                            2 min ago
+                        </small>
+
+                        <div class="badge high">
+                            Severe Flood Risk
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <div class="report-card">
-                    <h3>Temperature</h3>
-                    <strong id="liveTemp">
-                        28°C
-                    </strong>
+
+                <div class="alert">
+
+                    <div class="alert-icon">
+                        🟡
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Brahmaputra · Assam
+                        </strong>
+
+                        <small>
+                            8 min ago
+                        </small>
+
+                        <div class="badge medium">
+                            High Risk
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="alert">
+
+                    <div class="alert-icon">
+                        🔵
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Godavari Basin
+                        </strong>
+
+                        <small>
+                            15 min ago
+                        </small>
+
+                        <div class="badge blue">
+                            Rising Water Level
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="alert">
+
+                    <div class="alert-icon">
+                        🟡
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Nile River · Egypt
+                        </strong>
+
+                        <small>
+                            22 min ago
+                        </small>
+
+                        <div class="badge medium">
+                            Moderate Risk
+                        </div>
+
+                    </div>
+
                 </div>
 
             </div>
 
-        </div>
 
-    </section>
+            <!-- GLOBAL OVERVIEW -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    📊 Global Flood Overview
+
+                    <span>
+                        LIVE
+                    </span>
+
+                </div>
+
+
+                <div class="overview">
+
+                    <div class="overview-item">
+
+                        🌐
+
+                        <b>24</b>
+
+                        <small>
+                            Regions
+                        </small>
+
+                    </div>
+
+
+                    <div class="overview-item">
+
+                        👥
+
+                        <b>1.3M</b>
+
+                        <small>
+                            People Risk
+                        </small>
+
+                    </div>
+
+
+                    <div class="overview-item">
+
+                        🌊
+
+                        <b>256</b>
+
+                        <small>
+                            Rivers
+                        </small>
+
+                    </div>
+
+
+                    <div class="overview-item">
+
+                        ⚠
+
+                        <b id="overviewAlerts">
+                            12
+                        </b>
+
+                        <small>
+                            Alerts
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- HEXA AI -->
+
+            <div class="card chat">
+
+                <div class="chat-header">
+
+                    <svg class="ai-icon small">
+                        <use href="#aiRobot"></use>
+                    </svg>
+
+                    <div class="ai-name">
+
+                        Hexa AI Assistant
+
+                        <small>
+                            ● Online
+                        </small>
+
+                    </div>
+
+                    <button
+                        class="voice"
+                        id="voiceButton"
+                        onclick="toggleVoice()"
+                    >
+                        🔊
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="chat-messages"
+                    id="chatMessages"
+                >
+
+                    <div class="msg">
+
+                        <svg class="ai-icon small">
+                            <use href="#aiRobot"></use>
+                        </svg>
+
+                        <div class="bubble">
+
+                            Hello! I'm Hexa, your
+                            FloodGuard AI assistant.
+
+                            <br><br>
+
+                            I can help with flood risk,
+                            maps, weather, sensors,
+                            alerts and predictions.
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="chat-input">
+
+                    <input
+                        id="chatInput"
+                        placeholder="Ask Hexa..."
+                        onkeydown="
+                            if(event.key==='Enter')
+                            sendMessage()
+                        "
+                    >
+
+                    <button onclick="sendMessage()">
+                        ➤
+                    </button>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+    </div>
 
 </main>
 
-<!-- ==================================================
-     HEXA CHATBOT
-================================================== -->
-
-<div class="chat-box"
-     id="chatBox">
-
-    <div class="chat-header">
-
-        <svg>
-            <use href="#robotLogo"></use>
-        </svg>
-
-        <div>
-            <strong>Hexa</strong>
-            <small>● Online</small>
-        </div>
-
-        <button class="voice-toggle"
-                id="voiceButton"
-                onclick="toggleChatVoice()">
-            🔊 ON
-        </button>
-
-    </div>
-
-    <div class="chat-messages"
-         id="chatMessages">
-
-        <div class="message bot">
-            Hello! I'm Hexa. I can help you with
-            flood alerts, maps, predictions,
-            sensor data and safety information.
-        </div>
-
-    </div>
-
-    <div class="chat-input">
-
-        <input id="chatInput"
-               placeholder="Ask Hexa something..."
-               onkeydown="if(event.key==='Enter')sendMessage()">
-
-        <button onclick="sendMessage()">
-            ➤
-        </button>
-
-    </div>
-
 </div>
 
-<!-- ROBOT BUTTON -->
-
-<div class="chat-orb"
-     onclick="toggleChat()">
-
-    <svg>
-        <use href="#robotLogo"></use>
-    </svg>
-
-</div>
-
-<div class="toast"
-     id="toast">
-    Map updated
-</div>
-
-<!-- LEAFLET -->
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
 
-/* ==================================================
-   GLOBAL
-================================================== */
+/* =====================================================
+   MAP
+===================================================== */
 
 let map;
-let fullMap;
-let waterChart;
+let currentLayer;
 
-let currentMapStyle = "standard";
+let rainfallLayer;
+let floodLayer;
+let weatherLayer;
 
-let voiceEnabled = true;
+let marker;
 
-let mapLayers = {};
+let voiceEnabled=true;
 
-let overlayLayers = {};
 
-/* ==================================================
-   MAP TILE SOURCES
-================================================== */
+/* =====================================================
+   MAP BASE LAYERS
+===================================================== */
 
-const mapStyles = {
+const layers={
 
-    standard:{
-        name:"Standard",
-        url:"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        attribution:"© OpenStreetMap contributors"
-    },
+    standard:L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+            maxZoom:19,
+            attribution:"© OpenStreetMap"
+        }
+    ),
 
-    satellite:{
-        name:"Satellite",
-        url:"https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-        attribution:"Tiles © Esri"
-    },
+    satellite:L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        {
+            maxZoom:19,
+            attribution:"© Esri"
+        }
+    ),
 
-    terrain:{
-        name:"Terrain",
-        url:"https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-        attribution:"© OpenTopoMap contributors"
-    },
+    terrain:L.tileLayer(
+        "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+        {
+            maxZoom:17,
+            attribution:"© OpenTopoMap"
+        }
+    ),
 
-    light:{
-        name:"Light",
-        url:"https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-        attribution:"© CARTO"
-    },
+    light:L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+        {
+            maxZoom:20,
+            attribution:"© CARTO"
+        }
+    ),
 
-    roads:{
-        name:"Roads",
-        url:"https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
-        attribution:"© OpenStreetMap contributors"
-    }
+    roads:L.tileLayer(
+        "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
+        {
+            maxZoom:19,
+            attribution:"© OpenStreetMap HOT"
+        }
+    )
 
 };
 
-/* ==================================================
-   INDIA MAP CENTER
-================================================== */
 
-const INDIA = [22.5,79.0];
-
-/* ==================================================
+/* =====================================================
    INIT MAP
-================================================== */
+===================================================== */
 
-function initMaps(){
+function initMap(){
 
-    if(typeof L === "undefined"){
-        console.log("Leaflet unavailable");
-        return;
-    }
+    map=L.map("map",{
 
-    /* BACKGROUND MAP */
+        center:[22.5,79],
 
-    map = L.map("dashboardMap",{
+        zoom:4,
+
         zoomControl:false,
-        attributionControl:true,
-        dragging:false,
-        scrollWheelZoom:false,
-        doubleClickZoom:false,
-        boxZoom:false,
-        keyboard:false,
-        touchZoom:false
-    }).setView(INDIA,5);
 
-    addBaseLayer(map,"standard");
+        worldCopyJump:true,
 
-    createRiskOverlay(map);
+        fullscreenControl:true,
 
-    /* FULL INTERACTIVE MAP */
-
-    fullMap = L.map("fullMap").setView(INDIA,5);
-
-    addBaseLayer(fullMap,"standard");
-
-    createRiskOverlay(fullMap);
-
-}
-
-/* ==================================================
-   BASE MAP
-================================================== */
-
-function addBaseLayer(target,key){
-
-    if(!mapStyles[key]) return;
-
-    if(target._baseLayer){
-        target.removeLayer(target._baseLayer);
-    }
-
-    const style = mapStyles[key];
-
-    target._baseLayer = L.tileLayer(
-        style.url,
-        {
-            maxZoom:19,
-            attribution:style.attribution
+        fullscreenControlOptions:{
+            position:"topright"
         }
-    ).addTo(target);
-
-}
-
-/* ==================================================
-   MAP STYLE SWITCH
-================================================== */
-
-function changeMap(style,button){
-
-    currentMapStyle = style;
-
-    document
-      .querySelectorAll(".map-option")
-      .forEach(b=>b.classList.remove("active"));
-
-    if(button){
-        button.classList.add("active");
-    }
-
-    if(style === "rainfall"){
-
-        addBaseLayer(map,"standard");
-        addBaseLayer(fullMap,"standard");
-
-        showRainfallOverlay(map);
-        showRainfallOverlay(fullMap);
-
-        document.getElementById("mapMode").textContent =
-            "Rainfall";
-
-        showToast("Rainfall map enabled");
-
-        return;
-    }
-
-    if(style === "flood"){
-
-        addBaseLayer(map,"standard");
-        addBaseLayer(fullMap,"standard");
-
-        showFloodOverlay(map);
-        showFloodOverlay(fullMap);
-
-        document.getElementById("mapMode").textContent =
-            "Flood Risk";
-
-        showToast("Flood risk map enabled");
-
-        return;
-    }
-
-    if(style === "weather"){
-
-        addBaseLayer(map,"standard");
-        addBaseLayer(fullMap,"standard");
-
-        showWeatherOverlay(map);
-        showWeatherOverlay(fullMap);
-
-        document.getElementById("mapMode").textContent =
-            "Weather";
-
-        showToast("Weather map enabled");
-
-        return;
-    }
-
-    removeOverlays(map);
-    removeOverlays(fullMap);
-
-    addBaseLayer(map,style);
-    addBaseLayer(fullMap,style);
-
-    document.getElementById("mapMode").textContent =
-        mapStyles[style].name;
-
-    showToast(mapStyles[style].name + " map enabled");
-
-}
-
-/* ==================================================
-   RISK ZONE OVERLAY
-================================================== */
-
-function createRiskOverlay(target){
-
-    const zones = [
-
-        {
-            lat:28.6,
-            lng:77.2,
-            radius:90000,
-            color:"#ff3158",
-            label:"Delhi — HIGH RISK"
-        },
-
-        {
-            lat:25.6,
-            lng:85.1,
-            radius:85000,
-            color:"#ffc928",
-            label:"Bihar — WATCH"
-        },
-
-        {
-            lat:17.4,
-            lng:78.4,
-            radius:70000,
-            color:"#00aaff",
-            label:"Telangana — RISING"
-        },
-
-        {
-            lat:16.5,
-            lng:80.6,
-            radius:65000,
-            color:"#00e6a0",
-            label:"Andhra Pradesh — SAFE"
-        }
-
-    ];
-
-    zones.forEach(z=>{
-
-        L.circle(
-            [z.lat,z.lng],
-            {
-                radius:z.radius,
-                color:z.color,
-                fillColor:z.color,
-                fillOpacity:.12,
-                weight:2
-            }
-        )
-        .bindPopup(
-            "<b>"+z.label+"</b><br>FloodGuard AI monitoring zone."
-        )
-        .addTo(target);
 
     });
 
-    L.marker([28.6139,77.2090])
-      .bindPopup("<b>New Delhi</b><br>High flood risk")
-      .addTo(target);
+
+    currentLayer=layers.standard;
+
+    currentLayer.addTo(map);
+
+
+    /* REQUIRED:
+       zoom bottom-left
+    */
+
+    L.control.zoom({
+
+        position:"bottomleft"
+
+    }).addTo(map);
+
+
+    createMapOverlays();
+
+    addRiskMarkers();
 
 }
 
-/* ==================================================
-   RAINFALL OVERLAY
-================================================== */
 
-function showRainfallOverlay(target){
+/* =====================================================
+   OVERLAYS
+===================================================== */
 
-    removeOverlays(target);
+function createMapOverlays(){
 
-    const rainPoints = [
+    rainfallLayer=L.layerGroup();
 
-        [28.6,77.2,110],
-        [27.0,78.0,90],
-        [25.6,85.1,130],
-        [22.5,80.5,75],
-        [19.0,73.0,105],
-        [17.4,78.4,65],
-        [16.5,80.6,95]
+    floodLayer=L.layerGroup();
+
+    weatherLayer=L.layerGroup();
+
+
+    const rainPoints=[
+
+        [28.61,77.20,80],
+        [26.14,91.73,90],
+        [22.57,88.36,65],
+        [19.07,72.87,70],
+        [13.08,80.27,55],
+        [23.81,90.41,95],
+        [35.67,139.65,45],
+        [40.71,-74,35]
 
     ];
 
-    const layer = L.layerGroup();
 
     rainPoints.forEach(p=>{
+
+        const color=
+            p[2]>=85
+            ? "#ff3158"
+            : p[2]>=60
+            ? "#ffd43b"
+            : "#00d9ff";
+
 
         L.circle(
             [p[0],p[1]],
             {
-                radius:p[2]*1000,
-                color:"#00bfff",
-                fillColor:"#00d8ff",
-                fillOpacity:.2,
+                radius:90000,
+                color:color,
+                fillColor:color,
+                fillOpacity:.22,
                 weight:1
             }
         )
-        .bindPopup(
-            "<b>Rainfall Intensity</b><br>"+
-            p[2]+" mm"
+        .bindTooltip(
+            "Rainfall intensity: "+p[2]+" mm"
         )
-        .addTo(layer);
+        .addTo(rainfallLayer);
 
     });
 
-    layer.addTo(target);
 
-    overlayLayers[target._leaflet_id] = layer;
+    const zones=[
 
-}
-
-/* ==================================================
-   FLOOD RISK OVERLAY
-================================================== */
-
-function showFloodOverlay(target){
-
-    removeOverlays(target);
-
-    const layer = L.layerGroup();
-
-    const areas = [
-
-        [28.6,77.2,120000,"#ff174d","CRITICAL"],
-        [25.6,85.1,100000,"#ff9800","HIGH"],
-        [22.5,80.5,90000,"#ffcc00","WATCH"],
-        [17.4,78.4,85000,"#00aaff","RISING"],
-        [16.5,80.6,70000,"#00e6a0","SAFE"]
+        [28.61,77.20,"Severe"],
+        [26.14,91.73,"High"],
+        [23.81,90.41,"Severe"],
+        [19.07,72.87,"High"],
+        [22.57,88.36,"Moderate"],
+        [13.08,80.27,"Moderate"],
+        [35.67,139.65,"Moderate"],
+        [40.71,-74,"Low"]
 
     ];
 
-    areas.forEach(a=>{
+
+    zones.forEach(z=>{
+
+        let color="#00e59b";
+
+        if(z[2]==="Moderate")
+            color="#ffd43b";
+
+        if(z[2]==="High")
+            color="#ff8a00";
+
+        if(z[2]==="Severe")
+            color="#ff3158";
+
 
         L.circle(
-            [a[0],a[1]],
+            [z[0],z[1]],
             {
-                radius:a[2],
-                color:a[3],
-                fillColor:a[3],
-                fillOpacity:.25,
-                weight:3
+                radius:80000,
+                color:color,
+                fillColor:color,
+                fillOpacity:.2,
+                weight:2
             }
         )
         .bindPopup(
-            "<b>Flood Risk: "+
-            a[4]+
-            "</b><br>FloodGuard AI analysis zone."
+            "<b>Flood Risk</b><br>"+
+            z[2]+" Risk"
         )
-        .addTo(layer);
+        .addTo(floodLayer);
 
     });
 
-    layer.addTo(target);
 
-    overlayLayers[target._leaflet_id] = layer;
+    const weather=[
 
-}
-
-/* ==================================================
-   WEATHER OVERLAY
-================================================== */
-
-function showWeatherOverlay(target){
-
-    removeOverlays(target);
-
-    const layer = L.layerGroup();
-
-    const cities = [
-
-        ["New Delhi",28.6139,77.2090,31],
-        ["Mumbai",19.0760,72.8777,29],
-        ["Hyderabad",17.3850,78.4867,28],
-        ["Vijayawada",16.5062,80.6480,30],
-        ["Lucknow",26.8467,80.9462,27]
+        [28.61,77.20,"🌧️ Delhi"],
+        [40.71,-74,"☀️ New York"],
+        [35.67,139.65,"🌤️ Tokyo"],
+        [51.50,-.12,"🌧️ London"],
+        [-33.86,151.20,"☀️ Sydney"]
 
     ];
 
-    cities.forEach(c=>{
 
-        L.marker([c[1],c[2]])
-         .bindPopup(
-             "<b>"+c[0]+"</b><br>"+
-             "Temperature: "+c[3]+"°C<br>"+
-             "Weather monitoring active."
-         )
-         .addTo(layer);
+    weather.forEach(w=>{
+
+        L.marker(
+            [w[0],w[1]]
+        )
+        .bindTooltip(w[2])
+        .addTo(weatherLayer);
 
     });
 
-    layer.addTo(target);
+}
 
-    overlayLayers[target._leaflet_id] = layer;
+
+/* =====================================================
+   RISK MARKERS
+===================================================== */
+
+function addRiskMarkers(){
+
+    const locations=[
+
+        [28.6139,77.2090,"Delhi","Severe"],
+        [26.1445,91.7362,"Assam","High"],
+        [23.8103,90.4125,"Bangladesh","Severe"],
+        [22.5726,88.3639,"Kolkata","Moderate"],
+        [19.0760,72.8777,"Mumbai","High"],
+        [13.0827,80.2707,"Chennai","Moderate"],
+        [40.7128,-74.006,"New York","Low"],
+        [35.6762,139.6503,"Tokyo","Moderate"]
+
+    ];
+
+
+    locations.forEach(x=>{
+
+        let color="#00e59b";
+
+        if(x[3]==="Moderate")
+            color="#ffd43b";
+
+        if(x[3]==="High")
+            color="#ff8a00";
+
+        if(x[3]==="Severe")
+            color="#ff3158";
+
+
+        L.circleMarker(
+            [x[0],x[1]],
+            {
+                radius:7,
+                color:"#fff",
+                weight:2,
+                fillColor:color,
+                fillOpacity:1
+            }
+        )
+        .bindPopup(`
+            <b>${x[2]}</b><br>
+            Flood Risk:
+            <strong style="color:${color}">
+            ${x[3]}
+            </strong>
+        `)
+        .addTo(map);
+
+    });
 
 }
 
-/* ==================================================
-   REMOVE OVERLAYS
-================================================== */
 
-function removeOverlays(target){
+/* =====================================================
+   CHANGE MAP
+===================================================== */
 
-    const id = target._leaflet_id;
+function changeMap(type,button){
 
-    if(overlayLayers[id]){
+    document
+        .querySelectorAll(".map-button")
+        .forEach(b=>{
+            b.classList.remove("active");
+        });
 
-        target.removeLayer(
-            overlayLayers[id]
+    button.classList.add("active");
+
+
+    if(currentLayer)
+        map.removeLayer(currentLayer);
+
+
+    map.removeLayer(rainfallLayer);
+    map.removeLayer(floodLayer);
+    map.removeLayer(weatherLayer);
+
+
+    if(layers[type]){
+
+        currentLayer=layers[type];
+
+        currentLayer.addTo(map);
+
+    }
+
+
+    if(type==="rainfall"){
+
+        currentLayer=layers.standard;
+
+        currentLayer.addTo(map);
+
+        rainfallLayer.addTo(map);
+
+        showToast(
+            "Rainfall layer activated"
         );
 
-        delete overlayLayers[id];
+    }
+
+
+    if(type==="flood"){
+
+        currentLayer=layers.standard;
+
+        currentLayer.addTo(map);
+
+        floodLayer.addTo(map);
+
+        showToast(
+            "Flood-risk layer activated"
+        );
+
+    }
+
+
+    if(type==="weather"){
+
+        currentLayer=layers.standard;
+
+        currentLayer.addTo(map);
+
+        weatherLayer.addTo(map);
+
+        showToast(
+            "Weather layer activated"
+        );
 
     }
 
 }
 
-/* ==================================================
-   NAVIGATION
-================================================== */
 
-function showPage(id,button){
+/* =====================================================
+   SEARCH ANY LOCATION
+===================================================== */
 
-    document
-      .querySelectorAll(".page-section,.dashboard")
-      .forEach(x=>x.classList.remove("active"));
+async function searchLocation(){
 
-    const page = document.getElementById(id);
+    const query=
+        document
+        .getElementById("searchInput")
+        .value
+        .trim();
 
-    if(page){
-        page.classList.add("active");
-    }
 
-    document
-      .querySelectorAll(".nav button")
-      .forEach(x=>x.classList.remove("active"));
+    if(!query){
 
-    if(button){
-        button.classList.add("active");
-    }
+        showToast(
+            "Enter a location"
+        );
 
-    if(id === "risk" && fullMap){
-
-        setTimeout(()=>{
-            fullMap.invalidateSize();
-        },300);
+        return;
 
     }
 
-}
 
-/* ==================================================
-   CLOCK
-================================================== */
-
-function updateClock(){
-
-    const now = new Date();
-
-    document.getElementById("clock")
-      .textContent =
-      now.toLocaleTimeString(
-          "en-IN",
-          {
-              hour:"2-digit",
-              minute:"2-digit",
-              hour12:false
-          }
-      );
-
-}
-
-setInterval(updateClock,1000);
-updateClock();
-
-/* ==================================================
-   SENSOR SIMULATION
-================================================== */
-
-function updateSensors(){
-
-    const water =
-        (4 + Math.random()*0.7).toFixed(1);
-
-    const rain =
-        Math.floor(70 + Math.random()*40);
-
-    const temp =
-        Math.floor(26 + Math.random()*7);
-
-    document.getElementById("waterValue")
-      .textContent = water+" m";
-
-    document.getElementById("rainValue")
-      .textContent = rain+" mm";
-
-    document.getElementById("temperature")
-      .textContent = temp+"°C";
-
-    document.getElementById("liveWater")
-      .textContent = water+"m";
-
-    document.getElementById("liveRain")
-      .textContent = rain+"mm";
-
-    document.getElementById("liveTemp")
-      .textContent = temp+"°C";
-
-    if(water > 4.5){
-
-        document.getElementById("alertValue")
-          .textContent = "4";
-
-    }else{
-
-        document.getElementById("alertValue")
-          .textContent = "3";
-
-    }
-
-    updateChart(
-        parseFloat(water)
+    showToast(
+        "Searching worldwide..."
     );
 
-}
 
-setInterval(updateSensors,10000);
+    try{
 
-/* ==================================================
-   CHART
-================================================== */
+        const response=
+            await fetch(
+                "https://nominatim.openstreetmap.org/search?format=json&limit=1&q="+
+                encodeURIComponent(query)
+            );
 
-function initChart(){
 
-    const ctx =
-        document
-        .getElementById("waterChart")
-        .getContext("2d");
+        const data=
+            await response.json();
 
-    waterChart = new Chart(
-        ctx,
-        {
-            type:"line",
 
-            data:{
-                labels:[
-                    "10:00",
-                    "11:00",
-                    "12:00",
-                    "13:00",
-                    "14:00",
-                    "15:00",
-                    "16:00"
-                ],
+        if(!data.length){
 
-                datasets:[{
+            showToast(
+                "Location not found"
+            );
 
-                    label:"Water Level",
-
-                    data:[
-                        3.2,
-                        3.5,
-                        3.7,
-                        3.9,
-                        4.0,
-                        4.1,
-                        4.2
-                    ],
-
-                    borderColor:"#00cfff",
-
-                    backgroundColor:
-                        "rgba(0,200,255,.08)",
-
-                    tension:.4,
-
-                    fill:true,
-
-                    pointRadius:3,
-
-                    pointBackgroundColor:"#00eaff"
-
-                }]
-
-            },
-
-            options:{
-
-                responsive:true,
-
-                maintainAspectRatio:false,
-
-                plugins:{
-                    legend:{
-                        display:false
-                    }
-                },
-
-                scales:{
-
-                    x:{
-                        ticks:{
-                            color:"#6e95ae"
-                        },
-
-                        grid:{
-                            color:"rgba(255,255,255,.04)"
-                        }
-                    },
-
-                    y:{
-                        ticks:{
-                            color:"#6e95ae"
-                        },
-
-                        grid:{
-                            color:"rgba(255,255,255,.04)"
-                        }
-                    }
-
-                }
-
-            }
+            return;
 
         }
+
+
+        const result=data[0];
+
+        const lat=parseFloat(result.lat);
+        const lon=parseFloat(result.lon);
+
+
+        map.flyTo(
+            [lat,lon],
+            11,
+            {
+                duration:2
+            }
+        );
+
+
+        if(marker)
+            map.removeLayer(marker);
+
+
+        marker=
+            L.marker([lat,lon])
+            .addTo(map)
+            .bindPopup(
+                "<b>"+result.display_name+"</b>"
+            )
+            .openPopup();
+
+
+        showToast(
+            "Showing "+result.display_name
+        );
+
+
+    }catch(error){
+
+        showToast(
+            "Search failed"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   CURRENT LOCATION
+===================================================== */
+
+function useLocation(){
+
+    if(!navigator.geolocation){
+
+        showToast(
+            "Geolocation unavailable"
+        );
+
+        return;
+
+    }
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        position=>{
+
+            const lat=
+                position.coords.latitude;
+
+            const lon=
+                position.coords.longitude;
+
+
+            map.flyTo(
+                [lat,lon],
+                14,
+                {
+                    duration:2
+                }
+            );
+
+
+            if(marker)
+                map.removeLayer(marker);
+
+
+            marker=
+                L.marker([lat,lon])
+                .addTo(map)
+                .bindPopup(
+                    "<b>📍 Your Location</b>"
+                )
+                .openPopup();
+
+
+            showToast(
+                "Current location found"
+            );
+
+        },
+
+        ()=>{
+            showToast(
+                "Location permission denied"
+            );
+        }
+
     );
 
 }
 
-function updateChart(value){
 
-    if(!waterChart) return;
-
-    waterChart.data.datasets[0]
-      .data.push(value);
-
-    waterChart.data.datasets[0]
-      .data.shift();
-
-    waterChart.update();
-
-}
-
-/* ==================================================
-   AI PREDICTION
-================================================== */
-
-function predictFlood(){
-
-    const water =
-        parseFloat(
-            document.getElementById("pWater").value
-        ) || 0;
-
-    const rain =
-        parseFloat(
-            document.getElementById("pRain").value
-        ) || 0;
-
-    const flow =
-        parseFloat(
-            document.getElementById("pFlow").value
-        ) || 0;
-
-    const humidity =
-        parseFloat(
-            document.getElementById("pHumidity").value
-        ) || 0;
-
-    let score = 0;
-
-    score += Math.min(water * 12,35);
-    score += Math.min(rain * .3,30);
-    score += Math.min(flow * .25,20);
-    score += Math.min(humidity * .15,15);
-
-    let status;
-    let message;
-
-    if(score >= 80){
-
-        status = "CRITICAL";
-        message =
-          "Immediate flood response is recommended.";
-
-    }else if(score >= 60){
-
-        status = "HIGH";
-        message =
-          "High flood probability detected. Monitor the area closely.";
-
-    }else if(score >= 40){
-
-        status = "WATCH";
-        message =
-          "Flood conditions are developing. Continue monitoring.";
-
-    }else{
-
-        status = "SAFE";
-        message =
-          "Current environmental conditions appear stable.";
-
-    }
-
-    document.getElementById("predictionResult")
-      .innerHTML =
-
-      "<strong style='font-size:22px'>"+
-      status+
-      "</strong>"+
-      "<br><br>"+
-      "Risk Score: "+
-      score.toFixed(1)+
-      "%"+
-      "<br><br>"+
-      message;
-
-}
-
-/* ==================================================
-   HEXA CHAT
-================================================== */
-
-function toggleChat(){
-
-    document
-      .getElementById("chatBox")
-      .classList.toggle("open");
-
-}
-
-/* ==================================================
-   VOICE
-================================================== */
-
-function speakHexa(text){
-
-    if(!voiceEnabled) return;
-
-    if(!("speechSynthesis" in window)) return;
-
-    window.speechSynthesis.cancel();
-
-    /*
-       IMPORTANT:
-       We deliberately use lowercase "hexa"
-       in spoken text so browsers pronounce it
-       as a name rather than spelling H-E-X-A.
-    */
-
-    let spokenText =
-        text
-        .replace(/HEXA AI/gi,"hexa AI")
-        .replace(/HEXA TECH/gi,"hexa tech")
-        .replace(/\bHEXA\b/gi,"hexa");
-
-    const utterance =
-        new SpeechSynthesisUtterance(
-            spokenText
-        );
-
-    const voices =
-        window.speechSynthesis.getVoices();
-
-    const voice =
-        voices.find(v =>
-            v.lang === "en-IN"
-        ) ||
-        voices.find(v =>
-            v.lang.startsWith("en")
-        );
-
-    if(voice){
-        utterance.voice = voice;
-    }
-
-    utterance.rate = .92;
-    utterance.pitch = 1.02;
-    utterance.volume = 1;
-
-    window.speechSynthesis.speak(
-        utterance
-    );
-
-}
-
-function toggleChatVoice(){
-
-    voiceEnabled = !voiceEnabled;
-
-    const button =
-        document.getElementById("voiceButton");
-
-    button.textContent =
-        voiceEnabled
-        ? "🔊 ON"
-        : "🔇 OFF";
-
-    if(voiceEnabled){
-
-        speakHexa(
-            "Hello, I am hexa. Voice assistant is now active."
-        );
-
-    }else{
-
-        window.speechSynthesis.cancel();
-
-    }
-
-}
-
-function toggleVoice(element){
-
-    voiceEnabled =
-        !voiceEnabled;
-
-    element.classList.toggle(
-        "on",
-        voiceEnabled
-    );
-
-    if(voiceEnabled){
-
-        speakHexa(
-            "Hello, I am hexa."
-        );
-
-    }else{
-
-        window.speechSynthesis.cancel();
-
-    }
-
-}
-
-/* ==================================================
-   CHAT RESPONSE
-================================================== */
+/* =====================================================
+   CHATBOT
+===================================================== */
 
 function sendMessage(){
 
-    const input =
-        document.getElementById("chatInput");
+    const input=
+        document
+        .getElementById("chatInput");
 
-    const text =
+
+    const text=
         input.value.trim();
 
-    if(!text) return;
+
+    if(!text)
+        return;
+
 
     addMessage(
         text,
-        "user"
+        true
     );
 
-    input.value = "";
+
+    input.value="";
+
 
     setTimeout(()=>{
 
-        const lower =
-            text.toLowerCase();
+        const response=
+            getResponse(text);
 
-        let reply;
 
-        if(
-            lower.includes("flood") ||
-            lower.includes("risk")
-        ){
+        addMessage(
+            response,
+            false
+        );
 
-            reply =
-              "The current FloodGuard AI monitoring indicates a moderate to high risk condition. Please monitor water levels and rainfall closely.";
 
-        }else if(
-            lower.includes("water")
-        ){
+        speakHexa(response);
 
-            reply =
-              "The current simulated water level is "+
-              document.getElementById("waterValue")
-              .textContent+
-              ".";
+    },450);
 
-        }else if(
-            lower.includes("rain")
-        ){
+}
 
-            reply =
-              "Current rainfall is "+
-              document.getElementById("rainValue")
-              .textContent+
-              ".";
 
-        }else if(
-            lower.includes("map")
-        ){
+/* =====================================================
+   CHAT RESPONSE
+===================================================== */
 
-            reply =
-              "You can switch the map using the left sidebar. Available styles are Standard, Satellite, Terrain, Light, Roads, Rainfall, Flood Risk and Weather.";
+function getResponse(text){
 
-        }else if(
-            lower.includes("hello") ||
-            lower.includes("hi")
-        ){
+    const q=text.toLowerCase();
 
-            reply =
-              "Hello! I am hexa, your AI flood protection assistant. How can I help you?";
 
-        }else if(
-            lower.includes("safe")
-        ){
+    if(
+        q.includes("hello") ||
+        q.includes("hi") ||
+        q.includes("hey")
+    ){
 
-            reply =
-              "Stay alert during heavy rainfall. Follow official emergency instructions if a warning is issued.";
+        return(
+            "Hello! I'm Hexa, your FloodGuard AI assistant. "+
+            "How can I help you today?"
+        );
 
-        }else{
+    }
 
-            reply =
-              "I can help you with flood risk, water levels, rainfall, maps, AI predictions, alerts and safety information.";
+
+    if(
+        q.includes("map") ||
+        q.includes("location")
+    ){
+
+        return(
+            "You can search any location worldwide using "+
+            "the search bar. Map styles are available directly "+
+            "below the map."
+        );
+
+    }
+
+
+    if(
+        q.includes("flood") ||
+        q.includes("risk")
+    ){
+
+        return(
+            "FloodGuard currently monitors multiple flood-risk "+
+            "regions. Select Flood Risk below the map to visualize "+
+            "risk zones."
+        );
+
+    }
+
+
+    if(
+        q.includes("rain") ||
+        q.includes("weather")
+    ){
+
+        return(
+            "Use the Rainfall or Weather map options below "+
+            "the map to visualize environmental information."
+        );
+
+    }
+
+
+    if(
+        q.includes("sensor") ||
+        q.includes("water")
+    ){
+
+        return(
+            "FloodGuard can monitor water level, rainfall, "+
+            "temperature, humidity and flow sensors."
+        );
+
+    }
+
+
+    if(
+        q.includes("ai") ||
+        q.includes("prediction")
+    ){
+
+        return(
+            "The AI prediction system can evaluate rainfall, "+
+            "water level, flow and environmental conditions."
+        );
+
+    }
+
+
+    return(
+        "I can help you with maps, flood risk, weather, "+
+        "sensors, alerts and AI predictions."
+    );
+
+}
+
+
+/* =====================================================
+   ADD CHAT MESSAGE
+===================================================== */
+
+function addMessage(text,user){
+
+    const container=
+        document
+        .getElementById("chatMessages");
+
+
+    const div=
+        document.createElement("div");
+
+
+    div.className=
+        "msg"+
+        (user ? " user":"");
+
+
+    if(user){
+
+        div.innerHTML=
+            `<div class="bubble">
+                ${escapeHTML(text)}
+            </div>`;
+
+    }else{
+
+        div.innerHTML=`
+
+            <svg class="ai-icon small">
+                <use href="#aiRobot"></use>
+            </svg>
+
+            <div class="bubble">
+                ${escapeHTML(text)}
+            </div>
+
+        `;
+
+    }
+
+
+    container.appendChild(div);
+
+
+    container.scrollTop=
+        container.scrollHeight;
+
+}
+
+
+/* =====================================================
+   HEXA VOICE
+===================================================== */
+
+function speakHexa(text){
+
+    if(!voiceEnabled)
+        return;
+
+
+    if(!window.speechSynthesis)
+        return;
+
+
+    speechSynthesis.cancel();
+
+
+    /*
+      IMPORTANT:
+      Never send "HEXA" to speech synthesis.
+      Use "Hexa" so browsers pronounce it
+      as a name instead of H-E-X-A.
+    */
+
+    const clean=
+        text
+        .replace(/H\.E\.X\.A/gi,"Hexa")
+        .replace(/\bHEXA\b/gi,"Hexa");
+
+
+    const speech=
+        new SpeechSynthesisUtterance(
+            clean
+        );
+
+
+    speech.lang="en-IN";
+    speech.rate=.9;
+    speech.pitch=1.05;
+    speech.volume=1;
+
+
+    const voices=
+        speechSynthesis.getVoices();
+
+
+    const voice=
+        voices.find(
+            v=>v.lang==="en-IN"
+        ) ||
+        voices.find(
+            v=>v.lang.startsWith("en")
+        );
+
+
+    if(voice)
+        speech.voice=voice;
+
+
+    speechSynthesis.speak(
+        speech
+    );
+
+}
+
+
+/* =====================================================
+   VOICE TOGGLE
+===================================================== */
+
+function toggleVoice(){
+
+    voiceEnabled=!voiceEnabled;
+
+
+    document
+        .getElementById("voiceButton")
+        .textContent=
+        voiceEnabled
+        ? "🔊"
+        : "🔇";
+
+
+    if(!voiceEnabled)
+        speechSynthesis.cancel();
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(text){
+
+    const div=
+        document.createElement("div");
+
+    div.textContent=text;
+
+    return div.innerHTML;
+
+}
+
+
+/* =====================================================
+   DEMO LIVE DATA
+===================================================== */
+
+function updateData(){
+
+    const water=
+        (3.7+
+        Math.random()*1.6)
+        .toFixed(1);
+
+
+    const rain=
+        Math.floor(
+            55+
+            Math.random()*60
+        );
+
+
+    const risk=
+        Math.floor(
+            48+
+            Math.random()*30
+        );
+
+
+    const alerts=
+        Math.floor(
+            9+
+            Math.random()*6
+        );
+
+
+    document
+        .getElementById("water")
+        .textContent=
+        water+" m";
+
+
+    document
+        .getElementById("rain")
+        .textContent=
+        rain+" mm";
+
+
+    document
+        .getElementById("risk")
+        .textContent=
+        risk+"%";
+
+
+    document
+        .getElementById("alerts")
+        .textContent=
+        alerts;
+
+
+    document
+        .getElementById("overviewAlerts")
+        .textContent=
+        alerts;
+
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+let toastTimer;
+
+function showToast(text){
+
+    let toast=
+        document.getElementById("toast");
+
+
+    if(!toast){
+
+        toast=
+            document.createElement("div");
+
+        toast.id="toast";
+
+        toast.style.cssText=`
+
+            position:fixed;
+            right:20px;
+            top:85px;
+            z-index:999999;
+            padding:13px 18px;
+            border-radius:12px;
+            background:rgba(2,18,38,.95);
+            border:1px solid #00d9ff;
+            color:#fff;
+            font-size:11px;
+            box-shadow:0 0 30px rgba(0,200,255,.2);
+
+        `;
+
+        document.body.appendChild(toast);
+
+    }
+
+
+    toast.textContent=text;
+
+
+    clearTimeout(toastTimer);
+
+
+    toastTimer=
+        setTimeout(
+            ()=>{
+                toast.remove();
+            },
+            3000
+        );
+
+}
+
+
+/* =====================================================
+   OTHER BUTTONS
+===================================================== */
+
+function riskMap(){
+
+    map.flyTo(
+        [22.5,79],
+        5,
+        {
+            duration:1.5
+        }
+    );
+
+
+    floodLayer.addTo(map);
+
+
+    showToast(
+        "Flood Risk Map activated"
+    );
+
+}
+
+
+function prediction(){
+
+    showToast(
+        "AI Flood Prediction engine activated"
+    );
+
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+const statuses=[
+
+    "INITIALIZING FLOOD MONITORING...",
+    "LOADING GLOBAL WATER SYSTEMS...",
+    "ANALYZING WEATHER PATTERNS...",
+    "PROCESSING FLOOD RISK DATA...",
+    "CONNECTING SENSOR NETWORK...",
+    "HEXA AI ONLINE..."
+
+];
+
+
+let statusIndex=0;
+
+
+const statusInterval=
+    setInterval(()=>{
+
+        const el=
+            document.getElementById(
+                "loadingStatus"
+            );
+
+
+        if(el){
+
+            el.textContent=
+                statuses[
+                    statusIndex %
+                    statuses.length
+                ];
+
+            statusIndex++;
 
         }
 
-        addMessage(
-            reply,
-            "bot"
-        );
+    },650);
 
-        speakHexa(reply);
 
-    },500);
-
-}
-
-function addMessage(text,type){
-
-    const messages =
-        document.getElementById(
-            "chatMessages"
-        );
-
-    const div =
-        document.createElement("div");
-
-    div.className =
-        "message "+type;
-
-    div.textContent = text;
-
-    messages.appendChild(div);
-
-    messages.scrollTop =
-        messages.scrollHeight;
-
-}
-
-/* ==================================================
-   SETTINGS
-================================================== */
-
-function toggleSwitch(el){
-
-    el.classList.toggle("on");
-
-    showToast(
-        el.classList.contains("on")
-        ? "Setting enabled"
-        : "Setting disabled"
-    );
-
-}
-
-/* ==================================================
-   TOAST
-================================================== */
-
-function showToast(message){
-
-    const toast =
-        document.getElementById("toast");
-
-    toast.textContent =
-        message;
-
-    toast.classList.add("show");
-
-    setTimeout(()=>{
-        toast.classList.remove("show");
-    },2000);
-
-}
-
-/* ==================================================
+/* =====================================================
    START
-================================================== */
+===================================================== */
 
 window.addEventListener(
     "load",
     ()=>{
 
-        initMaps();
+        initMap();
 
-        initChart();
+        updateData();
 
-        updateSensors();
+
+        setInterval(
+            updateData,
+            10000
+        );
+
+
+        setTimeout(()=>{
+
+            clearInterval(
+                statusInterval
+            );
+
+
+            document
+                .getElementById(
+                    "loadingScreen"
+                )
+                .classList.add(
+                    "hide"
+                );
+
+
+            setTimeout(()=>{
+
+                document
+                    .getElementById(
+                        "mapLoading"
+                    )
+                    .style.display="none";
+
+            },1200);
+
+        },4300);
 
     }
 );
