@@ -2,296 +2,450 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>FloodGuard AI | HEXA TECH</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet">
+<!-- =========================================================
+     EXTERNAL LIBRARIES
+========================================================= -->
 
-<link rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link
+rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
 
-<link rel="stylesheet"
-href="https://unpkg.com/leaflet.fullscreen@3.0.0/Control.FullScreen.css">
+<link
+href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800;900&display=swap"
+rel="stylesheet"
+>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.fullscreen@3.0.0/dist/Control.FullScreen.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
 
 <style>
 
-:root{
-    --bg:#020817;
-    --panel:#061426;
-    --panel2:#081b31;
-    --cyan:#00d9ff;
-    --blue:#1677ff;
-    --purple:#8b5cf6;
-    --green:#00f5a0;
-    --yellow:#ffd43b;
-    --orange:#ff8a00;
-    --red:#ff3158;
-    --text:#eef9ff;
-    --muted:#819ab5;
-    --border:rgba(0,203,255,.25);
-}
+/* =========================================================
+   GLOBAL
+========================================================= */
 
 *{
-    box-sizing:border-box;
     margin:0;
     padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
 }
 
 body{
-    width:100%;
-    height:100vh;
-    overflow:hidden;
-    background:
-        radial-gradient(circle at 50% 0%,#062c4b 0%,#020817 45%);
-    color:var(--text);
-    font-family:Inter,Arial,sans-serif;
+    font-family:"Inter",sans-serif;
+    background:#050912;
+    color:#eaf6ff;
+    overflow-x:hidden;
 }
 
 button,
-input{
+input,
+select{
     font-family:inherit;
 }
 
-/* =====================================
-   ROBOT / AI ICON
-===================================== */
-
-.ai-icon{
-    width:52px;
-    height:52px;
-    filter:
-        drop-shadow(0 0 10px rgba(0,217,255,.7))
-        drop-shadow(0 0 25px rgba(77,77,255,.35));
+button{
+    cursor:pointer;
 }
 
-.ai-icon.small{
-    width:38px;
-    height:38px;
+:root{
+    --bg:#050912;
+    --panel:#0b1320;
+    --panel2:#0e1928;
+    --border:rgba(87,196,255,.18);
+    --cyan:#29d9ff;
+    --blue:#388cff;
+    --green:#27e58a;
+    --yellow:#ffd84d;
+    --orange:#ff9d32;
+    --red:#ff3f5f;
+    --text:#eaf6ff;
+    --muted:#7e98ad;
 }
 
-.ai-icon.big{
-    width:110px;
-    height:110px;
-}
 
-/* =====================================
-   LOADING SCREEN
-===================================== */
+/* =========================================================
+   BACKGROUND
+========================================================= */
 
-.loading-screen{
+body::before{
+    content:"";
     position:fixed;
     inset:0;
-    z-index:99999;
-    background:#010611;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    overflow:hidden;
-    transition:1s;
-}
-
-.loading-screen.hide{
-    opacity:0;
-    visibility:hidden;
-}
-
-.flood-bg{
-    position:absolute;
-    bottom:0;
-    width:100%;
-    height:45%;
+    pointer-events:none;
     background:
-        repeating-radial-gradient(
-            ellipse at 50% 100%,
-            transparent 0 20px,
-            rgba(0,217,255,.12) 21px 24px
-        );
-    animation:floodMove 4s linear infinite;
+        linear-gradient(rgba(41,217,255,.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(41,217,255,.025) 1px,transparent 1px);
+    background-size:40px 40px;
+    z-index:-3;
 }
 
-@keyframes floodMove{
-    from{transform:translateX(0)}
-    to{transform:translateX(-100px)}
+body::after{
+    content:"";
+    position:fixed;
+    width:500px;
+    height:500px;
+    right:-220px;
+    top:-220px;
+    background:radial-gradient(circle,rgba(41,217,255,.10),transparent 70%);
+    pointer-events:none;
+    z-index:-2;
 }
 
-.wave1,
-.wave2{
+
+/* =========================================================
+   LOADER
+========================================================= */
+
+#loader{
+    position:fixed;
+    inset:0;
+    background:#02050a;
+    z-index:99999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+}
+
+.loader-grid{
     position:absolute;
-    bottom:-90px;
-    width:120%;
-    height:180px;
-    border-radius:50% 50% 0 0;
-    background:rgba(0,157,255,.10);
-    animation:wave 3s ease-in-out infinite;
+    inset:0;
+    background:
+        linear-gradient(rgba(41,217,255,.05) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(41,217,255,.05) 1px,transparent 1px);
+    background-size:45px 45px;
+    transform:perspective(600px) rotateX(60deg) scale(1.5);
+    transform-origin:center bottom;
+    animation:gridMove 4s linear infinite;
 }
 
-.wave2{
-    bottom:-120px;
-    opacity:.7;
-    animation-delay:-1.3s;
-}
-
-@keyframes wave{
-    0%,100%{
-        transform:translateX(-3%);
+@keyframes gridMove{
+    from{
+        background-position:0 0;
     }
-    50%{
-        transform:translateX(3%);
+    to{
+        background-position:0 45px;
     }
 }
 
-.loading-box{
+.rain{
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+}
+
+.rain span{
+    position:absolute;
+    width:1px;
+    height:80px;
+    background:linear-gradient(transparent,#4bdcff);
+    opacity:.45;
+    animation:rainFall linear infinite;
+}
+
+@keyframes rainFall{
+    from{
+        transform:translateY(-120px);
+    }
+    to{
+        transform:translateY(110vh);
+    }
+}
+
+.loader-content{
     position:relative;
     z-index:3;
-    width:min(500px,90%);
+    width:min(700px,90%);
     text-align:center;
-    padding:40px;
-    border-radius:28px;
-    border:1px solid rgba(0,214,255,.35);
-    background:rgba(3,17,35,.82);
-    backdrop-filter:blur(25px);
-    box-shadow:
-        0 0 80px rgba(0,200,255,.15),
-        inset 0 0 40px rgba(0,200,255,.04);
 }
 
-.flood-logo{
-    font-size:75px;
-    animation:floodPulse 1.7s infinite;
-}
-
-@keyframes floodPulse{
-    0%,100%{
-        transform:translateY(0) scale(1);
-        filter:drop-shadow(0 0 10px #00d9ff);
-    }
-    50%{
-        transform:translateY(-10px) scale(1.06);
-        filter:drop-shadow(0 0 30px #00d9ff);
-    }
-}
-
-.loading-title{
+.loader-logo{
     font-family:Orbitron;
-    font-size:27px;
-    letter-spacing:2px;
-    margin-top:15px;
+    font-size:clamp(34px,6vw,70px);
+    font-weight:900;
+    letter-spacing:7px;
+    color:#fff;
+    text-shadow:
+        0 0 15px #29d9ff,
+        0 0 40px rgba(41,217,255,.5);
 }
 
-.loading-title span{
-    color:var(--cyan);
-}
-
-.loading-text{
+.loader-sub{
+    color:#56dfff;
+    letter-spacing:5px;
     margin-top:10px;
-    color:var(--muted);
     font-size:12px;
 }
 
-.loading-bar{
-    margin-top:25px;
-    height:8px;
-    border-radius:20px;
-    background:#071a30;
-    overflow:hidden;
+.ai-core{
+    width:130px;
+    height:130px;
+    margin:45px auto 30px;
+    border:2px solid #29d9ff;
+    border-radius:50%;
+    position:relative;
+    box-shadow:
+        0 0 25px #29d9ff,
+        inset 0 0 30px rgba(41,217,255,.25);
+    animation:corePulse 1.7s infinite;
 }
 
-.loading-progress{
-    height:100%;
-    width:0;
+.ai-core::before,
+.ai-core::after{
+    content:"";
+    position:absolute;
+    inset:17px;
+    border:1px dashed #29d9ff;
+    border-radius:50%;
+    animation:spin 4s linear infinite;
+}
+
+.ai-core::after{
+    inset:38px;
+    animation-direction:reverse;
+    animation-duration:2s;
+}
+
+.core-dot{
+    position:absolute;
+    width:25px;
+    height:25px;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    background:#fff;
+    border-radius:50%;
+    box-shadow:0 0 30px #29d9ff;
+}
+
+@keyframes spin{
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+@keyframes corePulse{
+    50%{
+        transform:scale(1.08);
+    }
+}
+
+.city{
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    height:120px;
     background:
-        linear-gradient(
-            90deg,
-            #006eff,
-            #00d9ff,
-            #8b5cf6
-        );
-    box-shadow:0 0 20px #00d9ff;
-    animation:load 4s forwards;
+        linear-gradient(90deg,
+        transparent 0 4%,
+        #09131e 4% 9%,
+        transparent 9% 12%,
+        #09131e 12% 17%,
+        transparent 17% 22%,
+        #09131e 22% 31%,
+        transparent 31% 35%,
+        #09131e 35% 43%,
+        transparent 43% 47%,
+        #09131e 47% 57%,
+        transparent 57% 62%,
+        #09131e 62% 69%,
+        transparent 69% 74%,
+        #09131e 74% 84%,
+        transparent 84% 88%,
+        #09131e 88% 96%,
+        transparent 96%);
+    opacity:.8;
 }
 
-@keyframes load{
-    to{width:100%}
+.flood-water{
+    position:absolute;
+    bottom:0;
+    left:-10%;
+    width:120%;
+    height:30px;
+    background:#087da0;
+    box-shadow:0 -5px 30px rgba(41,217,255,.5);
+    animation:waterRise 5s ease forwards;
 }
 
-.loading-status{
-    margin-top:12px;
-    color:var(--cyan);
-    font-family:Orbitron;
-    font-size:10px;
+@keyframes waterRise{
+    from{
+        height:0;
+    }
+    to{
+        height:35px;
+    }
 }
 
-/* =====================================
-   APP
-===================================== */
+.loader-status{
+    margin-top:15px;
+    color:#7f9aaa;
+    font-size:13px;
+}
 
-.app{
+.loader-progress{
     width:100%;
-    height:100vh;
-    display:flex;
+    height:4px;
+    margin-top:20px;
+    background:#101b27;
+    overflow:hidden;
+    border-radius:10px;
 }
 
-/* =====================================
+.loader-progress-bar{
+    width:0%;
+    height:100%;
+    background:#29d9ff;
+    box-shadow:0 0 15px #29d9ff;
+    animation:loadProgress 4.5s ease forwards;
+}
+
+@keyframes loadProgress{
+    to{
+        width:100%;
+    }
+}
+
+
+/* =========================================================
+   APP
+========================================================= */
+
+#app{
+    display:none;
+}
+
+
+/* =========================================================
    SIDEBAR
-===================================== */
+========================================================= */
 
 .sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
     width:245px;
-    height:100%;
-    flex-shrink:0;
-    padding:16px;
     background:
-        linear-gradient(
-            180deg,
-            rgba(3,19,39,.98),
-            rgba(2,11,25,.98)
-        );
+        linear-gradient(180deg,
+        rgba(7,17,29,.98),
+        rgba(4,10,18,.98));
     border-right:1px solid var(--border);
-    display:flex;
-    flex-direction:column;
-    z-index:20;
+    z-index:1000;
+    padding:22px 15px;
+    overflow-y:auto;
 }
 
 .brand{
     display:flex;
     align-items:center;
-    gap:10px;
-    padding:8px;
-    margin-bottom:15px;
+    gap:12px;
+    padding:0 10px 25px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:20px;
 }
 
-.brand-text{
+.brand-icon{
+    width:42px;
+    height:42px;
+    border:1px solid #29d9ff;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#29d9ff;
+    box-shadow:0 0 20px rgba(41,217,255,.18);
     font-family:Orbitron;
-    font-size:17px;
-    font-weight:700;
+    font-weight:800;
 }
 
-.brand-text span{
-    color:var(--cyan);
+.brand-name{
+    font-family:Orbitron;
+    font-size:15px;
+    letter-spacing:1px;
 }
 
-.tech{
-    font-size:8px;
-    color:#5b8aaa;
-    letter-spacing:4px;
+.brand-small{
+    color:#5d8298;
+    font-size:9px;
     margin-top:3px;
 }
 
-.system{
-    padding:10px;
+.nav-title{
+    color:#476478;
+    font-size:9px;
+    letter-spacing:2px;
+    padding:8px 10px;
+}
+
+.nav-item{
+    width:100%;
+    border:1px solid transparent;
+    background:transparent;
+    color:#7892a5;
+    display:flex;
+    align-items:center;
+    gap:13px;
+    padding:12px 13px;
+    border-radius:11px;
+    margin:4px 0;
+    text-align:left;
+    transition:.25s;
+}
+
+.nav-item:hover{
+    color:#dff7ff;
+    background:rgba(41,217,255,.06);
+}
+
+.nav-item.active{
+    color:#fff;
+    border-color:rgba(41,217,255,.2);
+    background:
+        linear-gradient(90deg,
+        rgba(41,217,255,.14),
+        rgba(41,217,255,.03));
+    box-shadow:inset 3px 0 #29d9ff;
+}
+
+.nav-icon{
+    width:25px;
+    text-align:center;
+    font-size:16px;
+}
+
+.sidebar-status{
+    margin-top:25px;
+    padding:13px;
+    border:1px solid var(--border);
     border-radius:12px;
-    background:rgba(0,245,160,.06);
-    border:1px solid rgba(0,245,160,.18);
-    font-size:10px;
-    color:#9fffdc;
-    margin-bottom:15px;
+    background:rgba(255,255,255,.015);
+}
+
+.status-line{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:11px;
+    margin:7px 0;
+}
+
+.online{
+    color:var(--green);
 }
 
 .dot{
@@ -299,755 +453,944 @@ input{
     width:7px;
     height:7px;
     border-radius:50%;
-    background:var(--green);
-    box-shadow:0 0 10px var(--green);
-    margin-right:7px;
+    background:currentColor;
+    box-shadow:0 0 8px currentColor;
+    margin-right:5px;
 }
 
-.nav{
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-}
 
-.nav button{
-    border:0;
-    background:transparent;
-    color:#91aac5;
-    padding:12px;
-    border-radius:12px;
-    cursor:pointer;
-    text-align:left;
-    font-size:12px;
-    transition:.25s;
-}
-
-.nav button:hover,
-.nav button.active{
-    color:#fff;
-    background:
-        linear-gradient(
-            90deg,
-            rgba(0,120,255,.3),
-            rgba(0,205,255,.07)
-        );
-    box-shadow:
-        inset 3px 0 var(--cyan);
-}
-
-.nav-icon{
-    display:inline-block;
-    width:27px;
-    font-size:17px;
-}
-
-.sidebar-footer{
-    margin-top:auto;
-    padding:12px;
-    border-top:1px solid var(--border);
-    color:#597894;
-    font-size:9px;
-    line-height:1.7;
-}
-
-/* =====================================
+/* =========================================================
    MAIN
-===================================== */
+========================================================= */
 
 .main{
-    flex:1;
-    min-width:0;
-    height:100%;
-    padding:16px;
-    overflow:hidden;
+    margin-left:245px;
+    min-height:100vh;
+    padding:22px 25px 50px;
 }
-
-/* =====================================
-   TOP BAR
-===================================== */
 
 .topbar{
-    height:58px;
+    height:62px;
     display:flex;
+    justify-content:space-between;
     align-items:center;
-    gap:14px;
-    margin-bottom:12px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:25px;
 }
-
-.search{
-    height:48px;
-    max-width:650px;
-    flex:1;
-    display:flex;
-    align-items:center;
-    padding:0 8px 0 15px;
-    border-radius:15px;
-    border:1px solid rgba(0,203,255,.35);
-    background:rgba(3,18,36,.9);
-    box-shadow:0 0 30px rgba(0,180,255,.05);
-}
-
-.search-icon{
-    color:var(--cyan);
-    font-size:20px;
-    margin-right:10px;
-}
-
-.search input{
-    flex:1;
-    min-width:0;
-    background:none;
-    border:0;
-    outline:0;
-    color:#fff;
-    font-size:12px;
-}
-
-.search input::placeholder{
-    color:#66839f;
-}
-
-.search button{
-    width:37px;
-    height:37px;
-    border:1px solid var(--border);
-    border-radius:10px;
-    background:rgba(0,120,255,.15);
-    color:var(--cyan);
-    cursor:pointer;
-}
-
-.online{
-    margin-left:auto;
-    padding:12px 15px;
-    border-radius:13px;
-    border:1px solid rgba(0,245,160,.2);
-    background:rgba(0,245,160,.05);
-    font-size:10px;
-    white-space:nowrap;
-}
-
-.online span{
-    color:var(--green);
-}
-
-/* =====================================
-   CONTENT GRID
-===================================== */
-
-.content{
-    height:calc(100% - 70px);
-    display:grid;
-    grid-template-columns:minmax(0,1fr) 330px;
-    gap:14px;
-    min-height:0;
-}
-
-.center{
-    min-width:0;
-    overflow-y:auto;
-    padding-right:2px;
-}
-
-.center::-webkit-scrollbar{
-    width:4px;
-}
-
-.center::-webkit-scrollbar-thumb{
-    background:#124b70;
-    border-radius:10px;
-}
-
-/* =====================================
-   HEADER
-===================================== */
 
 .page-title{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom:12px;
-}
-
-.page-title h1{
     font-family:Orbitron;
-    font-size:19px;
+    font-size:20px;
+    letter-spacing:1px;
 }
 
-.page-title h1 span{
-    color:var(--cyan);
-}
-
-.page-title p{
-    color:#7792ad;
-    font-size:10px;
-    margin-top:4px;
-}
-
-.live-pill{
-    padding:8px 12px;
-    border-radius:20px;
-    border:1px solid rgba(0,245,160,.2);
-    color:#a7ffe0;
-    background:rgba(0,245,160,.05);
-    font-size:9px;
-}
-
-/* =====================================
-   MAP CARD
-===================================== */
-
-.map-card{
-    border:1px solid rgba(0,200,255,.35);
-    border-radius:20px;
-    overflow:hidden;
-    background:#03101f;
-    box-shadow:
-        0 20px 60px rgba(0,0,0,.3),
-        0 0 35px rgba(0,180,255,.05);
-}
-
-.map-head{
-    height:55px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 15px;
-    background:rgba(3,17,35,.95);
-    border-bottom:1px solid var(--border);
-}
-
-.map-title{
-    display:flex;
-    align-items:center;
-    gap:9px;
-}
-
-.map-title-icon{
-    width:34px;
-    height:34px;
-    border-radius:10px;
-    display:grid;
-    place-items:center;
-    background:rgba(0,195,255,.1);
-    color:var(--cyan);
-    font-size:17px;
-}
-
-.map-title strong{
-    font-size:12px;
-}
-
-.map-title small{
-    display:block;
-    color:#6d8aa6;
-    font-size:8px;
-    margin-top:3px;
-}
-
-.map-status{
-    font-size:9px;
-    color:var(--green);
-}
-
-#map{
-    width:100%;
-    height:460px;
-}
-
-/* leaflet */
-
-.leaflet-container{
-    background:#03101d;
-}
-
-.leaflet-control-zoom{
-    margin-left:12px!important;
-    margin-bottom:14px!important;
-}
-
-.leaflet-control-zoom a{
-    background:rgba(3,17,35,.95)!important;
-    color:#fff!important;
-    border-color:rgba(0,210,255,.4)!important;
-    width:38px!important;
-    height:38px!important;
-    line-height:38px!important;
-}
-
-.leaflet-control-zoom a:hover{
-    color:var(--cyan)!important;
-}
-
-.leaflet-control-fullscreen{
-    margin-right:12px!important;
-    margin-top:12px!important;
-}
-
-.leaflet-control-fullscreen a{
-    background:rgba(3,17,35,.95)!important;
-    color:white!important;
-    border:1px solid rgba(0,210,255,.4)!important;
-}
-
-/* =====================================
-   FLOOD LOADING INSIDE MAP
-===================================== */
-
-.map-loading{
-    position:absolute;
-    z-index:500;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    width:260px;
-    padding:18px;
-    border-radius:16px;
-    background:rgba(2,14,30,.92);
-    border:1px solid rgba(0,210,255,.4);
-    backdrop-filter:blur(15px);
-    text-align:center;
-    box-shadow:0 0 40px rgba(0,180,255,.15);
-    pointer-events:none;
-}
-
-.map-flood{
-    font-size:35px;
-    animation:floodIcon 1.2s infinite;
-}
-
-@keyframes floodIcon{
-    0%,100%{
-        transform:translateY(0);
-    }
-    50%{
-        transform:translateY(-7px);
-    }
-}
-
-.map-loading strong{
-    display:block;
+.page-sub{
+    color:#5e788d;
     font-size:11px;
-    margin-top:7px;
-}
-
-.map-loading small{
-    display:block;
-    color:#6f91ad;
-    font-size:8px;
     margin-top:4px;
 }
 
-.map-load-bar{
-    margin-top:12px;
-    height:5px;
-    border-radius:20px;
-    background:#06182c;
-    overflow:hidden;
-}
-
-.map-load-fill{
-    height:100%;
-    width:75%;
-    background:linear-gradient(90deg,#006eff,#00d9ff);
-    box-shadow:0 0 15px #00d9ff;
-    animation:mapload 2.8s infinite alternate;
-}
-
-@keyframes mapload{
-    from{width:35%}
-    to{width:92%}
-}
-
-/* =====================================
-   MAP OPTIONS BELOW MAP
-===================================== */
-
-.map-options{
-    padding:13px;
-    background:
-        linear-gradient(
-            180deg,
-            #061629,
-            #04101f
-        );
-    border-top:1px solid rgba(0,190,255,.2);
-}
-
-.map-options-title{
-    font-size:9px;
-    color:#6f8eaa;
-    letter-spacing:1.5px;
-    margin-bottom:9px;
-}
-
-.map-buttons{
-    display:grid;
-    grid-template-columns:repeat(8,1fr);
-    gap:7px;
-}
-
-.map-button{
-    min-height:62px;
-    border:1px solid rgba(0,185,255,.18);
-    border-radius:11px;
-    background:rgba(3,22,43,.8);
-    color:#8ea8c2;
-    cursor:pointer;
-    transition:.25s;
-    font-size:9px;
-}
-
-.map-button div{
-    font-size:18px;
-    margin-bottom:5px;
-}
-
-.map-button:hover,
-.map-button.active{
-    color:#fff;
-    border-color:var(--cyan);
-    background:
-        linear-gradient(
-            145deg,
-            rgba(0,120,255,.24),
-            rgba(0,215,255,.08)
-        );
-    box-shadow:
-        0 0 18px rgba(0,200,255,.12),
-        inset 0 0 15px rgba(0,200,255,.04);
-}
-
-.map-button.active{
-    color:var(--cyan);
-}
-
-/* =====================================
-   METRICS
-===================================== */
-
-.metrics{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:9px;
-    margin-top:12px;
-}
-
-.metric{
-    padding:13px;
-    border-radius:15px;
-    border:1px solid var(--border);
-    background:rgba(4,20,39,.88);
-}
-
-.metric-label{
-    color:#7190ad;
-    font-size:8px;
-}
-
-.metric-value{
-    font-family:Orbitron;
-    font-size:21px;
-    margin-top:7px;
-}
-
-.metric-change{
-    color:var(--green);
-    font-size:8px;
-    margin-top:4px;
-}
-
-/* =====================================
-   RIGHT PANEL
-===================================== */
-
-.right{
-    min-width:0;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-    overflow-y:auto;
-}
-
-.right::-webkit-scrollbar{
-    width:4px;
-}
-
-.card{
-    border:1px solid var(--border);
-    border-radius:18px;
-    background:
-        linear-gradient(
-            145deg,
-            rgba(5,23,45,.95),
-            rgba(2,13,27,.95)
-        );
-    overflow:hidden;
-}
-
-.card-header{
-    padding:13px 14px;
-    border-bottom:1px solid rgba(0,190,255,.13);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    font-size:11px;
-    font-weight:700;
-}
-
-.card-header span{
-    color:var(--cyan);
-    font-size:8px;
-}
-
-.alert{
-    padding:11px 13px;
-    display:flex;
-    gap:9px;
-    border-bottom:1px solid rgba(0,190,255,.08);
-}
-
-.alert:last-child{
-    border-bottom:0;
-}
-
-.alert-icon{
-    width:29px;
-    height:29px;
-    flex-shrink:0;
-    border-radius:50%;
-    display:grid;
-    place-items:center;
-    background:rgba(255,49,88,.12);
-}
-
-.alert strong{
-    display:block;
-    font-size:9px;
-}
-
-.alert small{
-    color:#6f8ba6;
-    font-size:8px;
-}
-
-.badge{
-    display:inline-block;
-    margin-top:4px;
-    padding:3px 6px;
-    border-radius:10px;
-    font-size:7px;
-}
-
-.high{
-    color:#ff6d88;
-    background:rgba(255,49,88,.12);
-}
-
-.medium{
-    color:#ffd43b;
-    background:rgba(255,212,59,.1);
-}
-
-.blue{
-    color:#4ddfff;
-    background:rgba(0,210,255,.1);
-}
-
-/* =====================================
-   OVERVIEW
-===================================== */
-
-.overview{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:7px;
-    padding:10px;
-}
-
-.overview-item{
-    padding:11px 8px;
-    border:1px solid rgba(0,180,255,.15);
-    border-radius:10px;
-    text-align:center;
-}
-
-.overview-item b{
-    display:block;
-    font-family:Orbitron;
-    font-size:16px;
-    margin-top:5px;
-}
-
-.overview-item small{
-    color:#6f8ba6;
-    font-size:7px;
-}
-
-/* =====================================
-   FUTURISTIC AI CHATBOT
-===================================== */
-
-.chat{
-    flex:1;
-    min-height:280px;
-    display:flex;
-    flex-direction:column;
-}
-
-.chat-header{
+.live-badge{
     display:flex;
     align-items:center;
     gap:8px;
-    padding:11px;
+    border:1px solid rgba(39,229,138,.25);
+    padding:9px 13px;
+    border-radius:30px;
+    color:#57eea5;
+    font-size:11px;
+    background:rgba(39,229,138,.04);
+}
+
+.section{
+    display:none;
+    animation:sectionIn .3s ease;
+}
+
+.section.active{
+    display:block;
+}
+
+@keyframes sectionIn{
+    from{
+        opacity:0;
+        transform:translateY(8px);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+
+.card{
+    background:
+        linear-gradient(145deg,
+        rgba(13,26,42,.95),
+        rgba(7,15,26,.95));
+    border:1px solid var(--border);
+    border-radius:15px;
+    padding:18px;
+    position:relative;
+    overflow:hidden;
+}
+
+.card::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    height:1px;
+    background:linear-gradient(90deg,transparent,#29d9ff,transparent);
+    opacity:.5;
+}
+
+.card-label{
+    color:#718da2;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+.card-value{
+    font-family:Orbitron;
+    font-size:27px;
+    font-weight:700;
+    margin-top:12px;
+}
+
+.card-unit{
+    color:#6f899c;
+    font-size:11px;
+}
+
+.card-foot{
+    margin-top:12px;
+    font-size:10px;
+    color:#6e8798;
+}
+
+.green{
+    color:var(--green);
+}
+
+.yellow{
+    color:var(--yellow);
+}
+
+.orange{
+    color:var(--orange);
+}
+
+.red{
+    color:var(--red);
+}
+
+.cyan{
+    color:var(--cyan);
+}
+
+
+/* =========================================================
+   SECTION HEADER
+========================================================= */
+
+.section-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:30px 0 15px;
+}
+
+.section-header h2{
+    font-family:Orbitron;
+    font-size:15px;
+}
+
+.section-header span{
+    color:#648096;
+    font-size:10px;
+}
+
+
+/* =========================================================
+   DASHBOARD GRID
+========================================================= */
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:1.7fr 1fr;
+    gap:15px;
+    margin-top:15px;
+}
+
+.panel{
+    background:
+        linear-gradient(145deg,
+        rgba(10,21,35,.96),
+        rgba(6,13,23,.96));
+    border:1px solid var(--border);
+    border-radius:15px;
+    overflow:hidden;
+}
+
+.panel-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 17px;
     border-bottom:1px solid var(--border);
 }
 
-.ai-name{
+.panel-title{
+    font-size:12px;
+    font-family:Orbitron;
+}
+
+.panel-tag{
+    color:#5f7d91;
+    font-size:9px;
+}
+
+
+/* =========================================================
+   MAP
+========================================================= */
+
+#dashboardMap{
+    height:500px;
+    width:100%;
+}
+
+#riskMap{
+    height:650px;
+    width:100%;
+}
+
+.leaflet-container{
+    background:#07101a;
+}
+
+.map-wrap{
+    position:relative;
+}
+
+.map-search{
+    position:absolute;
+    top:12px;
+    left:55px;
+    z-index:500;
+    display:flex;
+    gap:7px;
+}
+
+.map-search input{
+    width:260px;
+    background:rgba(5,13,22,.92);
+    color:#fff;
+    border:1px solid rgba(41,217,255,.35);
+    padding:10px 12px;
+    border-radius:8px;
+    outline:none;
     font-size:11px;
+}
+
+.map-search button{
+    background:#29d9ff;
+    color:#021018;
+    border:0;
+    padding:0 14px;
+    border-radius:8px;
     font-weight:700;
 }
 
-.ai-name small{
-    display:block;
-    color:var(--green);
-    font-size:8px;
-    margin-top:3px;
+.map-action-buttons{
+    position:absolute;
+    top:60px;
+    right:12px;
+    z-index:500;
+    display:flex;
+    flex-direction:column;
+    gap:7px;
 }
 
-.voice{
-    margin-left:auto;
-    width:33px;
-    height:33px;
-    border-radius:9px;
-    border:1px solid var(--border);
-    background:rgba(0,140,255,.12);
+.map-action-buttons button{
+    width:38px;
+    height:38px;
+    background:rgba(5,13,22,.92);
+    border:1px solid rgba(41,217,255,.25);
+    color:#b9efff;
+    border-radius:8px;
+}
+
+.map-legend{
+    position:absolute;
+    right:12px;
+    bottom:15px;
+    z-index:500;
+    background:rgba(4,10,18,.92);
+    border:1px solid rgba(41,217,255,.2);
+    border-radius:10px;
+    padding:11px;
+    font-size:10px;
+}
+
+.legend-title{
     color:#fff;
+    font-family:Orbitron;
+    margin-bottom:7px;
+}
+
+.legend-row{
+    margin:5px 0;
+    color:#8da5b7;
+}
+
+.legend-dot{
+    display:inline-block;
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    margin-right:5px;
+}
+
+.map-options{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    padding:13px;
+    border-top:1px solid var(--border);
+    background:#07111d;
+}
+
+.map-option{
+    border:1px solid rgba(41,217,255,.15);
+    background:#091522;
+    color:#7e9caf;
+    padding:8px 12px;
+    border-radius:8px;
+    font-size:10px;
+}
+
+.map-option.active{
+    color:#fff;
+    border-color:#29d9ff;
+    background:rgba(41,217,255,.10);
+}
+
+
+/* =========================================================
+   RISK MARKERS
+========================================================= */
+
+.risk-marker{
+    width:80px;
+    height:30px;
+    border-radius:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:Orbitron;
+    font-size:9px;
+    font-weight:800;
+    border:1px solid rgba(255,255,255,.4);
+    box-shadow:0 0 15px currentColor;
+}
+
+.marker-safe{
+    background:rgba(39,229,138,.18);
+    color:#27e58a;
+}
+
+.marker-watch{
+    background:rgba(255,216,77,.18);
+    color:#ffd84d;
+}
+
+.marker-high{
+    background:rgba(255,157,50,.18);
+    color:#ff9d32;
+}
+
+.marker-critical{
+    background:rgba(255,63,95,.18);
+    color:#ff3f5f;
+}
+
+
+/* =========================================================
+   WEATHER
+========================================================= */
+
+.weather-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    padding:15px;
+}
+
+.weather-item{
+    background:#091522;
+    border:1px solid rgba(41,217,255,.10);
+    border-radius:10px;
+    padding:13px;
+}
+
+.weather-item label{
+    display:block;
+    color:#648096;
+    font-size:9px;
+    margin-bottom:7px;
+}
+
+.weather-item strong{
+    font-family:Orbitron;
+    font-size:17px;
+}
+
+
+/* =========================================================
+   CHART
+========================================================= */
+
+.chart-box{
+    padding:18px;
+    height:350px;
+}
+
+
+/* =========================================================
+   RISK RING
+========================================================= */
+
+.risk-panel{
+    padding:25px;
+    text-align:center;
+}
+
+.risk-ring{
+    width:185px;
+    height:185px;
+    border-radius:50%;
+    margin:15px auto 20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+        radial-gradient(circle,#08131f 57%,transparent 58%),
+        conic-gradient(
+            #27e58a 0deg,
+            #27e58a 110deg,
+            #ffd84d 110deg,
+            #ffd84d 210deg,
+            #ff9d32 210deg,
+            #ff9d32 290deg,
+            #ff3f5f 290deg,
+            #ff3f5f 360deg
+        );
+    box-shadow:0 0 35px rgba(41,217,255,.13);
+}
+
+.risk-number{
+    font-family:Orbitron;
+    font-size:40px;
+}
+
+.risk-state{
+    font-family:Orbitron;
+    font-size:14px;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-wrap{
+    overflow:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,
+td{
+    padding:13px 15px;
+    border-bottom:1px solid rgba(41,217,255,.08);
+    text-align:left;
+    font-size:11px;
+}
+
+th{
+    color:#638096;
+    font-size:9px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+td{
+    color:#b5cad8;
+}
+
+.status-pill{
+    display:inline-flex;
+    align-items:center;
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:9px;
+    font-weight:700;
+}
+
+.status-safe{
+    color:#27e58a;
+    background:rgba(39,229,138,.08);
+}
+
+.status-watch{
+    color:#ffd84d;
+    background:rgba(255,216,77,.08);
+}
+
+.status-high{
+    color:#ff9d32;
+    background:rgba(255,157,50,.08);
+}
+
+.status-critical{
+    color:#ff3f5f;
+    background:rgba(255,63,95,.08);
+}
+
+
+/* =========================================================
+   ALERTS
+========================================================= */
+
+.alert-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.alert{
+    padding:15px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:#091522;
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.alert-icon{
+    width:40px;
+    height:40px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+}
+
+.alert-critical .alert-icon{
+    color:#ff3f5f;
+    background:rgba(255,63,95,.10);
+}
+
+.alert-warning .alert-icon{
+    color:#ffd84d;
+    background:rgba(255,216,77,.10);
+}
+
+.alert-info .alert-icon{
+    color:#29d9ff;
+    background:rgba(41,217,255,.10);
+}
+
+.alert-content{
+    flex:1;
+}
+
+.alert-title{
+    font-size:12px;
+    font-weight:700;
+}
+
+.alert-description{
+    margin-top:4px;
+    color:#6e8799;
+    font-size:10px;
+}
+
+.alert-time{
+    color:#4e687b;
+    font-size:9px;
+}
+
+
+/* =========================================================
+   AI PREDICTION
+========================================================= */
+
+.prediction-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    padding:18px;
+}
+
+.form-group label{
+    display:block;
+    color:#6e8799;
+    font-size:10px;
+    margin-bottom:7px;
+}
+
+.form-group input,
+.form-group select{
+    width:100%;
+    background:#07121e;
+    border:1px solid rgba(41,217,255,.16);
+    border-radius:8px;
+    padding:11px;
+    color:#fff;
+    outline:none;
+}
+
+.primary-btn{
+    border:0;
+    background:linear-gradient(90deg,#29d9ff,#388cff);
+    color:#021018;
+    padding:11px 17px;
+    border-radius:8px;
+    font-weight:800;
+    font-size:11px;
+}
+
+.secondary-btn{
+    border:1px solid rgba(41,217,255,.2);
+    background:#091522;
+    color:#9ec0d1;
+    padding:10px 14px;
+    border-radius:8px;
+    font-size:10px;
+}
+
+
+/* =========================================================
+   ANALYTICS
+========================================================= */
+
+.analytics-grid{
+    display:grid;
+    grid-template-columns:1.5fr 1fr;
+    gap:15px;
+}
+
+.stat-list{
+    padding:18px;
+}
+
+.stat-row{
+    margin-bottom:18px;
+}
+
+.stat-row-top{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:6px;
+    font-size:10px;
+}
+
+.progress{
+    height:6px;
+    background:#111e2c;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.progress span{
+    display:block;
+    height:100%;
+    border-radius:20px;
+    background:#29d9ff;
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+.settings-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.setting-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:17px;
+    border-bottom:1px solid rgba(41,217,255,.08);
+}
+
+.setting-info strong{
+    display:block;
+    font-size:11px;
+}
+
+.setting-info span{
+    display:block;
+    color:#637d90;
+    font-size:9px;
+    margin-top:4px;
+}
+
+.switch{
+    width:43px;
+    height:23px;
+    border-radius:30px;
+    background:#172535;
+    position:relative;
+    border:1px solid rgba(41,217,255,.15);
     cursor:pointer;
 }
 
-.chat-messages{
-    flex:1;
-    overflow-y:auto;
-    padding:10px;
+.switch::after{
+    content:"";
+    position:absolute;
+    width:17px;
+    height:17px;
+    border-radius:50%;
+    background:#728799;
+    top:2px;
+    left:2px;
+    transition:.2s;
 }
 
-.msg{
+.switch.on{
+    background:rgba(41,217,255,.18);
+    border-color:#29d9ff;
+}
+
+.switch.on::after{
+    left:22px;
+    background:#29d9ff;
+    box-shadow:0 0 10px #29d9ff;
+}
+
+
+/* =========================================================
+   AI CHATBOT
+========================================================= */
+
+#hexaOrb{
+    position:fixed;
+    right:25px;
+    bottom:25px;
+    width:66px;
+    height:66px;
+    border-radius:50%;
+    z-index:3000;
+    cursor:pointer;
+    background:
+        radial-gradient(circle at 35% 30%,#fff,#29d9ff 22%,#075a7a 60%,#021019);
+    border:2px solid #5ce8ff;
+    box-shadow:
+        0 0 20px rgba(41,217,255,.65),
+        0 0 60px rgba(41,217,255,.25);
     display:flex;
-    gap:7px;
-    margin-bottom:9px;
+    align-items:center;
+    justify-content:center;
+    animation:orbFloat 3s ease-in-out infinite;
 }
 
-.msg.user{
-    justify-content:flex-end;
+@keyframes orbFloat{
+    50%{
+        transform:translateY(-8px);
+    }
 }
 
-.msg.user .bubble{
-    background:rgba(0,110,255,.2);
+.robot-face{
+    width:34px;
+    height:26px;
+    border:2px solid #dffbff;
+    border-radius:10px;
+    position:relative;
 }
 
-.bubble{
-    max-width:82%;
-    padding:9px 10px;
-    border-radius:12px;
-    border:1px solid rgba(0,190,255,.2);
-    background:rgba(0,35,65,.65);
-    font-size:8px;
-    line-height:1.55;
+.robot-face::before,
+.robot-face::after{
+    content:"";
+    position:absolute;
+    width:5px;
+    height:5px;
+    background:#fff;
+    border-radius:50%;
+    top:7px;
+    box-shadow:0 0 7px #fff;
+}
+
+.robot-face::before{
+    left:7px;
+}
+
+.robot-face::after{
+    right:7px;
+}
+
+#chatBox{
+    position:fixed;
+    right:25px;
+    bottom:105px;
+    width:330px;
+    max-width:calc(100vw - 35px);
+    height:420px;
+    z-index:2999;
+    background:#07111d;
+    border:1px solid rgba(41,217,255,.25);
+    border-radius:15px;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+    display:none;
+    overflow:hidden;
+}
+
+.chat-head{
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid var(--border);
+}
+
+.chat-name{
+    font-family:Orbitron;
+    font-size:12px;
+}
+
+.chat-status{
+    font-size:9px;
+    color:#27e58a;
+}
+
+.chat-messages{
+    height:315px;
+    overflow:auto;
+    padding:13px;
+}
+
+.message{
+    max-width:85%;
+    padding:10px;
+    border-radius:10px;
+    margin-bottom:8px;
+    font-size:10px;
+    line-height:1.5;
+}
+
+.bot-message{
+    background:#0d1d2d;
+    color:#b9d6e5;
+}
+
+.user-message{
+    background:#0b5b76;
+    margin-left:auto;
+    color:#fff;
 }
 
 .chat-input{
     display:flex;
-    gap:5px;
-    padding:8px;
     border-top:1px solid var(--border);
 }
 
 .chat-input input{
     flex:1;
-    min-width:0;
-    padding:9px;
-    border-radius:9px;
-    border:1px solid rgba(0,190,255,.2);
-    background:#031224;
-    color:white;
-    outline:0;
-    font-size:8px;
+    background:transparent;
+    border:0;
+    color:#fff;
+    padding:12px;
+    outline:none;
+    font-size:10px;
 }
 
 .chat-input button{
-    width:35px;
     border:0;
-    border-radius:9px;
-    background:linear-gradient(135deg,#006eff,#00cfff);
-    color:white;
-    cursor:pointer;
+    background:#29d9ff;
+    padding:0 15px;
 }
 
-/* =====================================
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+#toast{
+    position:fixed;
+    top:20px;
+    right:20px;
+    z-index:10000;
+    background:#081522;
+    border:1px solid rgba(41,217,255,.25);
+    padding:13px 17px;
+    border-radius:10px;
+    font-size:11px;
+    display:none;
+    box-shadow:0 10px 30px rgba(0,0,0,.4);
+}
+
+
+/* =========================================================
    RESPONSIVE
-===================================== */
+========================================================= */
 
-@media(max-width:1200px){
+@media(max-width:1100px){
 
-    .sidebar{
-        width:210px;
+    .cards{
+        grid-template-columns:repeat(2,1fr);
     }
 
-    .content{
-        grid-template-columns:minmax(0,1fr) 290px;
-    }
-
-    .map-buttons{
-        grid-template-columns:repeat(4,1fr);
+    .dashboard-grid,
+    .analytics-grid,
+    .prediction-grid{
+        grid-template-columns:1fr;
     }
 
 }
 
-@media(max-width:900px){
-
-    body{
-        overflow:auto;
-    }
-
-    .app{
-        height:auto;
-        min-height:100vh;
-    }
+@media(max-width:800px){
 
     .sidebar{
-        width:75px;
-        padding:10px;
-    }
-
-    .brand-text,
-    .tech,
-    .system,
-    .nav button span:not(.nav-icon),
-    .sidebar-footer{
-        display:none;
-    }
-
-    .brand{
-        justify-content:center;
+        width:190px;
     }
 
     .main{
-        padding:10px;
+        margin-left:190px;
+        padding:15px;
     }
 
-    .content{
+    .settings-grid{
         grid-template-columns:1fr;
-        height:auto;
-    }
-
-    .right{
-        display:grid;
-        grid-template-columns:1fr 1fr;
-    }
-
-    #map{
-        height:420px;
     }
 
 }
@@ -1055,36 +1398,59 @@ input{
 @media(max-width:600px){
 
     .sidebar{
+        width:70px;
+        padding:12px 8px;
+    }
+
+    .brand{
+        justify-content:center;
+        padding:0 0 15px;
+    }
+
+    .brand-name,
+    .brand-small,
+    .nav-title,
+    .sidebar-status{
         display:none;
     }
 
-    .topbar{
-        height:auto;
+    .nav-item{
+        justify-content:center;
+        padding:12px 5px;
     }
 
-    .online{
-        display:none;
+    .main{
+        margin-left:70px;
+        padding:12px;
     }
 
-    .content{
-        display:block;
+    .cards{
+        grid-template-columns:1fr;
     }
 
-    .right{
-        display:block;
-        margin-top:12px;
+    .weather-grid{
+        grid-template-columns:1fr 1fr;
     }
 
-    #map{
-        height:360px;
+    .form-grid{
+        grid-template-columns:1fr;
     }
 
-    .map-buttons{
-        grid-template-columns:repeat(4,1fr);
+    .map-search{
+        left:50px;
+        right:10px;
     }
 
-    .metrics{
-        grid-template-columns:repeat(2,1fr);
+    .map-search input{
+        width:100%;
+    }
+
+    #dashboardMap{
+        height:430px;
+    }
+
+    #riskMap{
+        height:500px;
     }
 
 }
@@ -1092,189 +1458,44 @@ input{
 </style>
 </head>
 
+
 <body>
 
-<!-- =====================================================
-     SVG FUTURISTIC AI ICON
-===================================================== -->
 
-<svg width="0" height="0" style="position:absolute">
+<!-- =========================================================
+     LOADER
+========================================================= -->
 
-<symbol id="aiRobot" viewBox="0 0 200 200">
+<div id="loader">
 
-    <circle
-        cx="100"
-        cy="100"
-        r="86"
-        fill="none"
-        stroke="#00d9ff"
-        stroke-width="3"
-        opacity=".4"
-    />
+    <div class="loader-grid"></div>
 
-    <circle
-        cx="100"
-        cy="100"
-        r="72"
-        fill="none"
-        stroke="#7c5cff"
-        stroke-width="2"
-        stroke-dasharray="10 7"
-    />
+    <div class="rain" id="rain"></div>
 
-    <line
-        x1="100"
-        y1="19"
-        x2="100"
-        y2="38"
-        stroke="#00d9ff"
-        stroke-width="6"
-    />
+    <div class="city"></div>
 
-    <circle
-        cx="100"
-        cy="13"
-        r="7"
-        fill="#00f5a0"
-    />
+    <div class="flood-water"></div>
 
-    <rect
-        x="42"
-        y="38"
-        width="116"
-        height="104"
-        rx="35"
-        fill="#061a31"
-        stroke="#00d9ff"
-        stroke-width="5"
-    />
+    <div class="loader-content">
 
-    <rect
-        x="57"
-        y="56"
-        width="86"
-        height="66"
-        rx="25"
-        fill="#020b18"
-        stroke="#236dff"
-        stroke-width="3"
-    />
-
-    <circle
-        cx="80"
-        cy="86"
-        r="11"
-        fill="#00d9ff"
-    />
-
-    <circle
-        cx="120"
-        cy="86"
-        r="11"
-        fill="#8b5cf6"
-    />
-
-    <circle
-        cx="80"
-        cy="86"
-        r="4"
-        fill="white"
-    />
-
-    <circle
-        cx="120"
-        cy="86"
-        r="4"
-        fill="white"
-    />
-
-    <path
-        d="M78 105 Q100 117 122 105"
-        fill="none"
-        stroke="#00d9ff"
-        stroke-width="4"
-        stroke-linecap="round"
-    />
-
-    <rect
-        x="31"
-        y="72"
-        width="14"
-        height="40"
-        rx="7"
-        fill="#0b4168"
-        stroke="#00d9ff"
-        stroke-width="3"
-    />
-
-    <rect
-        x="155"
-        y="72"
-        width="14"
-        height="40"
-        rx="7"
-        fill="#0b4168"
-        stroke="#00d9ff"
-        stroke-width="3"
-    />
-
-    <path
-        d="M58 143 Q100 128 142 143 L151 174 Q100 193 49 174 Z"
-        fill="#06182d"
-        stroke="#246dff"
-        stroke-width="4"
-    />
-
-    <circle
-        cx="100"
-        cy="159"
-        r="11"
-        fill="#00d9ff"
-    />
-
-    <circle
-        cx="100"
-        cy="159"
-        r="5"
-        fill="white"
-    />
-
-</symbol>
-
-</svg>
-
-
-<!-- =====================================================
-     FLOOD LOADING SCREEN
-===================================================== -->
-
-<div class="loading-screen" id="loadingScreen">
-
-    <div class="flood-bg"></div>
-    <div class="wave1"></div>
-    <div class="wave2"></div>
-
-    <div class="loading-box">
-
-        <div class="flood-logo">🌊</div>
-
-        <div class="loading-title">
-            FLOODGUARD <span>AI</span>
+        <div class="loader-logo">
+            FLOODGUARD
         </div>
 
-        <div class="loading-text">
-            Initializing Global Flood Intelligence Network
+        <div class="loader-sub">
+            AI FLOOD INTELLIGENCE PLATFORM
         </div>
 
-        <div class="loading-bar">
-            <div class="loading-progress"></div>
+        <div class="ai-core">
+            <div class="core-dot"></div>
         </div>
 
-        <div
-            class="loading-status"
-            id="loadingStatus"
-        >
-            INITIALIZING FLOOD MONITORING...
+        <div class="loader-status" id="loaderStatus">
+            INITIALIZING FLOOD INTELLIGENCE...
+        </div>
+
+        <div class="loader-progress">
+            <div class="loader-progress-bar"></div>
         </div>
 
     </div>
@@ -1282,1110 +1503,2352 @@ input{
 </div>
 
 
-<!-- =====================================================
-     APPLICATION
-===================================================== -->
+<!-- =========================================================
+     APP
+========================================================= -->
 
-<div class="app">
+<div id="app">
 
-<!-- =====================================================
+
+<!-- =========================================================
      SIDEBAR
-===================================================== -->
+========================================================= -->
 
 <aside class="sidebar">
 
     <div class="brand">
 
-        <svg class="ai-icon">
-            <use href="#aiRobot"></use>
-        </svg>
+        <div class="brand-icon">
+            FG
+        </div>
 
         <div>
-
-            <div class="brand-text">
-                FloodGuard <span>AI</span>
+            <div class="brand-name">
+                FLOODGUARD
             </div>
 
-            <div class="tech">
-                HEXA TECH
+            <div class="brand-small">
+                POWERED BY HEXA TECH
             </div>
-
         </div>
 
     </div>
 
 
-    <div class="system">
-        <span class="dot"></span>
-        GLOBAL SYSTEM ONLINE
+    <div class="nav-title">
+        MAIN CONTROL
     </div>
 
 
-    <div class="nav">
+    <button
+        class="nav-item active"
+        onclick="showSection('dashboard',this)"
+    >
+        <span class="nav-icon">⌂</span>
+        <span>Dashboard</span>
+    </button>
 
-        <button class="active">
-            <span class="nav-icon">⌂</span>
-            Dashboard
-        </button>
 
-        <button onclick="riskMap()">
-            <span class="nav-icon">🌊</span>
-            Risk Map
-        </button>
+    <button
+        class="nav-item"
+        onclick="showSection('weather',this)"
+    >
+        <span class="nav-icon">☁</span>
+        <span>Global Weather</span>
+    </button>
 
-        <button onclick="prediction()">
-            <span class="nav-icon">🧠</span>
-            AI Predictions
-        </button>
 
-        <button onclick="showToast('12 active flood alerts')">
-            <span class="nav-icon">⚠</span>
-            Alerts
-        </button>
+    <button
+        class="nav-item"
+        onclick="showSection('monitoring',this)"
+    >
+        <span class="nav-icon">◉</span>
+        <span>Live Monitoring</span>
+    </button>
 
-        <button onclick="showToast('Reports module opened')">
-            <span class="nav-icon">▤</span>
-            Reports
-        </button>
 
-        <button onclick="showToast('Live sensor data connected')">
-            <span class="nav-icon">◈</span>
-            Live Data
-        </button>
+    <button
+        class="nav-item"
+        onclick="showSection('riskZones',this)"
+    >
+        <span class="nav-icon">⚠</span>
+        <span>Risk Zones</span>
+    </button>
 
-        <button onclick="showToast('Settings opened')">
-            <span class="nav-icon">⚙</span>
-            Settings
-        </button>
 
+    <button
+        class="nav-item"
+        onclick="showSection('alerts',this)"
+    >
+        <span class="nav-icon">!</span>
+        <span>Alerts</span>
+    </button>
+
+
+    <button
+        class="nav-item"
+        onclick="showSection('analytics',this)"
+    >
+        <span class="nav-icon">▥</span>
+        <span>Analytics</span>
+    </button>
+
+
+    <button
+        class="nav-item"
+        onclick="showSection('prediction',this)"
+    >
+        <span class="nav-icon">✦</span>
+        <span>AI Prediction</span>
+    </button>
+
+
+    <div class="nav-title" style="margin-top:20px">
+        SYSTEM
     </div>
 
 
-    <div class="sidebar-footer">
+    <button
+        class="nav-item"
+        onclick="showSection('settings',this)"
+    >
+        <span class="nav-icon">⚙</span>
+        <span>Settings</span>
+    </button>
 
-        FloodGuard AI v3.0
 
-        <br>
+    <div class="sidebar-status">
 
-        Powered by HEXA TECH
+        <div class="status-line">
+            <span>Backend</span>
+            <span class="online">
+                <span class="dot"></span>
+                ONLINE
+            </span>
+        </div>
 
-        <br>
+        <div class="status-line">
+            <span>Database</span>
+            <span class="online">
+                <span class="dot"></span>
+                READY
+            </span>
+        </div>
 
-        Technology Today | Safer Tomorrows
+        <div class="status-line">
+            <span>AI Engine</span>
+            <span class="online">
+                <span class="dot"></span>
+                ACTIVE
+            </span>
+        </div>
 
     </div>
 
 </aside>
 
 
-<!-- =====================================================
+<!-- =========================================================
      MAIN
-===================================================== -->
+========================================================= -->
 
 <main class="main">
 
-    <!-- TOP -->
+
+    <!-- TOPBAR -->
 
     <header class="topbar">
 
-        <div class="search">
+        <div>
 
-            <div class="search-icon">
-                ⌕
+            <div
+                class="page-title"
+                id="pageTitle"
+            >
+                FLOODGUARD AI
             </div>
 
-            <input
-                id="searchInput"
-                placeholder="Search any location... Delhi, New York, Tokyo..."
-                onkeydown="
-                    if(event.key==='Enter')
-                    searchLocation()
-                "
+            <div
+                class="page-sub"
+                id="pageSub"
             >
-
-            <button
-                onclick="useLocation()"
-                title="Current location"
-            >
-                ◎
-            </button>
-
-            <button
-                onclick="searchLocation()"
-            >
-                →
-            </button>
+                Global Flood Intelligence & Monitoring
+            </div>
 
         </div>
 
+        <div class="live-badge">
 
-        <div class="online">
+            <span class="dot"></span>
 
-            <span>●</span>
-            System Online
+            SYSTEM LIVE
 
         </div>
 
     </header>
 
 
-    <!-- CONTENT -->
+<!-- =========================================================
+     DASHBOARD
+========================================================= -->
 
-    <div class="content">
+<section
+    id="dashboard"
+    class="section active"
+>
 
-        <!-- CENTER -->
+    <div class="cards">
 
-        <section class="center">
+        <div class="card">
 
-            <div class="page-title">
+            <div class="card-label">
+                Flood Risk
+            </div>
+
+            <div
+                id="dashRisk"
+                class="card-value green"
+            >
+                12%
+            </div>
+
+            <div class="card-foot">
+                Current AI assessment
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-label">
+                Water Level
+            </div>
+
+            <div class="card-value">
+                <span id="dashWater">
+                    --
+                </span>
+                <span class="card-unit">
+                    m
+                </span>
+            </div>
+
+            <div class="card-foot">
+                ESP32 sensor
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-label">
+                Rainfall
+            </div>
+
+            <div class="card-value">
+                <span id="dashRain">
+                    --
+                </span>
+                <span class="card-unit">
+                    mm
+                </span>
+            </div>
+
+            <div class="card-foot">
+                Current precipitation
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-label">
+                Temperature
+            </div>
+
+            <div class="card-value">
+                <span id="dashTemp">
+                    --
+                </span>
+                <span class="card-unit">
+                    °C
+                </span>
+            </div>
+
+            <div class="card-foot">
+                Live weather
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="section-header">
+
+        <h2>
+            LIVE FLOOD MAP
+        </h2>
+
+        <span>
+            ENGLISH RISK STATUS
+        </span>
+
+    </div>
+
+
+    <!-- MAP -->
+
+    <div class="panel map-wrap">
+
+        <div
+            id="dashboardMap"
+        ></div>
+
+
+        <div class="map-search">
+
+            <input
+                id="locationSearch"
+                placeholder="Search worldwide location..."
+                onkeydown="if(event.key==='Enter') searchLocation()"
+            >
+
+            <button onclick="searchLocation()">
+                SEARCH
+            </button>
+
+        </div>
+
+
+        <div class="map-action-buttons">
+
+            <button
+                onclick="locateUser()"
+                title="Current location"
+            >
+                ◎
+            </button>
+
+            <button
+                onclick="fullscreenMap('dashboardMap')"
+                title="Fullscreen"
+            >
+                ⛶
+            </button>
+
+        </div>
+
+
+        <div class="map-legend">
+
+            <div class="legend-title">
+                FLOOD RISK
+            </div>
+
+            <div class="legend-row">
+                <span
+                    class="legend-dot"
+                    style="background:#27e58a"
+                ></span>
+                SAFE
+            </div>
+
+            <div class="legend-row">
+                <span
+                    class="legend-dot"
+                    style="background:#ffd84d"
+                ></span>
+                WATCH
+            </div>
+
+            <div class="legend-row">
+                <span
+                    class="legend-dot"
+                    style="background:#ff9d32"
+                ></span>
+                HIGH
+            </div>
+
+            <div class="legend-row">
+                <span
+                    class="legend-dot"
+                    style="background:#ff3f5f"
+                ></span>
+                CRITICAL
+            </div>
+
+        </div>
+
+
+        <!-- MAP OPTIONS MUST STAY BELOW MAP -->
+
+        <div class="map-options">
+
+            <button
+                class="map-option active"
+                onclick="changeMap('standard',this)"
+            >
+                Standard
+            </button>
+
+            <button
+                class="map-option"
+                onclick="changeMap('satellite',this)"
+            >
+                Satellite
+            </button>
+
+            <button
+                class="map-option"
+                onclick="changeMap('terrain',this)"
+            >
+                Terrain
+            </button>
+
+            <button
+                class="map-option"
+                onclick="changeMap('light',this)"
+            >
+                Light
+            </button>
+
+            <button
+                class="map-option"
+                onclick="changeMap('roads',this)"
+            >
+                Roads
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-grid">
+
+        <div class="panel">
+
+            <div class="panel-head">
+
+                <div class="panel-title">
+                    WATER LEVEL HISTORY
+                </div>
+
+                <div class="panel-tag">
+                    LIVE DATA
+                </div>
+
+            </div>
+
+            <div class="chart-box">
+
+                <canvas id="waterChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel risk-panel">
+
+            <div class="panel-head">
+
+                <div class="panel-title">
+                    AI INTELLIGENCE
+                </div>
+
+            </div>
+
+            <div class="risk-ring">
 
                 <div>
 
-                    <h1>
-                        Global <span>Flood Intelligence</span>
-                    </h1>
-
-                    <p>
-                        Real-time geographical monitoring and
-                        flood-risk analysis
-                    </p>
-
-                </div>
-
-                <div class="live-pill">
-                    ● LIVE MONITORING
-                </div>
-
-            </div>
-
-
-            <!-- ==========================================
-                 MAP
-            =========================================== -->
-
-            <div class="map-card">
-
-                <div class="map-head">
-
-                    <div class="map-title">
-
-                        <div class="map-title-icon">
-                            🌐
-                        </div>
-
-                        <div>
-
-                            <strong>
-                                Global Flood Monitoring Map
-                            </strong>
-
-                            <small>
-                                Search • Satellite • Terrain • Weather • Risk
-                            </small>
-
-                        </div>
-
-                    </div>
-
-                    <div class="map-status">
-                        ● LIVE
-                    </div>
-
-                </div>
-
-
-                <div style="position:relative">
-
-                    <div id="map"></div>
-
-
-                    <!-- FLOOD MAP LOADING -->
-
                     <div
-                        class="map-loading"
-                        id="mapLoading"
-                    >
-
-                        <div class="map-flood">
-                            🌊
-                        </div>
-
-                        <strong>
-                            Flood Intelligence Loading
-                        </strong>
-
-                        <small>
-                            Processing global water systems...
-                        </small>
-
-                        <div class="map-load-bar">
-                            <div class="map-load-fill"></div>
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- ======================================
-                     MAP OPTIONS BELOW MAP
-                ======================================= -->
-
-                <div class="map-options">
-
-                    <div class="map-options-title">
-                        MAP VIEW OPTIONS
-                    </div>
-
-                    <div class="map-buttons">
-
-                        <button
-                            class="map-button active"
-                            onclick="changeMap('standard',this)"
-                        >
-                            <div>🌐</div>
-                            Standard
-                        </button>
-
-                        <button
-                            class="map-button"
-                            onclick="changeMap('satellite',this)"
-                        >
-                            <div>🛰️</div>
-                            Satellite
-                        </button>
-
-                        <button
-                            class="map-button"
-                            onclick="changeMap('terrain',this)"
-                        >
-                            <div>⛰️</div>
-                            Terrain
-                        </button>
-
-                        <button
-                            class="map-button"
-                            onclick="changeMap('light',this)"
-                        >
-                            <div>☀️</div>
-                            Light
-                        </button>
-
-                        <button
-                            class="map-button"
-                            onclick="changeMap('roads',this)"
-                        >
-                            <div>🛣️</div>
-                            Roads
-                        </button>
-
-                        <button
-                            class="map-button"
-                            onclick="changeMap('rainfall',this)"
-                        >
-                            <div>🌧️</div>
-                            Rainfall
-                        </button>
-
-                        <button
-                            class="map-button"
-                            onclick="changeMap('flood',this)"
-                        >
-                            <div>🌊</div>
-                            Flood Risk
-                        </button>
-
-                        <button
-                            class="map-button"
-                            onclick="changeMap('weather',this)"
-                        >
-                            <div>🌤️</div>
-                            Weather
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- METRICS -->
-
-            <div class="metrics">
-
-                <div class="metric">
-
-                    <div class="metric-label">
-                        🌊 WATER LEVEL
-                    </div>
-
-                    <div
-                        class="metric-value"
-                        id="water"
-                    >
-                        4.2 m
-                    </div>
-
-                    <div class="metric-change">
-                        ↓ 12% vs 24h
-                    </div>
-
-                </div>
-
-
-                <div class="metric">
-
-                    <div class="metric-label">
-                        🌧️ GLOBAL RAINFALL
-                    </div>
-
-                    <div
-                        class="metric-value"
-                        id="rain"
-                    >
-                        86 mm
-                    </div>
-
-                    <div class="metric-change">
-                        ↓ 18% vs 24h
-                    </div>
-
-                </div>
-
-
-                <div class="metric">
-
-                    <div class="metric-label">
-                        🚨 ACTIVE ALERTS
-                    </div>
-
-                    <div
-                        class="metric-value"
-                        id="alerts"
+                        class="risk-number"
+                        id="riskRingNumber"
                     >
                         12
                     </div>
 
-                    <div
-                        class="metric-change"
-                        style="color:#ff6684"
-                    >
-                        ↑ 3 new
-                    </div>
-
-                </div>
-
-
-                <div class="metric">
-
-                    <div class="metric-label">
-                        🛡️ RISK SCORE
-                    </div>
-
-                    <div
-                        class="metric-value"
-                        id="risk"
-                    >
-                        67%
-                    </div>
-
-                    <div
-                        class="metric-change"
-                        style="color:#ffd43b"
-                    >
-                        Moderate Risk
+                    <div>
+                        %
                     </div>
 
                 </div>
 
             </div>
 
-        </section>
-
-
-        <!-- ==========================================
-             RIGHT SIDE
-        =========================================== -->
-
-        <aside class="right">
-
-            <!-- ALERTS -->
-
-            <div class="card">
-
-                <div class="card-header">
-
-                    🚨 Live Flood Alerts
-
-                    <span>
-                        VIEW ALL
-                    </span>
-
-                </div>
-
-
-                <div class="alert">
-
-                    <div class="alert-icon">
-                        🔴
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            Yamuna River · Delhi
-                        </strong>
-
-                        <small>
-                            2 min ago
-                        </small>
-
-                        <div class="badge high">
-                            Severe Flood Risk
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="alert">
-
-                    <div class="alert-icon">
-                        🟡
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            Brahmaputra · Assam
-                        </strong>
-
-                        <small>
-                            8 min ago
-                        </small>
-
-                        <div class="badge medium">
-                            High Risk
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="alert">
-
-                    <div class="alert-icon">
-                        🔵
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            Godavari Basin
-                        </strong>
-
-                        <small>
-                            15 min ago
-                        </small>
-
-                        <div class="badge blue">
-                            Rising Water Level
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="alert">
-
-                    <div class="alert-icon">
-                        🟡
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            Nile River · Egypt
-                        </strong>
-
-                        <small>
-                            22 min ago
-                        </small>
-
-                        <div class="badge medium">
-                            Moderate Risk
-                        </div>
-
-                    </div>
-
-                </div>
-
+            <div
+                id="riskState"
+                class="risk-state green"
+            >
+                SAFE
             </div>
 
-
-            <!-- GLOBAL OVERVIEW -->
-
-            <div class="card">
-
-                <div class="card-header">
-
-                    📊 Global Flood Overview
-
-                    <span>
-                        LIVE
-                    </span>
-
-                </div>
-
-
-                <div class="overview">
-
-                    <div class="overview-item">
-
-                        🌐
-
-                        <b>24</b>
-
-                        <small>
-                            Regions
-                        </small>
-
-                    </div>
-
-
-                    <div class="overview-item">
-
-                        👥
-
-                        <b>1.3M</b>
-
-                        <small>
-                            People Risk
-                        </small>
-
-                    </div>
-
-
-                    <div class="overview-item">
-
-                        🌊
-
-                        <b>256</b>
-
-                        <small>
-                            Rivers
-                        </small>
-
-                    </div>
-
-
-                    <div class="overview-item">
-
-                        ⚠
-
-                        <b id="overviewAlerts">
-                            12
-                        </b>
-
-                        <small>
-                            Alerts
-                        </small>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- HEXA AI -->
-
-            <div class="card chat">
-
-                <div class="chat-header">
-
-                    <svg class="ai-icon small">
-                        <use href="#aiRobot"></use>
-                    </svg>
-
-                    <div class="ai-name">
-
-                        Hexa AI Assistant
-
-                        <small>
-                            ● Online
-                        </small>
-
-                    </div>
-
-                    <button
-                        class="voice"
-                        id="voiceButton"
-                        onclick="toggleVoice()"
-                    >
-                        🔊
-                    </button>
-
-                </div>
-
-
-                <div
-                    class="chat-messages"
-                    id="chatMessages"
-                >
-
-                    <div class="msg">
-
-                        <svg class="ai-icon small">
-                            <use href="#aiRobot"></use>
-                        </svg>
-
-                        <div class="bubble">
-
-                            Hello! I'm Hexa, your
-                            FloodGuard AI assistant.
-
-                            <br><br>
-
-                            I can help with flood risk,
-                            maps, weather, sensors,
-                            alerts and predictions.
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="chat-input">
-
-                    <input
-                        id="chatInput"
-                        placeholder="Ask Hexa..."
-                        onkeydown="
-                            if(event.key==='Enter')
-                            sendMessage()
-                        "
-                    >
-
-                    <button onclick="sendMessage()">
-                        ➤
-                    </button>
-
-                </div>
-
-            </div>
-
-        </aside>
+        </div>
 
     </div>
 
+
+</section>
+
+
+<!-- =========================================================
+     GLOBAL WEATHER
+========================================================= -->
+
+<section
+    id="weather"
+    class="section"
+>
+
+    <div class="section-header">
+
+        <h2>
+            GLOBAL WEATHER
+        </h2>
+
+        <span>
+            OPEN-METEO LIVE DATA
+        </span>
+
+    </div>
+
+
+    <div class="panel">
+
+        <div class="panel-head">
+
+            <div class="panel-title">
+                WEATHER LOCATION
+            </div>
+
+            <div
+                id="weatherLocation"
+                class="panel-tag"
+            >
+                Vijayawada, India
+            </div>
+
+        </div>
+
+
+        <div class="weather-grid">
+
+            <div class="weather-item">
+                <label>Temperature</label>
+                <strong id="weatherTemp">--</strong>
+                °C
+            </div>
+
+            <div class="weather-item">
+                <label>Humidity</label>
+                <strong id="weatherHumidity">--</strong>
+                %
+            </div>
+
+            <div class="weather-item">
+                <label>Precipitation</label>
+                <strong id="weatherRain">--</strong>
+                mm
+            </div>
+
+            <div class="weather-item">
+                <label>Wind Speed</label>
+                <strong id="weatherWind">--</strong>
+                km/h
+            </div>
+
+            <div class="weather-item">
+                <label>Pressure</label>
+                <strong id="weatherPressure">--</strong>
+                hPa
+            </div>
+
+            <div class="weather-item">
+                <label>Cloud Cover</label>
+                <strong id="weatherCloud">--</strong>
+                %
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-grid">
+
+        <div class="panel">
+
+            <div class="panel-head">
+
+                <div class="panel-title">
+                    PRECIPITATION TREND
+                </div>
+
+            </div>
+
+            <div class="chart-box">
+
+                <canvas id="rainChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="panel-head">
+
+                <div class="panel-title">
+                    WEATHER STATUS
+                </div>
+
+            </div>
+
+            <div
+                id="weatherStatus"
+                style="
+                padding:30px;
+                font-family:Orbitron;
+                font-size:20px;
+                "
+            >
+                MONITORING
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     LIVE MONITORING
+========================================================= -->
+
+<section
+    id="monitoring"
+    class="section"
+>
+
+    <div class="section-header">
+
+        <h2>
+            LIVE MONITORING
+        </h2>
+
+        <span>
+            ESP32 + SENSOR NETWORK
+        </span>
+
+    </div>
+
+
+    <div class="cards">
+
+        <div class="card">
+
+            <div class="card-label">
+                Water Level
+            </div>
+
+            <div class="card-value">
+                <span id="monitorWater">--</span>
+                <span class="card-unit">m</span>
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-label">
+                Rainfall
+            </div>
+
+            <div class="card-value">
+                <span id="monitorRain">--</span>
+                <span class="card-unit">mm</span>
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-label">
+                Temperature
+            </div>
+
+            <div class="card-value">
+                <span id="monitorTemp">--</span>
+                <span class="card-unit">°C</span>
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-label">
+                Humidity
+            </div>
+
+            <div class="card-value">
+                <span id="monitorHumidity">--</span>
+                <span class="card-unit">%</span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="section-header">
+
+        <h2>
+            SENSOR NETWORK
+        </h2>
+
+    </div>
+
+
+    <div class="panel table-wrap">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Device</th>
+                    <th>Location</th>
+                    <th>Water</th>
+                    <th>Rain</th>
+                    <th>Temperature</th>
+                    <th>Humidity</th>
+                    <th>Risk</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="sensorTable">
+
+                <tr>
+
+                    <td>
+                        FG-ESP32-001
+                    </td>
+
+                    <td>
+                        Vijayawada
+                    </td>
+
+                    <td id="tableWater">
+                        --
+                    </td>
+
+                    <td id="tableRain">
+                        --
+                    </td>
+
+                    <td id="tableTemp">
+                        --
+                    </td>
+
+                    <td id="tableHumidity">
+                        --
+                    </td>
+
+                    <td>
+
+                        <span
+                            id="tableRisk"
+                            class="status-pill status-safe"
+                        >
+                            SAFE
+                        </span>
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     RISK ZONES
+========================================================= -->
+
+<section
+    id="riskZones"
+    class="section"
+>
+
+    <div class="section-header">
+
+        <h2>
+            FLOOD RISK ZONES
+        </h2>
+
+        <span>
+            SAFE / WATCH / HIGH / CRITICAL
+        </span>
+
+    </div>
+
+
+    <div class="panel map-wrap">
+
+        <div id="riskMap"></div>
+
+
+        <div class="map-action-buttons">
+
+            <button
+                onclick="fullscreenMap('riskMap')"
+            >
+                ⛶
+            </button>
+
+            <button
+                onclick="riskMap.setZoom(riskMap.getZoom()+1)"
+            >
+                +
+            </button>
+
+            <button
+                onclick="riskMap.setZoom(riskMap.getZoom()-1)"
+            >
+                −
+            </button>
+
+        </div>
+
+
+        <div class="map-legend">
+
+            <div class="legend-title">
+                RISK LEVEL
+            </div>
+
+            <div class="legend-row">
+                🟢 SAFE
+            </div>
+
+            <div class="legend-row">
+                🟡 WATCH
+            </div>
+
+            <div class="legend-row">
+                🟠 HIGH
+            </div>
+
+            <div class="legend-row">
+                🔴 CRITICAL
+            </div>
+
+        </div>
+
+
+        <div class="map-options">
+
+            <button
+                class="map-option active"
+                onclick="changeRiskMap('standard',this)"
+            >
+                Standard
+            </button>
+
+            <button
+                class="map-option"
+                onclick="changeRiskMap('satellite',this)"
+            >
+                Satellite
+            </button>
+
+            <button
+                class="map-option"
+                onclick="changeRiskMap('terrain',this)"
+            >
+                Terrain
+            </button>
+
+            <button
+                class="map-option"
+                onclick="changeRiskMap('light',this)"
+            >
+                Light
+            </button>
+
+            <button
+                class="map-option"
+                onclick="changeRiskMap('roads',this)"
+            >
+                Roads
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     ALERTS
+========================================================= -->
+
+<section
+    id="alerts"
+    class="section"
+>
+
+    <div class="section-header">
+
+        <h2>
+            EMERGENCY ALERT CENTER
+        </h2>
+
+        <span>
+            REAL-TIME THREAT NOTIFICATIONS
+        </span>
+
+    </div>
+
+
+    <div class="panel">
+
+        <div class="panel-head">
+
+            <div class="panel-title">
+                ACTIVE ALERTS
+            </div>
+
+            <button
+                class="primary-btn"
+                onclick="testEmergencyAlert()"
+            >
+                TEST EMERGENCY ALERT
+            </button>
+
+        </div>
+
+
+        <div
+            class="alert-list"
+            style="padding:15px"
+            id="alertList"
+        >
+
+            <div class="alert alert-info">
+
+                <div class="alert-icon">
+                    ✓
+                </div>
+
+                <div class="alert-content">
+
+                    <div class="alert-title">
+                        System Monitoring Active
+                    </div>
+
+                    <div class="alert-description">
+                        FloodGuard AI is continuously monitoring available sensor and weather data.
+                    </div>
+
+                </div>
+
+                <div class="alert-time">
+                    NOW
+                </div>
+
+            </div>
+
+
+            <div class="alert alert-warning">
+
+                <div class="alert-icon">
+                    ⚠
+                </div>
+
+                <div class="alert-content">
+
+                    <div class="alert-title">
+                        Rainfall Watch
+                    </div>
+
+                    <div class="alert-description">
+                        Increased precipitation may require additional monitoring.
+                    </div>
+
+                </div>
+
+                <div class="alert-time">
+                    MONITOR
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     ANALYTICS
+========================================================= -->
+
+<section
+    id="analytics"
+    class="section"
+>
+
+    <div class="section-header">
+
+        <h2>
+            FLOOD ANALYTICS
+        </h2>
+
+        <span>
+            HISTORICAL INTELLIGENCE
+        </span>
+
+    </div>
+
+
+    <div class="analytics-grid">
+
+        <div class="panel">
+
+            <div class="panel-head">
+
+                <div class="panel-title">
+                    SENSOR PERFORMANCE
+                </div>
+
+            </div>
+
+            <div class="chart-box">
+
+                <canvas id="analyticsChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="panel-head">
+
+                <div class="panel-title">
+                    RISK INDICATORS
+                </div>
+
+            </div>
+
+
+            <div class="stat-list">
+
+                <div class="stat-row">
+
+                    <div class="stat-row-top">
+                        <span>Water Level</span>
+                        <span id="analyticsWater">--</span>
+                    </div>
+
+                    <div class="progress">
+                        <span
+                            id="waterProgress"
+                            style="width:20%"
+                        ></span>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-row">
+
+                    <div class="stat-row-top">
+                        <span>Rainfall</span>
+                        <span id="analyticsRain">--</span>
+                    </div>
+
+                    <div class="progress">
+                        <span
+                            id="rainProgress"
+                            style="width:20%"
+                        ></span>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-row">
+
+                    <div class="stat-row-top">
+                        <span>Humidity</span>
+                        <span id="analyticsHumidity">--</span>
+                    </div>
+
+                    <div class="progress">
+                        <span
+                            id="humidityProgress"
+                            style="width:50%"
+                        ></span>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-row">
+
+                    <div class="stat-row-top">
+                        <span>AI Risk</span>
+                        <span id="analyticsRisk">--</span>
+                    </div>
+
+                    <div class="progress">
+                        <span
+                            id="riskProgress"
+                            style="width:10%"
+                        ></span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     AI PREDICTION
+========================================================= -->
+
+<section
+    id="prediction"
+    class="section"
+>
+
+    <div class="section-header">
+
+        <h2>
+            AI FLOOD PREDICTION
+        </h2>
+
+        <span>
+            INTELLIGENT RISK ANALYSIS
+        </span>
+
+    </div>
+
+
+    <div class="prediction-grid">
+
+        <div class="panel">
+
+            <div class="panel-head">
+
+                <div class="panel-title">
+                    PREDICTION INPUT
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>
+                        Water Level (m)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="predictionWater"
+                        step="0.1"
+                        value="2"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Rainfall (mm)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="predictionRain"
+                        step="1"
+                        value="20"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Humidity (%)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="predictionHumidity"
+                        value="70"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Flow Level
+                    </label>
+
+                    <input
+                        type="number"
+                        id="predictionFlow"
+                        value="30"
+                    >
+
+                </div>
+
+
+                <button
+                    class="primary-btn"
+                    onclick="runPrediction()"
+                >
+                    RUN AI PREDICTION
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel risk-panel">
+
+            <div class="panel-head">
+
+                <div class="panel-title">
+                    PREDICTION RESULT
+                </div>
+
+            </div>
+
+
+            <div
+                id="predictionScore"
+                class="card-value"
+            >
+                --
+            </div>
+
+
+            <div
+                id="predictionState"
+                class="risk-state green"
+                style="margin-top:15px"
+            >
+                WAITING
+            </div>
+
+
+            <p
+                id="predictionAdvice"
+                style="
+                color:#718b9e;
+                font-size:11px;
+                line-height:1.6;
+                margin-top:20px;
+                padding:0 20px;
+                "
+            >
+                Enter environmental values and run the AI prediction.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     SETTINGS
+========================================================= -->
+
+<section
+    id="settings"
+    class="section"
+>
+
+    <div class="section-header">
+
+        <h2>
+            SYSTEM SETTINGS
+        </h2>
+
+        <span>
+            FLOODGUARD CONFIGURATION
+        </span>
+
+    </div>
+
+
+    <div class="settings-grid">
+
+        <div class="panel">
+
+            <div class="panel-head">
+
+                <div class="panel-title">
+                    MONITORING
+                </div>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        Live Sensor Updates
+                    </strong>
+
+                    <span>
+                        Receive live backend sensor information
+                    </span>
+
+                </div>
+
+                <div
+                    id="sensorSwitch"
+                    class="switch on"
+                    onclick="toggleSwitch(this)"
+                ></div>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        Auto Refresh
+                    </strong>
+
+                    <span>
+                        Automatically refresh sensor information
+                    </span>
+
+                </div>
+
+                <div
+                    id="refreshSwitch"
+                    class="switch on"
+                    onclick="toggleSwitch(this)"
+                ></div>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        English Map Labels
+                    </strong>
+
+                    <span>
+                        Keep FloodGuard risk labels in English
+                    </span>
+
+                </div>
+
+                <div
+                    id="englishSwitch"
+                    class="switch on"
+                    onclick="toggleSwitch(this)"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="panel-head">
+
+                <div class="panel-title">
+                    AI & ALERTS
+                </div>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        AI Voice Assistant
+                    </strong>
+
+                    <span>
+                        Enable Hexa voice responses
+                    </span>
+
+                </div>
+
+                <div
+                    id="voiceSwitch"
+                    class="switch on"
+                    onclick="toggleSwitch(this)"
+                ></div>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        Emergency Alerts
+                    </strong>
+
+                    <span>
+                        Enable critical flood notifications
+                    </span>
+
+                </div>
+
+                <div
+                    id="alertSwitch"
+                    class="switch on"
+                    onclick="toggleSwitch(this)"
+                ></div>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        Alert Threshold
+                    </strong>
+
+                    <span>
+                        AI warning level
+                    </span>
+
+                </div>
+
+                <select
+                    id="alertThreshold"
+                    style="
+                    background:#07121e;
+                    color:#fff;
+                    border:1px solid rgba(41,217,255,.2);
+                    border-radius:7px;
+                    padding:7px;
+                    "
+                >
+                    <option value="50">50%</option>
+                    <option value="60">60%</option>
+                    <option value="70" selected>70%</option>
+                    <option value="80">80%</option>
+                </select>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
 </main>
+
+
+<!-- =========================================================
+     HEXA CHATBOT
+========================================================= -->
+
+<div id="chatBox">
+
+    <div class="chat-head">
+
+        <div>
+
+            <div class="chat-name">
+                HEXA AI
+            </div>
+
+            <div class="chat-status">
+                ● ONLINE
+            </div>
+
+        </div>
+
+        <button
+            onclick="toggleChat()"
+            style="
+            background:none;
+            border:0;
+            color:#789;
+            font-size:17px;
+            "
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div
+        id="chatMessages"
+        class="chat-messages"
+    >
+
+        <div class="message bot-message">
+
+            Hello! I'm Hexa, the FloodGuard AI assistant.
+            Ask me about flood risk, rainfall, water levels,
+            alerts or system status.
+
+        </div>
+
+    </div>
+
+
+    <div class="chat-input">
+
+        <input
+            id="chatInput"
+            placeholder="Ask Hexa..."
+            onkeydown="if(event.key==='Enter')sendChat()"
+        >
+
+        <button onclick="sendChat()">
+            ➤
+        </button>
+
+    </div>
 
 </div>
 
 
+<div
+    id="hexaOrb"
+    onclick="toggleChat()"
+>
+
+    <div class="robot-face"></div>
+
+</div>
+
+
+<div id="toast"></div>
+
+
 <script>
 
-/* =====================================================
-   MAP
-===================================================== */
+/* =========================================================
+   CONFIGURATION
+========================================================= */
 
-let map;
-let currentLayer;
+const API_URL =
+    "https://flood-ai-hexa.onrender.com";
 
-let rainfallLayer;
-let floodLayer;
-let weatherLayer;
+const DEFAULT_LAT =
+    16.5062;
 
-let marker;
+const DEFAULT_LON =
+    80.6480;
 
-let voiceEnabled=true;
+let currentLat =
+    DEFAULT_LAT;
+
+let currentLon =
+    DEFAULT_LON;
+
+let currentLocationName =
+    "Vijayawada, India";
+
+let currentSensorData =
+    {
+        waterLevel:null,
+        rainfall:null,
+        temperature:null,
+        humidity:null,
+        risk:null,
+        location:"Vijayawada",
+        latitude:DEFAULT_LAT,
+        longitude:DEFAULT_LON
+    };
 
 
-/* =====================================================
-   MAP BASE LAYERS
-===================================================== */
+/* =========================================================
+   LOADER
+========================================================= */
 
-const layers={
+const loaderStatus =
+    document.getElementById("loaderStatus");
 
-    standard:L.tileLayer(
-        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        {
-            maxZoom:19,
-            attribution:"© OpenStreetMap"
+const loaderMessages = [
+    "INITIALIZING FLOOD INTELLIGENCE...",
+    "CONNECTING SENSOR NETWORK...",
+    "LOADING WEATHER INTELLIGENCE...",
+    "INITIALIZING AI PREDICTION ENGINE...",
+    "CONNECTING GLOBAL FLOOD MAP...",
+    "SECURING LIVE MONITORING CHANNEL...",
+    "FLOODGUARD SYSTEM READY..."
+];
+
+let loaderMessageIndex = 0;
+
+const loaderInterval =
+    setInterval(() => {
+
+        loaderMessageIndex++;
+
+        if(loaderMessageIndex < loaderMessages.length){
+
+            loaderStatus.textContent =
+                loaderMessages[loaderMessageIndex];
+
         }
-    ),
 
-    satellite:L.tileLayer(
-        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-        {
-            maxZoom:19,
-            attribution:"© Esri"
-        }
-    ),
+    },650);
 
-    terrain:L.tileLayer(
-        "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-        {
-            maxZoom:17,
-            attribution:"© OpenTopoMap"
-        }
-    ),
 
-    light:L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-        {
-            maxZoom:20,
-            attribution:"© CARTO"
-        }
-    ),
+/* Generate rain */
 
-    roads:L.tileLayer(
-        "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
-        {
-            maxZoom:19,
-            attribution:"© OpenStreetMap HOT"
-        }
-    )
+const rainContainer =
+    document.getElementById("rain");
+
+for(let i=0;i<80;i++){
+
+    const drop =
+        document.createElement("span");
+
+    drop.style.left =
+        Math.random()*100+"%";
+
+    drop.style.animationDuration =
+        (0.5+Math.random()*1.4)+"s";
+
+    drop.style.animationDelay =
+        Math.random()*2+"s";
+
+    rainContainer.appendChild(drop);
+
+}
+
+
+/* =========================================================
+   START APP
+========================================================= */
+
+setTimeout(() => {
+
+    clearInterval(loaderInterval);
+
+    document.getElementById("loader").style.display =
+        "none";
+
+    document.getElementById("app").style.display =
+        "block";
+
+    initializeApp();
+
+},4700);
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+const pageInformation = {
+
+    dashboard:{
+        title:"FLOODGUARD AI",
+        sub:"Global Flood Intelligence & Monitoring"
+    },
+
+    weather:{
+        title:"GLOBAL WEATHER",
+        sub:"Live atmospheric intelligence"
+    },
+
+    monitoring:{
+        title:"LIVE MONITORING",
+        sub:"Connected flood sensor network"
+    },
+
+    riskZones:{
+        title:"FLOOD RISK ZONES",
+        sub:"Geographic flood threat intelligence"
+    },
+
+    alerts:{
+        title:"EMERGENCY ALERT CENTER",
+        sub:"Real-time flood threat notifications"
+    },
+
+    analytics:{
+        title:"FLOOD ANALYTICS",
+        sub:"Historical and live sensor intelligence"
+    },
+
+    prediction:{
+        title:"AI FLOOD PREDICTION",
+        sub:"Artificial intelligence risk assessment"
+    },
+
+    settings:{
+        title:"SYSTEM SETTINGS",
+        sub:"FloodGuard AI configuration"
+    }
 
 };
 
 
-/* =====================================================
-   INIT MAP
-===================================================== */
-
-function initMap(){
-
-    map=L.map("map",{
-
-        center:[22.5,79],
-
-        zoom:4,
-
-        zoomControl:false,
-
-        worldCopyJump:true,
-
-        fullscreenControl:true,
-
-        fullscreenControlOptions:{
-            position:"topright"
-        }
-
-    });
-
-
-    currentLayer=layers.standard;
-
-    currentLayer.addTo(map);
-
-
-    /* REQUIRED:
-       zoom bottom-left
-    */
-
-    L.control.zoom({
-
-        position:"bottomleft"
-
-    }).addTo(map);
-
-
-    createMapOverlays();
-
-    addRiskMarkers();
-
-}
-
-
-/* =====================================================
-   OVERLAYS
-===================================================== */
-
-function createMapOverlays(){
-
-    rainfallLayer=L.layerGroup();
-
-    floodLayer=L.layerGroup();
-
-    weatherLayer=L.layerGroup();
-
-
-    const rainPoints=[
-
-        [28.61,77.20,80],
-        [26.14,91.73,90],
-        [22.57,88.36,65],
-        [19.07,72.87,70],
-        [13.08,80.27,55],
-        [23.81,90.41,95],
-        [35.67,139.65,45],
-        [40.71,-74,35]
-
-    ];
-
-
-    rainPoints.forEach(p=>{
-
-        const color=
-            p[2]>=85
-            ? "#ff3158"
-            : p[2]>=60
-            ? "#ffd43b"
-            : "#00d9ff";
-
-
-        L.circle(
-            [p[0],p[1]],
-            {
-                radius:90000,
-                color:color,
-                fillColor:color,
-                fillOpacity:.22,
-                weight:1
-            }
-        )
-        .bindTooltip(
-            "Rainfall intensity: "+p[2]+" mm"
-        )
-        .addTo(rainfallLayer);
-
-    });
-
-
-    const zones=[
-
-        [28.61,77.20,"Severe"],
-        [26.14,91.73,"High"],
-        [23.81,90.41,"Severe"],
-        [19.07,72.87,"High"],
-        [22.57,88.36,"Moderate"],
-        [13.08,80.27,"Moderate"],
-        [35.67,139.65,"Moderate"],
-        [40.71,-74,"Low"]
-
-    ];
-
-
-    zones.forEach(z=>{
-
-        let color="#00e59b";
-
-        if(z[2]==="Moderate")
-            color="#ffd43b";
-
-        if(z[2]==="High")
-            color="#ff8a00";
-
-        if(z[2]==="Severe")
-            color="#ff3158";
-
-
-        L.circle(
-            [z[0],z[1]],
-            {
-                radius:80000,
-                color:color,
-                fillColor:color,
-                fillOpacity:.2,
-                weight:2
-            }
-        )
-        .bindPopup(
-            "<b>Flood Risk</b><br>"+
-            z[2]+" Risk"
-        )
-        .addTo(floodLayer);
-
-    });
-
-
-    const weather=[
-
-        [28.61,77.20,"🌧️ Delhi"],
-        [40.71,-74,"☀️ New York"],
-        [35.67,139.65,"🌤️ Tokyo"],
-        [51.50,-.12,"🌧️ London"],
-        [-33.86,151.20,"☀️ Sydney"]
-
-    ];
-
-
-    weather.forEach(w=>{
-
-        L.marker(
-            [w[0],w[1]]
-        )
-        .bindTooltip(w[2])
-        .addTo(weatherLayer);
-
-    });
-
-}
-
-
-/* =====================================================
-   RISK MARKERS
-===================================================== */
-
-function addRiskMarkers(){
-
-    const locations=[
-
-        [28.6139,77.2090,"Delhi","Severe"],
-        [26.1445,91.7362,"Assam","High"],
-        [23.8103,90.4125,"Bangladesh","Severe"],
-        [22.5726,88.3639,"Kolkata","Moderate"],
-        [19.0760,72.8777,"Mumbai","High"],
-        [13.0827,80.2707,"Chennai","Moderate"],
-        [40.7128,-74.006,"New York","Low"],
-        [35.6762,139.6503,"Tokyo","Moderate"]
-
-    ];
-
-
-    locations.forEach(x=>{
-
-        let color="#00e59b";
-
-        if(x[3]==="Moderate")
-            color="#ffd43b";
-
-        if(x[3]==="High")
-            color="#ff8a00";
-
-        if(x[3]==="Severe")
-            color="#ff3158";
-
-
-        L.circleMarker(
-            [x[0],x[1]],
-            {
-                radius:7,
-                color:"#fff",
-                weight:2,
-                fillColor:color,
-                fillOpacity:1
-            }
-        )
-        .bindPopup(`
-            <b>${x[2]}</b><br>
-            Flood Risk:
-            <strong style="color:${color}">
-            ${x[3]}
-            </strong>
-        `)
-        .addTo(map);
-
-    });
-
-}
-
-
-/* =====================================================
-   CHANGE MAP
-===================================================== */
-
-function changeMap(type,button){
+function showSection(
+    sectionId,
+    clickedButton
+){
 
     document
-        .querySelectorAll(".map-button")
-        .forEach(b=>{
-            b.classList.remove("active");
+        .querySelectorAll(".section")
+        .forEach(section => {
+
+            section.classList.remove("active");
+
         });
+
+
+    const selected =
+        document.getElementById(sectionId);
+
+    if(selected){
+
+        selected.classList.add("active");
+
+    }
+
+
+    document
+        .querySelectorAll(".nav-item")
+        .forEach(item => {
+
+            item.classList.remove("active");
+
+        });
+
+
+    if(clickedButton){
+
+        clickedButton.classList.add("active");
+
+    }
+
+
+    const info =
+        pageInformation[sectionId];
+
+    if(info){
+
+        document.getElementById("pageTitle")
+            .textContent =
+            info.title;
+
+        document.getElementById("pageSub")
+            .textContent =
+            info.sub;
+
+    }
+
+
+    if(sectionId === "riskZones"){
+
+        setTimeout(() => {
+
+            riskMap.invalidateSize();
+
+        },200);
+
+    }
+
+
+    if(sectionId === "analytics"){
+
+        initializeAnalyticsChart();
+
+    }
+
+
+    if(sectionId === "weather"){
+
+        loadWeather(
+            currentLat,
+            currentLon
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   MAP LAYERS
+========================================================= */
+
+const mapLayers = {
+
+    standard:
+        L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                attribution:"© OpenStreetMap contributors",
+                maxZoom:19
+            }
+        ),
+
+    satellite:
+        L.tileLayer(
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            {
+                attribution:"Tiles © Esri",
+                maxZoom:19
+            }
+        ),
+
+    terrain:
+        L.tileLayer(
+            "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+            {
+                attribution:"© OpenTopoMap",
+                maxZoom:17
+            }
+        ),
+
+    light:
+        L.tileLayer(
+            "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+            {
+                attribution:"© OpenStreetMap © CARTO",
+                maxZoom:20
+            }
+        ),
+
+    roads:
+        L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                attribution:"© OpenStreetMap",
+                maxZoom:19
+            }
+        )
+
+};
+
+
+/* =========================================================
+   DASHBOARD MAP
+========================================================= */
+
+let dashboardMap;
+
+let riskMap;
+
+let activeDashboardLayer;
+
+let activeRiskLayer;
+
+let dashboardMarkers = [];
+
+let riskMarkers = [];
+
+
+/* =========================================================
+   DEMO RISK ZONES
+   These are clearly sample locations until live GIS data
+   is supplied by the backend.
+========================================================= */
+
+const demoRiskZones = [
+
+    {
+        name:"Vijayawada Monitoring Zone",
+        city:"Vijayawada",
+        lat:16.5062,
+        lon:80.6480,
+        risk:"SAFE",
+        score:18
+    },
+
+    {
+        name:"River Watch Zone",
+        city:"Vijayawada River Area",
+        lat:16.515,
+        lon:80.620,
+        risk:"WATCH",
+        score:42
+    },
+
+    {
+        name:"Flood High Risk Zone",
+        city:"Krishna River Area",
+        lat:16.545,
+        lon:80.600,
+        risk:"HIGH",
+        score:68
+    },
+
+    {
+        name:"Critical Flood Zone",
+        city:"Low-Lying Area",
+        lat:16.490,
+        lon:80.670,
+        risk:"CRITICAL",
+        score:91
+    },
+
+    {
+        name:"Safe Urban Zone",
+        city:"Guntur",
+        lat:16.3067,
+        lon:80.4365,
+        risk:"SAFE",
+        score:15
+    }
+
+];
+
+
+/* =========================================================
+   INITIALIZE MAPS
+========================================================= */
+
+function initializeMaps(){
+
+    dashboardMap =
+        L.map(
+            "dashboardMap",
+            {
+                zoomControl:true,
+                minZoom:2
+            }
+        );
+
+    activeDashboardLayer =
+        mapLayers.standard.addTo(
+            dashboardMap
+        );
+
+    dashboardMap.setView(
+        [currentLat,currentLon],
+        11
+    );
+
+
+    riskMap =
+        L.map(
+            "riskMap",
+            {
+                zoomControl:true,
+                minZoom:2
+            }
+        );
+
+    activeRiskLayer =
+        mapLayers.standard.addTo(
+            riskMap
+        );
+
+    riskMap.setView(
+        [currentLat,currentLon],
+        10
+    );
+
+
+    addRiskMarkers(
+        dashboardMap,
+        dashboardMarkers
+    );
+
+    addRiskMarkers(
+        riskMap,
+        riskMarkers
+    );
+
+}
+
+
+/* =========================================================
+   RISK MARKERS
+========================================================= */
+
+function getRiskClass(risk){
+
+    switch(risk){
+
+        case "SAFE":
+            return "marker-safe";
+
+        case "WATCH":
+            return "marker-watch";
+
+        case "HIGH":
+            return "marker-high";
+
+        case "CRITICAL":
+            return "marker-critical";
+
+        default:
+            return "marker-safe";
+
+    }
+
+}
+
+
+function getRiskColor(risk){
+
+    switch(risk){
+
+        case "SAFE":
+            return "#27e58a";
+
+        case "WATCH":
+            return "#ffd84d";
+
+        case "HIGH":
+            return "#ff9d32";
+
+        case "CRITICAL":
+            return "#ff3f5f";
+
+        default:
+            return "#27e58a";
+
+    }
+
+}
+
+
+function addRiskMarkers(
+    map,
+    markerCollection
+){
+
+    demoRiskZones.forEach(zone => {
+
+        const icon =
+            L.divIcon({
+
+                className:"",
+                html:`
+                    <div
+                        class="risk-marker ${getRiskClass(zone.risk)}"
+                    >
+                        ${zone.risk}
+                    </div>
+                `,
+                iconSize:[80,30],
+                iconAnchor:[40,15]
+
+            });
+
+
+        const marker =
+            L.marker(
+                [zone.lat,zone.lon],
+                {icon}
+            ).addTo(map);
+
+
+        marker.bindPopup(`
+            <div style="font-family:Inter;color:#111">
+
+                <strong>
+                    ${zone.name}
+                </strong>
+
+                <br><br>
+
+                <b>Location:</b>
+                ${zone.city}
+
+                <br>
+
+                <b>Risk:</b>
+                ${zone.risk}
+
+                <br>
+
+                <b>AI Score:</b>
+                ${zone.score}%
+
+                <br><br>
+
+                <small>
+                    Demo/sample risk location
+                </small>
+
+            </div>
+        `);
+
+
+        markerCollection.push(marker);
+
+    });
+
+}
+
+
+/* =========================================================
+   LIVE SENSOR MARKER
+========================================================= */
+
+let liveSensorMarker = null;
+
+
+function updateLiveSensorMarker(){
+
+    if(
+        !dashboardMap ||
+        currentSensorData.latitude == null ||
+        currentSensorData.longitude == null
+    ){
+
+        return;
+
+    }
+
+
+    const risk =
+        getRiskState(
+            Number(currentSensorData.risk || 0)
+        );
+
+
+    const icon =
+        L.divIcon({
+
+            className:"",
+            html:`
+                <div
+                    class="risk-marker ${getRiskClass(risk)}"
+                >
+                    ${risk}
+                </div>
+            `,
+            iconSize:[80,30],
+            iconAnchor:[40,15]
+
+        });
+
+
+    if(liveSensorMarker){
+
+        liveSensorMarker
+            .setLatLng([
+                currentSensorData.latitude,
+                currentSensorData.longitude
+            ]);
+
+        liveSensorMarker.setIcon(icon);
+
+    }
+    else{
+
+        liveSensorMarker =
+            L.marker(
+                [
+                    currentSensorData.latitude,
+                    currentSensorData.longitude
+                ],
+                {icon}
+            )
+            .addTo(dashboardMap);
+
+    }
+
+
+    liveSensorMarker.bindPopup(`
+        <div style="font-family:Inter;color:#111">
+
+            <strong>
+                LIVE SENSOR
+            </strong>
+
+            <br><br>
+
+            <b>Location:</b>
+            ${currentSensorData.location || "Unknown"}
+
+            <br>
+
+            <b>Water Level:</b>
+            ${currentSensorData.waterLevel ?? "--"} m
+
+            <br>
+
+            <b>Rainfall:</b>
+            ${currentSensorData.rainfall ?? "--"} mm
+
+            <br>
+
+            <b>Temperature:</b>
+            ${currentSensorData.temperature ?? "--"} °C
+
+            <br>
+
+            <b>Humidity:</b>
+            ${currentSensorData.humidity ?? "--"} %
+
+            <br>
+
+            <b>Risk:</b>
+            ${currentSensorData.risk ?? "--"}%
+
+        </div>
+    `);
+
+}
+
+
+/* =========================================================
+   CHANGE MAP
+========================================================= */
+
+function changeMap(
+    type,
+    button
+){
+
+    if(activeDashboardLayer){
+
+        dashboardMap.removeLayer(
+            activeDashboardLayer
+        );
+
+    }
+
+
+    activeDashboardLayer =
+        mapLayers[type].addTo(
+            dashboardMap
+        );
+
+
+    document
+        .querySelectorAll(
+            "#dashboard .map-option"
+        )
+        .forEach(btn => {
+
+            btn.classList.remove("active");
+
+        });
+
 
     button.classList.add("active");
 
-
-    if(currentLayer)
-        map.removeLayer(currentLayer);
+}
 
 
-    map.removeLayer(rainfallLayer);
-    map.removeLayer(floodLayer);
-    map.removeLayer(weatherLayer);
+function changeRiskMap(
+    type,
+    button
+){
 
+    if(activeRiskLayer){
 
-    if(layers[type]){
-
-        currentLayer=layers[type];
-
-        currentLayer.addTo(map);
-
-    }
-
-
-    if(type==="rainfall"){
-
-        currentLayer=layers.standard;
-
-        currentLayer.addTo(map);
-
-        rainfallLayer.addTo(map);
-
-        showToast(
-            "Rainfall layer activated"
+        riskMap.removeLayer(
+            activeRiskLayer
         );
 
     }
 
 
-    if(type==="flood"){
-
-        currentLayer=layers.standard;
-
-        currentLayer.addTo(map);
-
-        floodLayer.addTo(map);
-
-        showToast(
-            "Flood-risk layer activated"
+    activeRiskLayer =
+        mapLayers[type].addTo(
+            riskMap
         );
 
-    }
+
+    document
+        .querySelectorAll(
+            "#riskZones .map-option"
+        )
+        .forEach(btn => {
+
+            btn.classList.remove("active");
+
+        });
 
 
-    if(type==="weather"){
-
-        currentLayer=layers.standard;
-
-        currentLayer.addTo(map);
-
-        weatherLayer.addTo(map);
-
-        showToast(
-            "Weather layer activated"
-        );
-
-    }
+    button.classList.add("active");
 
 }
 
 
-/* =====================================================
-   SEARCH ANY LOCATION
-===================================================== */
+/* =========================================================
+   MAP SEARCH
+========================================================= */
 
 async function searchLocation(){
 
-    const query=
-        document
-        .getElementById("searchInput")
-        .value
-        .trim();
+    const input =
+        document.getElementById(
+            "locationSearch"
+        );
 
+    const query =
+        input.value.trim();
 
     if(!query){
 
         showToast(
-            "Enter a location"
+            "Enter a location to search."
         );
 
         return;
@@ -2393,28 +3856,39 @@ async function searchLocation(){
     }
 
 
-    showToast(
-        "Searching worldwide..."
-    );
-
-
     try{
 
-        const response=
-            await fetch(
-                "https://nominatim.openstreetmap.org/search?format=json&limit=1&q="+
-                encodeURIComponent(query)
-            );
+        showToast(
+            "Searching location..."
+        );
 
 
-        const data=
+        const url =
+            "https://nominatim.openstreetmap.org/search?" +
+            new URLSearchParams({
+
+                q:query,
+
+                format:"json",
+
+                limit:"1",
+
+                "accept-language":"en"
+
+            });
+
+
+        const response =
+            await fetch(url);
+
+        const results =
             await response.json();
 
 
-        if(!data.length){
+        if(!results.length){
 
             showToast(
-                "Location not found"
+                "Location not found."
             );
 
             return;
@@ -2422,43 +3896,55 @@ async function searchLocation(){
         }
 
 
-        const result=data[0];
-
-        const lat=parseFloat(result.lat);
-        const lon=parseFloat(result.lon);
+        const place =
+            results[0];
 
 
-        map.flyTo(
-            [lat,lon],
-            11,
-            {
-                duration:2
-            }
+        currentLat =
+            Number(place.lat);
+
+        currentLon =
+            Number(place.lon);
+
+        currentLocationName =
+            place.display_name;
+
+
+        dashboardMap.setView(
+            [currentLat,currentLon],
+            13
         );
 
 
-        if(marker)
-            map.removeLayer(marker);
-
-
-        marker=
-            L.marker([lat,lon])
-            .addTo(map)
-            .bindPopup(
-                "<b>"+result.display_name+"</b>"
-            )
-            .openPopup();
-
-
-        showToast(
-            "Showing "+result.display_name
+        riskMap.setView(
+            [currentLat,currentLon],
+            11
         );
 
 
-    }catch(error){
+        loadWeather(
+            currentLat,
+            currentLon
+        );
+
+
+        document.getElementById(
+            "weatherLocation"
+        ).textContent =
+            currentLocationName;
+
 
         showToast(
-            "Search failed"
+            "Location loaded successfully."
+        );
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        showToast(
+            "Location search failed."
         );
 
     }
@@ -2466,16 +3952,16 @@ async function searchLocation(){
 }
 
 
-/* =====================================================
+/* =========================================================
    CURRENT LOCATION
-===================================================== */
+========================================================= */
 
-function useLocation(){
+function locateUser(){
 
     if(!navigator.geolocation){
 
         showToast(
-            "Geolocation unavailable"
+            "Geolocation is not supported."
         );
 
         return;
@@ -2485,47 +3971,45 @@ function useLocation(){
 
     navigator.geolocation.getCurrentPosition(
 
-        position=>{
+        position => {
 
-            const lat=
+            currentLat =
                 position.coords.latitude;
 
-            const lon=
+            currentLon =
                 position.coords.longitude;
 
 
-            map.flyTo(
-                [lat,lon],
-                14,
-                {
-                    duration:2
-                }
+            dashboardMap.setView(
+                [currentLat,currentLon],
+                14
             );
 
 
-            if(marker)
-                map.removeLayer(marker);
+            riskMap.setView(
+                [currentLat,currentLon],
+                12
+            );
 
 
-            marker=
-                L.marker([lat,lon])
-                .addTo(map)
-                .bindPopup(
-                    "<b>📍 Your Location</b>"
-                )
-                .openPopup();
+            loadWeather(
+                currentLat,
+                currentLon
+            );
 
 
             showToast(
-                "Current location found"
+                "Current location loaded."
             );
 
         },
 
-        ()=>{
+        () => {
+
             showToast(
-                "Location permission denied"
+                "Location permission unavailable."
             );
+
         }
 
     );
@@ -2533,557 +4017,1805 @@ function useLocation(){
 }
 
 
-/* =====================================================
-   CHATBOT
-===================================================== */
+/* =========================================================
+   FULLSCREEN MAP
+========================================================= */
 
-function sendMessage(){
+function fullscreenMap(
+    id
+){
 
-    const input=
-        document
-        .getElementById("chatInput");
+    const element =
+        document.getElementById(id);
+
+    if(element.requestFullscreen){
+
+        element.requestFullscreen();
+
+    }
+
+}
 
 
-    const text=
-        input.value.trim();
+/* =========================================================
+   WEATHER
+========================================================= */
+
+async function loadWeather(
+    lat,
+    lon
+){
+
+    try{
+
+        const url =
+            "https://api.open-meteo.com/v1/forecast?" +
+            new URLSearchParams({
+
+                latitude:lat,
+
+                longitude:lon,
+
+                current:[
+                    "temperature_2m",
+                    "relative_humidity_2m",
+                    "apparent_temperature",
+                    "precipitation",
+                    "rain",
+                    "weather_code",
+                    "cloud_cover",
+                    "surface_pressure",
+                    "wind_speed_10m"
+                ].join(","),
+
+                hourly:[
+                    "precipitation",
+                    "rain"
+                ].join(","),
+
+                timezone:"auto",
+
+                forecast_days:"2"
+
+            });
 
 
-    if(!text)
+        const response =
+            await fetch(url);
+
+        const data =
+            await response.json();
+
+
+        if(!data.current){
+
+            return;
+
+        }
+
+
+        const current =
+            data.current;
+
+
+        document.getElementById(
+            "weatherTemp"
+        ).textContent =
+            current.temperature_2m ?? "--";
+
+
+        document.getElementById(
+            "weatherHumidity"
+        ).textContent =
+            current.relative_humidity_2m ?? "--";
+
+
+        document.getElementById(
+            "weatherRain"
+        ).textContent =
+            current.precipitation ?? "--";
+
+
+        document.getElementById(
+            "weatherWind"
+        ).textContent =
+            current.wind_speed_10m ?? "--";
+
+
+        document.getElementById(
+            "weatherPressure"
+        ).textContent =
+            current.surface_pressure ?? "--";
+
+
+        document.getElementById(
+            "weatherCloud"
+        ).textContent =
+            current.cloud_cover ?? "--";
+
+
+        document.getElementById(
+            "dashTemp"
+        ).textContent =
+            current.temperature_2m ?? "--";
+
+
+        document.getElementById(
+            "weatherStatus"
+        ).textContent =
+            weatherCodeToText(
+                current.weather_code
+            );
+
+
+        createRainChart(
+            data.hourly
+        );
+
+    }
+    catch(error){
+
+        console.error(
+            "Weather API error:",
+            error
+        );
+
+    }
+
+}
+
+
+function weatherCodeToText(code){
+
+    const codes = {
+
+        0:"CLEAR",
+
+        1:"MAINLY CLEAR",
+
+        2:"PARTLY CLOUDY",
+
+        3:"OVERCAST",
+
+        45:"FOG",
+
+        48:"DEPOSITING RIME FOG",
+
+        51:"LIGHT DRIZZLE",
+
+        53:"MODERATE DRIZZLE",
+
+        55:"DENSE DRIZZLE",
+
+        61:"LIGHT RAIN",
+
+        63:"MODERATE RAIN",
+
+        65:"HEAVY RAIN",
+
+        71:"LIGHT SNOW",
+
+        73:"MODERATE SNOW",
+
+        75:"HEAVY SNOW",
+
+        80:"RAIN SHOWERS",
+
+        81:"RAIN SHOWERS",
+
+        82:"VIOLENT RAIN SHOWERS",
+
+        95:"THUNDERSTORM",
+
+        96:"THUNDERSTORM + HAIL",
+
+        99:"THUNDERSTORM + HAIL"
+
+    };
+
+    return codes[code] || "MONITORING";
+
+}
+
+
+/* =========================================================
+   RAIN CHART
+========================================================= */
+
+let rainChart;
+
+
+function createRainChart(
+    hourly
+){
+
+    if(!hourly){
+
         return;
 
-
-    addMessage(
-        text,
-        true
-    );
+    }
 
 
-    input.value="";
+    const labels =
+        hourly.time
+            .slice(0,24)
+            .map(t => {
+
+                return new Date(t)
+                    .getHours()
+                    .toString()
+                    .padStart(2,"0") + ":00";
+
+            });
 
 
-    setTimeout(()=>{
+    const values =
+        hourly.precipitation
+            .slice(0,24);
 
-        const response=
-            getResponse(text);
 
-
-        addMessage(
-            response,
-            false
+    const canvas =
+        document.getElementById(
+            "rainChart"
         );
 
 
-        speakHexa(response);
+    if(rainChart){
 
-    },450);
+        rainChart.destroy();
+
+    }
+
+
+    rainChart =
+        new Chart(
+            canvas,
+            {
+
+                type:"line",
+
+                data:{
+
+                    labels,
+
+                    datasets:[{
+
+                        label:"Precipitation (mm)",
+
+                        data:values,
+
+                        borderWidth:2,
+
+                        tension:.35,
+
+                        fill:true
+
+                    }]
+
+                },
+
+                options:{
+
+                    responsive:true,
+
+                    maintainAspectRatio:false,
+
+                    plugins:{
+
+                        legend:{
+
+                            labels:{
+                                color:"#9ab4c5"
+                            }
+
+                        }
+
+                    },
+
+                    scales:{
+
+                        x:{
+
+                            ticks:{
+                                color:"#627c90"
+                            },
+
+                            grid:{
+                                color:"rgba(255,255,255,.04)"
+                            }
+
+                        },
+
+                        y:{
+
+                            ticks:{
+                                color:"#627c90"
+                            },
+
+                            grid:{
+                                color:"rgba(255,255,255,.04)"
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
 
 }
 
 
-/* =====================================================
-   CHAT RESPONSE
-===================================================== */
+/* =========================================================
+   BACKEND SENSOR DATA
+========================================================= */
 
-function getResponse(text){
+async function loadLiveSensorData(){
 
-    const q=text.toLowerCase();
+    try{
+
+        const response =
+            await fetch(
+                `${API_URL}/api/sensor/latest`,
+                {
+                    cache:"no-store"
+                }
+            );
 
 
-    if(
-        q.includes("hello") ||
-        q.includes("hi") ||
-        q.includes("hey")
-    ){
+        if(!response.ok){
 
-        return(
-            "Hello! I'm Hexa, your FloodGuard AI assistant. "+
-            "How can I help you today?"
-        );
+            throw new Error(
+                "Backend unavailable"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        currentSensorData = {
+
+            waterLevel:
+                data.waterLevel ?? null,
+
+            rainfall:
+                data.rainfall ?? null,
+
+            temperature:
+                data.temperature ?? null,
+
+            humidity:
+                data.humidity ?? null,
+
+            risk:
+                data.risk ?? null,
+
+            location:
+                data.location ?? "Unknown",
+
+            latitude:
+                data.latitude ??
+                DEFAULT_LAT,
+
+            longitude:
+                data.longitude ??
+                DEFAULT_LON
+
+        };
+
+
+        updateDashboardSensorUI();
+
+        updateMonitoringUI();
+
+        updateAnalyticsUI();
+
+        updateLiveSensorMarker();
+
 
     }
+    catch(error){
 
-
-    if(
-        q.includes("map") ||
-        q.includes("location")
-    ){
-
-        return(
-            "You can search any location worldwide using "+
-            "the search bar. Map styles are available directly "+
-            "below the map."
+        console.warn(
+            "Live backend data unavailable:",
+            error.message
         );
 
-    }
+        /*
+           IMPORTANT:
 
+           No Math.random() is used here.
 
-    if(
-        q.includes("flood") ||
-        q.includes("risk")
-    ){
-
-        return(
-            "FloodGuard currently monitors multiple flood-risk "+
-            "regions. Select Flood Risk below the map to visualize "+
-            "risk zones."
-        );
+           If Render/MongoDB/ESP32 is offline,
+           the UI keeps showing -- instead of
+           pretending fake sensor values are real.
+        */
 
     }
-
-
-    if(
-        q.includes("rain") ||
-        q.includes("weather")
-    ){
-
-        return(
-            "Use the Rainfall or Weather map options below "+
-            "the map to visualize environmental information."
-        );
-
-    }
-
-
-    if(
-        q.includes("sensor") ||
-        q.includes("water")
-    ){
-
-        return(
-            "FloodGuard can monitor water level, rainfall, "+
-            "temperature, humidity and flow sensors."
-        );
-
-    }
-
-
-    if(
-        q.includes("ai") ||
-        q.includes("prediction")
-    ){
-
-        return(
-            "The AI prediction system can evaluate rainfall, "+
-            "water level, flow and environmental conditions."
-        );
-
-    }
-
-
-    return(
-        "I can help you with maps, flood risk, weather, "+
-        "sensors, alerts and AI predictions."
-    );
 
 }
 
 
-/* =====================================================
-   ADD CHAT MESSAGE
-===================================================== */
+/* =========================================================
+   SENSOR UI
+========================================================= */
 
-function addMessage(text,user){
+function updateDashboardSensorUI(){
 
-    const container=
-        document
-        .getElementById("chatMessages");
+    const d =
+        currentSensorData;
 
 
-    const div=
+    document.getElementById(
+        "dashWater"
+    ).textContent =
+        d.waterLevel ?? "--";
+
+
+    document.getElementById(
+        "dashRain"
+    ).textContent =
+        d.rainfall ?? "--";
+
+
+    const risk =
+        Number(d.risk);
+
+
+    if(!isNaN(risk)){
+
+        document.getElementById(
+            "dashRisk"
+        ).textContent =
+            risk + "%";
+
+
+        updateRiskVisuals(
+            risk
+        );
+
+    }
+
+}
+
+
+function updateMonitoringUI(){
+
+    const d =
+        currentSensorData;
+
+
+    document.getElementById(
+        "monitorWater"
+    ).textContent =
+        d.waterLevel ?? "--";
+
+
+    document.getElementById(
+        "monitorRain"
+    ).textContent =
+        d.rainfall ?? "--";
+
+
+    document.getElementById(
+        "monitorTemp"
+    ).textContent =
+        d.temperature ?? "--";
+
+
+    document.getElementById(
+        "monitorHumidity"
+    ).textContent =
+        d.humidity ?? "--";
+
+
+    document.getElementById(
+        "tableWater"
+    ).textContent =
+        d.waterLevel ?? "--";
+
+
+    document.getElementById(
+        "tableRain"
+    ).textContent =
+        d.rainfall ?? "--";
+
+
+    document.getElementById(
+        "tableTemp"
+    ).textContent =
+        d.temperature ?? "--";
+
+
+    document.getElementById(
+        "tableHumidity"
+    ).textContent =
+        d.humidity ?? "--";
+
+
+    const risk =
+        Number(d.risk || 0);
+
+
+    const state =
+        getRiskState(risk);
+
+
+    const riskElement =
+        document.getElementById(
+            "tableRisk"
+        );
+
+
+    riskElement.textContent =
+        state;
+
+
+    riskElement.className =
+        "status-pill " +
+        getStatusClass(state);
+
+}
+
+
+function updateAnalyticsUI(){
+
+    const d =
+        currentSensorData;
+
+
+    document.getElementById(
+        "analyticsWater"
+    ).textContent =
+        d.waterLevel ?? "--";
+
+
+    document.getElementById(
+        "analyticsRain"
+    ).textContent =
+        d.rainfall ?? "--";
+
+
+    document.getElementById(
+        "analyticsHumidity"
+    ).textContent =
+        d.humidity ?? "--";
+
+
+    document.getElementById(
+        "analyticsRisk"
+    ).textContent =
+        d.risk != null
+            ? d.risk + "%"
+            : "--";
+
+
+    if(d.waterLevel != null){
+
+        document.getElementById(
+            "waterProgress"
+        ).style.width =
+            Math.min(
+                Number(d.waterLevel) * 15,
+                100
+            ) + "%";
+
+    }
+
+
+    if(d.rainfall != null){
+
+        document.getElementById(
+            "rainProgress"
+        ).style.width =
+            Math.min(
+                Number(d.rainfall),
+                100
+            ) + "%";
+
+    }
+
+
+    if(d.humidity != null){
+
+        document.getElementById(
+            "humidityProgress"
+        ).style.width =
+            Math.min(
+                Number(d.humidity),
+                100
+            ) + "%";
+
+    }
+
+
+    if(d.risk != null){
+
+        document.getElementById(
+            "riskProgress"
+        ).style.width =
+            Math.min(
+                Number(d.risk),
+                100
+            ) + "%";
+
+    }
+
+}
+
+
+/* =========================================================
+   RISK STATE
+========================================================= */
+
+function getRiskState(
+    risk
+){
+
+    risk =
+        Number(risk || 0);
+
+
+    if(risk >= 80){
+
+        return "CRITICAL";
+
+    }
+
+    if(risk >= 60){
+
+        return "HIGH";
+
+    }
+
+    if(risk >= 35){
+
+        return "WATCH";
+
+    }
+
+    return "SAFE";
+
+}
+
+
+function getStatusClass(
+    state
+){
+
+    switch(state){
+
+        case "CRITICAL":
+            return "status-critical";
+
+        case "HIGH":
+            return "status-high";
+
+        case "WATCH":
+            return "status-watch";
+
+        default:
+            return "status-safe";
+
+    }
+
+}
+
+
+/* =========================================================
+   RISK VISUALS
+========================================================= */
+
+function updateRiskVisuals(
+    risk
+){
+
+    const state =
+        getRiskState(risk);
+
+
+    const riskText =
+        document.getElementById(
+            "riskState"
+        );
+
+
+    const riskNumber =
+        document.getElementById(
+            "riskRingNumber"
+        );
+
+
+    riskText.textContent =
+        state;
+
+
+    riskNumber.textContent =
+        risk;
+
+
+    riskText.className =
+        "risk-state " +
+        getRiskClassName(state);
+
+
+    const dashRisk =
+        document.getElementById(
+            "dashRisk"
+        );
+
+
+    dashRisk.className =
+        "card-value " +
+        getRiskClassName(state);
+
+}
+
+
+function getRiskClassName(
+    state
+){
+
+    switch(state){
+
+        case "CRITICAL":
+            return "red";
+
+        case "HIGH":
+            return "orange";
+
+        case "WATCH":
+            return "yellow";
+
+        default:
+            return "green";
+
+    }
+
+}
+
+
+/* =========================================================
+   SOCKET.IO
+========================================================= */
+
+function connectSocket(){
+
+    try{
+
+        const socket =
+            io(
+                API_URL,
+                {
+                    transports:[
+                        "websocket",
+                        "polling"
+                    ]
+                }
+            );
+
+
+        socket.on(
+            "connect",
+            () => {
+
+                console.log(
+                    "Socket.IO connected"
+                );
+
+            }
+        );
+
+
+        socket.on(
+            "sensorUpdate",
+            data => {
+
+                if(data){
+
+                    currentSensorData = {
+
+                        ...currentSensorData,
+
+                        ...data
+
+                    };
+
+
+                    updateDashboardSensorUI();
+
+                    updateMonitoringUI();
+
+                    updateAnalyticsUI();
+
+                    updateLiveSensorMarker();
+
+                }
+
+            }
+        );
+
+
+        socket.on(
+            "disconnect",
+            () => {
+
+                console.log(
+                    "Socket.IO disconnected"
+                );
+
+            }
+        );
+
+    }
+    catch(error){
+
+        console.warn(
+            "Socket connection unavailable"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   WATER CHART
+========================================================= */
+
+let waterChart;
+
+let waterHistory = [];
+
+
+function initializeWaterChart(){
+
+    const canvas =
+        document.getElementById(
+            "waterChart"
+        );
+
+
+    waterChart =
+        new Chart(
+            canvas,
+            {
+
+                type:"line",
+
+                data:{
+
+                    labels:[],
+
+                    datasets:[{
+
+                        label:"Water Level (m)",
+
+                        data:[],
+
+                        borderWidth:2,
+
+                        tension:.35,
+
+                        fill:true
+
+                    }]
+
+                },
+
+                options:{
+
+                    responsive:true,
+
+                    maintainAspectRatio:false,
+
+                    plugins:{
+
+                        legend:{
+
+                            labels:{
+                                color:"#9ab4c5"
+                            }
+
+                        }
+
+                    },
+
+                    scales:{
+
+                        x:{
+
+                            ticks:{
+                                color:"#627c90"
+                            },
+
+                            grid:{
+                                color:"rgba(255,255,255,.04)"
+                            }
+
+                        },
+
+                        y:{
+
+                            ticks:{
+                                color:"#627c90"
+                            },
+
+                            grid:{
+                                color:"rgba(255,255,255,.04)"
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+/* Update chart only with actual data */
+
+function updateWaterChart(){
+
+    const water =
+        currentSensorData.waterLevel;
+
+
+    if(water == null){
+
+        return;
+
+    }
+
+
+    const now =
+        new Date();
+
+
+    const label =
+        now.getHours()
+        .toString()
+        .padStart(2,"0")
+        + ":" +
+        now.getMinutes()
+        .toString()
+        .padStart(2,"0");
+
+
+    waterHistory.push({
+
+        label,
+
+        value:Number(water)
+
+    });
+
+
+    if(waterHistory.length > 20){
+
+        waterHistory.shift();
+
+    }
+
+
+    if(waterChart){
+
+        waterChart.data.labels =
+            waterHistory.map(
+                x => x.label
+            );
+
+        waterChart.data.datasets[0].data =
+            waterHistory.map(
+                x => x.value
+            );
+
+        waterChart.update();
+
+    }
+
+}
+
+
+/* =========================================================
+   ANALYTICS CHART
+========================================================= */
+
+let analyticsChart;
+
+
+function initializeAnalyticsChart(){
+
+    if(analyticsChart){
+
+        return;
+
+    }
+
+
+    const canvas =
+        document.getElementById(
+            "analyticsChart"
+        );
+
+
+    analyticsChart =
+        new Chart(
+            canvas,
+            {
+
+                type:"bar",
+
+                data:{
+
+                    labels:[
+                        "Water",
+                        "Rainfall",
+                        "Humidity",
+                        "Risk"
+                    ],
+
+                    datasets:[{
+
+                        label:"Current Indicator",
+
+                        data:[
+                            0,
+                            0,
+                            0,
+                            0
+                        ],
+
+                        borderWidth:1
+
+                    }]
+
+                },
+
+                options:{
+
+                    responsive:true,
+
+                    maintainAspectRatio:false,
+
+                    scales:{
+
+                        x:{
+
+                            ticks:{
+                                color:"#6c8799"
+                            }
+
+                        },
+
+                        y:{
+
+                            beginAtZero:true,
+
+                            max:100,
+
+                            ticks:{
+                                color:"#6c8799"
+                            }
+
+                        }
+
+                    },
+
+                    plugins:{
+
+                        legend:{
+
+                            labels:{
+                                color:"#9ab4c5"
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+function updateAnalyticsChart(){
+
+    if(!analyticsChart){
+
+        return;
+
+    }
+
+
+    const d =
+        currentSensorData;
+
+
+    analyticsChart.data.datasets[0].data = [
+
+        d.waterLevel != null
+            ? Math.min(Number(d.waterLevel)*10,100)
+            : 0,
+
+        d.rainfall != null
+            ? Math.min(Number(d.rainfall),100)
+            : 0,
+
+        d.humidity != null
+            ? Number(d.humidity)
+            : 0,
+
+        d.risk != null
+            ? Number(d.risk)
+            : 0
+
+    ];
+
+
+    analyticsChart.update();
+
+}
+
+
+/* =========================================================
+   AI PREDICTION
+========================================================= */
+
+function runPrediction(){
+
+    const water =
+        Number(
+            document.getElementById(
+                "predictionWater"
+            ).value
+        );
+
+
+    const rain =
+        Number(
+            document.getElementById(
+                "predictionRain"
+            ).value
+        );
+
+
+    const humidity =
+        Number(
+            document.getElementById(
+                "predictionHumidity"
+            ).value
+        );
+
+
+    const flow =
+        Number(
+            document.getElementById(
+                "predictionFlow"
+            ).value
+        );
+
+
+    let score = 0;
+
+
+    /*
+       Local demonstration heuristic.
+
+       For production:
+       replace this calculation with your
+       trained AI model/backend prediction.
+    */
+
+    score +=
+        Math.min(
+            water * 12,
+            35
+        );
+
+
+    score +=
+        Math.min(
+            rain * .35,
+            30
+        );
+
+
+    score +=
+        Math.min(
+            humidity * .15,
+            15
+        );
+
+
+    score +=
+        Math.min(
+            flow * .20,
+            20
+        );
+
+
+    score =
+        Math.round(
+            Math.min(
+                score,
+                100
+            )
+        );
+
+
+    const state =
+        getRiskState(score);
+
+
+    document.getElementById(
+        "predictionScore"
+    ).textContent =
+        score + "%";
+
+
+    const stateElement =
+        document.getElementById(
+            "predictionState"
+        );
+
+
+    stateElement.textContent =
+        state;
+
+
+    stateElement.className =
+        "risk-state " +
+        getRiskClassName(state);
+
+
+    const advice = {
+
+        SAFE:
+            "Conditions currently indicate a relatively low flood risk. Continue normal monitoring.",
+
+        WATCH:
+            "Conditions require attention. Monitor rainfall and water-level changes closely.",
+
+        HIGH:
+            "High flood potential detected. Increase monitoring frequency and prepare response measures.",
+
+        CRITICAL:
+            "Critical flood potential detected. Activate emergency response procedures and issue warnings where appropriate."
+
+    };
+
+
+    document.getElementById(
+        "predictionAdvice"
+    ).textContent =
+        advice[state];
+
+
+    if(
+        state === "CRITICAL" ||
+        state === "HIGH"
+    ){
+
+        showToast(
+            "AI Prediction: " + state
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   EMERGENCY ALERT
+========================================================= */
+
+function testEmergencyAlert(){
+
+    const alertList =
+        document.getElementById(
+            "alertList"
+        );
+
+
+    const alert =
         document.createElement("div");
 
 
-    div.className=
-        "msg"+
-        (user ? " user":"");
+    alert.className =
+        "alert alert-critical";
 
 
-    if(user){
+    alert.innerHTML = `
 
-        div.innerHTML=
-            `<div class="bubble">
-                ${escapeHTML(text)}
-            </div>`;
+        <div class="alert-icon">
+            !
+        </div>
 
-    }else{
+        <div class="alert-content">
 
-        div.innerHTML=`
-
-            <svg class="ai-icon small">
-                <use href="#aiRobot"></use>
-            </svg>
-
-            <div class="bubble">
-                ${escapeHTML(text)}
+            <div class="alert-title">
+                TEST EMERGENCY ALERT
             </div>
 
-        `;
+            <div class="alert-description">
+                FloodGuard emergency notification system has been successfully tested.
+            </div>
+
+        </div>
+
+        <div class="alert-time">
+            NOW
+        </div>
+
+    `;
+
+
+    alertList.prepend(
+        alert
+    );
+
+
+    showToast(
+        "Emergency alert test completed."
+    );
+
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+function toggleSwitch(
+    element
+){
+
+    element.classList.toggle(
+        "on"
+    );
+
+
+    const isOn =
+        element.classList.contains(
+            "on"
+        );
+
+
+    showToast(
+        isOn
+            ? "Setting enabled."
+            : "Setting disabled."
+    );
+
+}
+
+
+/* =========================================================
+   HEXA CHATBOT
+========================================================= */
+
+function toggleChat(){
+
+    const chat =
+        document.getElementById(
+            "chatBox"
+        );
+
+
+    chat.style.display =
+        chat.style.display === "block"
+            ? "none"
+            : "block";
+
+}
+
+
+function sendChat(){
+
+    const input =
+        document.getElementById(
+            "chatInput"
+        );
+
+
+    const text =
+        input.value.trim();
+
+
+    if(!text){
+
+        return;
 
     }
 
 
-    container.appendChild(div);
+    addChatMessage(
+        text,
+        "user-message"
+    );
 
 
-    container.scrollTop=
+    input.value = "";
+
+
+    setTimeout(() => {
+
+        const reply =
+            getHexaReply(
+                text
+            );
+
+
+        addChatMessage(
+            reply,
+            "bot-message"
+        );
+
+
+        speakHexa(
+            reply
+        );
+
+    },400);
+
+}
+
+
+function addChatMessage(
+    text,
+    className
+){
+
+    const container =
+        document.getElementById(
+            "chatMessages"
+        );
+
+
+    const message =
+        document.createElement("div");
+
+
+    message.className =
+        "message " +
+        className;
+
+
+    message.textContent =
+        text;
+
+
+    container.appendChild(
+        message
+    );
+
+
+    container.scrollTop =
         container.scrollHeight;
 
 }
 
 
-/* =====================================================
-   HEXA VOICE
-===================================================== */
+function getHexaReply(
+    text
+){
 
-function speakHexa(text){
+    const message =
+        text.toLowerCase();
 
-    if(!voiceEnabled)
+
+    const risk =
+        currentSensorData.risk;
+
+
+    const water =
+        currentSensorData.waterLevel;
+
+
+    const rain =
+        currentSensorData.rainfall;
+
+
+    if(
+        message.includes("risk")
+    ){
+
+        if(risk == null){
+
+            return "I do not have a live risk value from the sensor backend yet.";
+
+        }
+
+
+        return `The current FloodGuard AI risk level is ${risk} percent, classified as ${getRiskState(risk)}.`;
+
+    }
+
+
+    if(
+        message.includes("water")
+    ){
+
+        if(water == null){
+
+            return "The live water-level sensor value is currently unavailable.";
+
+        }
+
+
+        return `The latest connected sensor reports a water level of ${water} meters.`;
+
+    }
+
+
+    if(
+        message.includes("rain")
+    ){
+
+        if(rain == null){
+
+            return "The live rainfall value is currently unavailable.";
+
+        }
+
+
+        return `The latest connected data reports ${rain} millimeters of rainfall.`;
+
+    }
+
+
+    if(
+        message.includes("alert")
+    ){
+
+        return "The Emergency Alert Center is monitoring the current flood conditions and can issue critical notifications.";
+
+    }
+
+
+    if(
+        message.includes("weather")
+    ){
+
+        return "The Global Weather page uses live Open-Meteo weather information.";
+
+    }
+
+
+    if(
+        message.includes("safe")
+    ){
+
+        return "SAFE means current monitored conditions are below the configured flood-risk warning thresholds.";
+
+    }
+
+
+    if(
+        message.includes("critical")
+    ){
+
+        return "CRITICAL indicates a very high flood-risk condition requiring immediate attention.";
+
+    }
+
+
+    if(
+        message.includes("hello") ||
+        message.includes("hi")
+    ){
+
+        return "Hello! I'm Hexa. I'm ready to help monitor FloodGuard AI.";
+
+    }
+
+
+    return "I can help with flood risk, water level, rainfall, weather, alerts, AI prediction and system status.";
+
+}
+
+
+/* Natural pronunciation */
+
+function speakHexa(
+    text
+){
+
+    const voiceSwitch =
+        document.getElementById(
+            "voiceSwitch"
+        );
+
+
+    if(
+        !voiceSwitch.classList.contains(
+            "on"
+        )
+    ){
+
         return;
 
+    }
 
-    if(!window.speechSynthesis)
+
+    if(
+        !("speechSynthesis" in window)
+    ){
+
         return;
 
-
-    speechSynthesis.cancel();
-
-
-    /*
-      IMPORTANT:
-      Never send "HEXA" to speech synthesis.
-      Use "Hexa" so browsers pronounce it
-      as a name instead of H-E-X-A.
-    */
-
-    const clean=
-        text
-        .replace(/H\.E\.X\.A/gi,"Hexa")
-        .replace(/\bHEXA\b/gi,"Hexa");
+    }
 
 
-    const speech=
+    window.speechSynthesis.cancel();
+
+
+    const utterance =
         new SpeechSynthesisUtterance(
-            clean
+            text
         );
 
 
-    speech.lang="en-IN";
-    speech.rate=.9;
-    speech.pitch=1.05;
-    speech.volume=1;
+    utterance.lang =
+        "en-IN";
+
+    utterance.rate =
+        .95;
+
+    utterance.pitch =
+        1;
 
 
-    const voices=
-        speechSynthesis.getVoices();
+    const voices =
+        window.speechSynthesis
+            .getVoices();
 
 
-    const voice=
+    const indianVoice =
         voices.find(
-            v=>v.lang==="en-IN"
-        ) ||
-        voices.find(
-            v=>v.lang.startsWith("en")
+            voice =>
+                voice.lang
+                    .toLowerCase()
+                    .includes("en-in")
         );
 
 
-    if(voice)
-        speech.voice=voice;
+    if(indianVoice){
+
+        utterance.voice =
+            indianVoice;
+
+    }
 
 
-    speechSynthesis.speak(
-        speech
+    window.speechSynthesis.speak(
+        utterance
     );
 
 }
 
 
-/* =====================================================
-   VOICE TOGGLE
-===================================================== */
-
-function toggleVoice(){
-
-    voiceEnabled=!voiceEnabled;
-
-
-    document
-        .getElementById("voiceButton")
-        .textContent=
-        voiceEnabled
-        ? "🔊"
-        : "🔇";
-
-
-    if(!voiceEnabled)
-        speechSynthesis.cancel();
-
-}
-
-
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
-
-function escapeHTML(text){
-
-    const div=
-        document.createElement("div");
-
-    div.textContent=text;
-
-    return div.innerHTML;
-
-}
-
-
-/* =====================================================
-   DEMO LIVE DATA
-===================================================== */
-
-function updateData(){
-
-    const water=
-        (3.7+
-        Math.random()*1.6)
-        .toFixed(1);
-
-
-    const rain=
-        Math.floor(
-            55+
-            Math.random()*60
-        );
-
-
-    const risk=
-        Math.floor(
-            48+
-            Math.random()*30
-        );
-
-
-    const alerts=
-        Math.floor(
-            9+
-            Math.random()*6
-        );
-
-
-    document
-        .getElementById("water")
-        .textContent=
-        water+" m";
-
-
-    document
-        .getElementById("rain")
-        .textContent=
-        rain+" mm";
-
-
-    document
-        .getElementById("risk")
-        .textContent=
-        risk+"%";
-
-
-    document
-        .getElementById("alerts")
-        .textContent=
-        alerts;
-
-
-    document
-        .getElementById("overviewAlerts")
-        .textContent=
-        alerts;
-
-}
-
-
-/* =====================================================
+/* =========================================================
    TOAST
-===================================================== */
+========================================================= */
 
 let toastTimer;
 
-function showToast(text){
 
-    let toast=
-        document.getElementById("toast");
+function showToast(
+    message
+){
 
-
-    if(!toast){
-
-        toast=
-            document.createElement("div");
-
-        toast.id="toast";
-
-        toast.style.cssText=`
-
-            position:fixed;
-            right:20px;
-            top:85px;
-            z-index:999999;
-            padding:13px 18px;
-            border-radius:12px;
-            background:rgba(2,18,38,.95);
-            border:1px solid #00d9ff;
-            color:#fff;
-            font-size:11px;
-            box-shadow:0 0 30px rgba(0,200,255,.2);
-
-        `;
-
-        document.body.appendChild(toast);
-
-    }
-
-
-    toast.textContent=text;
-
-
-    clearTimeout(toastTimer);
-
-
-    toastTimer=
-        setTimeout(
-            ()=>{
-                toast.remove();
-            },
-            3000
-        );
-
-}
-
-
-/* =====================================================
-   OTHER BUTTONS
-===================================================== */
-
-function riskMap(){
-
-    map.flyTo(
-        [22.5,79],
-        5,
-        {
-            duration:1.5
-        }
-    );
-
-
-    floodLayer.addTo(map);
-
-
-    showToast(
-        "Flood Risk Map activated"
-    );
-
-}
-
-
-function prediction(){
-
-    showToast(
-        "AI Flood Prediction engine activated"
-    );
-
-}
-
-
-/* =====================================================
-   LOADING
-===================================================== */
-
-const statuses=[
-
-    "INITIALIZING FLOOD MONITORING...",
-    "LOADING GLOBAL WATER SYSTEMS...",
-    "ANALYZING WEATHER PATTERNS...",
-    "PROCESSING FLOOD RISK DATA...",
-    "CONNECTING SENSOR NETWORK...",
-    "HEXA AI ONLINE..."
-
-];
-
-
-let statusIndex=0;
-
-
-const statusInterval=
-    setInterval(()=>{
-
-        const el=
-            document.getElementById(
-                "loadingStatus"
-            );
-
-
-        if(el){
-
-            el.textContent=
-                statuses[
-                    statusIndex %
-                    statuses.length
-                ];
-
-            statusIndex++;
-
-        }
-
-    },650);
-
-
-/* =====================================================
-   START
-===================================================== */
-
-window.addEventListener(
-    "load",
-    ()=>{
-
-        initMap();
-
-        updateData();
-
-
-        setInterval(
-            updateData,
-            10000
+    const toast =
+        document.getElementById(
+            "toast"
         );
 
 
-        setTimeout(()=>{
+    toast.textContent =
+        message;
 
-            clearInterval(
-                statusInterval
+
+    toast.style.display =
+        "block";
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(() => {
+
+            toast.style.display =
+                "none";
+
+        },2500);
+
+}
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+async function initializeApp(){
+
+    initializeMaps();
+
+    initializeWaterChart();
+
+    initializeAnalyticsChart();
+
+    loadWeather(
+        currentLat,
+        currentLon
+    );
+
+    loadLiveSensorData();
+
+    connectSocket();
+
+    setInterval(
+        loadLiveSensorData,
+        60000
+    );
+
+    setInterval(
+        updateWaterChart,
+        60000
+    );
+
+    setInterval(
+        updateAnalyticsChart,
+        60000
+    );
+
+
+    /*
+       Load the current location's weather
+       every 15 minutes.
+    */
+
+    setInterval(
+        () => {
+
+            loadWeather(
+                currentLat,
+                currentLon
             );
 
-
-            document
-                .getElementById(
-                    "loadingScreen"
-                )
-                .classList.add(
-                    "hide"
-                );
+        },
+        15 * 60 * 1000
+    );
 
 
-            setTimeout(()=>{
+    showToast(
+        "FloodGuard AI initialized successfully."
+    );
 
-                document
-                    .getElementById(
-                        "mapLoading"
-                    )
-                    .style.display="none";
+}
 
-            },1200);
 
-        },4300);
+/* =========================================================
+   INITIAL ANALYTICS
+========================================================= */
 
-    }
-);
+initializeAnalyticsChart();
 
 </script>
 
